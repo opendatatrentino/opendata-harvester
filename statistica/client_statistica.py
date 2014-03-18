@@ -2,6 +2,7 @@
 API client for statweb.provincia.tn.it
 """
 
+import json
 import re
 
 import requests
@@ -42,7 +43,7 @@ class StatisticaClient(object):
     def list_datasets(self):
         response = requests.get(self.index_url())
         assert response.ok
-        data = response.json()
+        data = _json_decode(response.text)
         assert isinstance(data, dict)
         assert data.keys() == ['IndicatoriStrutturali']
 
@@ -50,7 +51,10 @@ class StatisticaClient(object):
 
     def iter_datasets(self):
         for record in self.list_datasets():
-            yield self.get_dataset_meta(record['id'])
+            try:
+                yield self.get_dataset_meta(record['id'])
+            except:
+                pass
 
     def get_dataset_meta(self, id):
         """Get metadata for a given dataset"""
@@ -58,7 +62,7 @@ class StatisticaClient(object):
         url = self.metadata_url(id)
         response = requests.get(url)
         assert response.ok
-        data = response.json()
+        data = _json_decode(response.text)
 
         assert isinstance(data, dict)
         assert len(data.keys()) == 1
@@ -208,7 +212,7 @@ class StatisticaClient(object):
     def _get_name(self, url):
         response = requests.get(url)
         assert response.ok
-        data = response.json()
+        data = _json_decode(response.text)
         assert isinstance(data, dict)
         assert len(data) == 1
         return data.keys()[0]
@@ -216,3 +220,8 @@ class StatisticaClient(object):
 
 def _slugify(text):
     return re.sub(r'[^a-z0-9]', '-', text.lower())
+
+
+def _json_decode(text):
+    text = text.replace('\n', ' ').replace('\r', '')
+    return json.loads(text)
