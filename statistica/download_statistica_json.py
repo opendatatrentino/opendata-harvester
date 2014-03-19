@@ -67,15 +67,4 @@ with open(destfile, 'wb') as f:
 for key, val in CATEGORIES.iteritems():
     destfile = os.path.join(destination, 'group', '{0}.json'.format(key))
     with open(destfile, 'wb') as f:
-        json.dump({
-            "name": "pat-s-statistica",
-            "description":
-            "Censimenti, analisi, indagine statistiche, indicatori, ...",
-            "display_name": "PAT S. Statistica",
-            "image_url": "http://dati.trentino.it/images/logo.png",
-            "is_organization": True,
-            "state": "active",
-            "tags": [],
-            "title": "PAT S. Statistica",
-            "type": "organization"
-        }, f)
+        json.dump(val, f)
