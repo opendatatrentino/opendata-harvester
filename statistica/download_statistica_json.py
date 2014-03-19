@@ -79,4 +79,4 @@ def write_groups(destination):
 
 write_organizations(destination)
 write_groups(destination)
-# download_datasets(destination)
+download_datasets(destination)
