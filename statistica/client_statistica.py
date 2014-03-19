@@ -7,9 +7,14 @@ API client for statweb.provincia.tn.it
 import json
 import logging
 import re
-from textwrap import dedent
+import hashlib
 
 import requests
+
+
+def _robohash(text):
+    h = hashlib.sha1(text).hexdigest()
+    return 'http://robohash.org/{0}.png?set=set1&bgset=bg1'.format(h)
 
 
 logger = logging.getLogger(__name__)
@@ -23,6 +28,64 @@ DATASET_URLS = {
     "indicatore": DEFAULT_BASE_URL + '?fmt=json&idind={id}&t=i',
     "numeratore": DEFAULT_BASE_URL + '?fmt=json&idind={id}&t=n',
     "denominatore": DEFAULT_BASE_URL + '?fmt=json&idind={id}&t=d',
+}
+
+## name : data
+CATEGORIES = {
+    'ambiente': {'title': 'Ambiente'},
+    'amministrazione': {'title': 'Amministrazione'},
+    'conoscenza': {'title': 'Conoscenza'},
+    'cultura': {'title': 'Cultura'},
+    'demografia': {'title': 'Demografia'},
+    'economia': {'title': 'Economia'},
+    'gestione-del-territorio': {'title': 'Gestione del territorio'},
+    'politica': {'title': 'Politica'},
+    'sicurezza': {'title': 'Sicurezza'},
+    'welfare': {'title': 'Welfare'},
+}
+for key, val in CATEGORIES.iteritems():
+    val['name'] = key
+    val['image_url'] = _robohash(key)  # PHUN!
+
+## 'source -> ckan' map
+CATEGORIES_MAP = {
+    "Agricoltura, silvicoltura, e pesca": "economia",
+    "Ambiente": "ambiente",
+    "Altri servizi": "economia",
+    "Assistenza e protezione sociale": "welfare",
+    "Benessere economico": "welfare",
+    "Benessere soggettivo": "welfare",
+    "Commercio": "economia",
+    "Commercio con l'estero e internazionalizzazione": "economia",
+    "Conti economici": "economia",
+    "Costruzioni": "economia",
+    "Credito e servizi finanziari": "economia",
+    "Cultura, sport e tempo libero": "cultura",
+    "Edilizia e opere pubbliche": "ambiente",
+    "Energia": "ambiente",
+    "Famiglia e comportamenti sociali": "welfare",
+    "Giustizia e sicurezza": "sicurezza",
+    "Industria": "economia",
+    "Istruzione e formazione": "conoscenza",
+    "Lavoro e conciliazione dei tempi di vita": "welfare",
+    "Mercato del lavoro": "welfare",
+    "Paesaggio e patrimonio culturale": "ambiente",
+    "Politica e istituzioni": "politica",
+    "Popolazione": "demografia",
+    "Prezzi": "economia",
+    "Pubblica amministrazione": "amministrazione",
+    "Qualità dei servizi": "welfare",
+    "Relazioni sociali": "welfare",
+    "Ricerca e innovazione": "conoscenza",
+    "Ricerca, Sviluppo e innovazione": "conoscenza",
+    "Salute": "welfare",
+    "Sicurezza": "sicurezza",
+    "Società dell'informazione": "conoscenza",
+    "Stato dell'ambiente": "ambiente",
+    "Struttura e competitività delle imprese": "economia",
+    "Territorio": "gestione-del-territorio",
+    "Trasporti": "economia",
+    "Turismo": "economia",
 }
 
 
@@ -257,6 +320,15 @@ class StatisticaClient(object):
             description.append('**Note:** {0}'.format(orig_dataset['Note']))
 
         new_dataset['description'] = '\n'.join(description)
+
+        ##------------------------------------------------------------
+        ## Add groups
+
+        groups = []
+        settore = orig_dataset['Settore']
+        if settore in CATEGORIES_MAP:
+            groups.append(CATEGORIES_MAP[settore])
+        new_dataset['groups'] = groups
 
         return new_dataset
 

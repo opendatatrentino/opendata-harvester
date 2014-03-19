@@ -17,7 +17,7 @@ import logging
 import sys
 import os
 
-from client_statistica import StatisticaClient
+from client_statistica import StatisticaClient, CATEGORIES
 
 
 ## todo: we need to create organization / group json files, reading
@@ -47,6 +47,7 @@ for dataset in client.iter_datasets():
     with open(destfile, 'wb') as f:
         json.dump(dataset, f)
 
+## Write organization to file
 destfile = os.path.join(destination, 'organization', 'pat-s-statistica.json')
 with open(destfile, 'wb') as f:
     json.dump({
@@ -61,3 +62,20 @@ with open(destfile, 'wb') as f:
         "title": "PAT S. Statistica",
         "type": "organization"
     }, f)
+
+## Write groups to file
+for key, val in CATEGORIES.iteritems():
+    destfile = os.path.join(destination, 'group', '{0}.json'.format(key))
+    with open(destfile, 'wb') as f:
+        json.dump({
+            "name": "pat-s-statistica",
+            "description":
+            "Censimenti, analisi, indagine statistiche, indicatori, ...",
+            "display_name": "PAT S. Statistica",
+            "image_url": "http://dati.trentino.it/images/logo.png",
+            "is_organization": True,
+            "state": "active",
+            "tags": [],
+            "title": "PAT S. Statistica",
+            "type": "organization"
+        }, f)
