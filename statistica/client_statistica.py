@@ -294,32 +294,34 @@ class StatisticaClient(object):
         description = []
 
         if 'Area' in orig_dataset:
-            description.append('**Area:** {0}'.format(orig_dataset['Area']))
+            description.append(u'**Area:** {0}'
+                               .format(orig_dataset['Area']))
 
         if 'Settore' in orig_dataset:
-            description.append('**Settore:** {0}'.format(
-                orig_dataset['Settore']))
+            description.append(u'**Settore:** {0}'
+                               .format(orig_dataset['Settore']))
 
         if 'Algoritmo' in orig_dataset:
-            description.append('**Algoritmo:** {0}'.format(
-                orig_dataset['Algoritmo']))
+            description.append(u'**Algoritmo:** {0}'
+                               .format(orig_dataset['Algoritmo']))
 
         if 'UM' in orig_dataset:
-            description.append(u'**Unità di misura:** {0}'.format(
-                orig_dataset['UM']))
+            description.append(u'**Unità di misura:** {0}'
+                               .format(orig_dataset['UM']))
 
         if 'Fenomeno' in orig_dataset:
-            description.append('**Fenomeno:** {0}'.format(
-                orig_dataset['Fenomeno']))
+            description.append(u'**Fenomeno:** {0}'
+                               .format(orig_dataset['Fenomeno']))
 
         if 'ConfrontiTerritoriali' in orig_dataset:
-            description.append('**Confronti territoriali:** {0}'.format(
-                orig_dataset['ConfrontiTerritoriali']))
+            description.append(u'**Confronti territoriali:** {0}'
+                               .format(orig_dataset['ConfrontiTerritoriali']))
 
         if 'Note' in orig_dataset:
-            description.append('**Note:** {0}'.format(orig_dataset['Note']))
+            description.append(u'**Note:** {0}'
+                               .format(orig_dataset['Note']))
 
-        new_dataset['description'] = '\n'.join(description)
+        new_dataset['description'] = u'\n'.join(description)
 
         ##------------------------------------------------------------
         ## Add groups
