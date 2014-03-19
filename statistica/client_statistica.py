@@ -291,34 +291,35 @@ class StatisticaClient(object):
 
         ##------------------------------------------------------------
         ## Add description
+        ## We omit missing / non-empty fields
 
         description = []
 
-        if 'Area' in orig_dataset:
+        if orig_dataset.get('Area'):
             description.append(u'**Area:** {0}'
                                .format(orig_dataset['Area']))
 
-        if 'Settore' in orig_dataset:
+        if orig_dataset.get('Settore'):
             description.append(u'**Settore:** {0}'
                                .format(orig_dataset['Settore']))
 
-        if 'Algoritmo' in orig_dataset:
+        if orig_dataset.get('Algoritmo'):
             description.append(u'**Algoritmo:** {0}'
                                .format(orig_dataset['Algoritmo']))
 
-        if 'UM' in orig_dataset:
+        if orig_dataset.get('UM'):
             description.append(u'**Unità di misura:** {0}'
                                .format(orig_dataset['UM']))
 
-        if 'Fenomeno' in orig_dataset:
+        if orig_dataset.get('Fenomeno'):
             description.append(u'**Fenomeno:** {0}'
                                .format(orig_dataset['Fenomeno']))
 
-        if 'ConfrontiTerritoriali' in orig_dataset:
+        if orig_dataset.get('ConfrontiTerritoriali'):
             description.append(u'**Confronti territoriali:** {0}'
                                .format(orig_dataset['ConfrontiTerritoriali']))
 
-        if 'Note' in orig_dataset:
+        if orig_dataset.get('Note'):
             description.append(u'**Note:** {0}'
                                .format(orig_dataset['Note']))
 
