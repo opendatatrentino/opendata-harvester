@@ -45,6 +45,7 @@ CATEGORIES = {
 }
 for key, val in CATEGORIES.iteritems():
     val['name'] = key
+    val['description'] = ''  # todo: we need to preserve the original one!
     val['image_url'] = _robohash(key)  # PHUN!
 
 ## 'source -> ckan' map
@@ -321,7 +322,7 @@ class StatisticaClient(object):
             description.append(u'**Note:** {0}'
                                .format(orig_dataset['Note']))
 
-        new_dataset['description'] = u'\n'.join(description)
+        new_dataset['notes'] = u'\n'.join(description)
 
         ##------------------------------------------------------------
         ## Add groups
