@@ -322,7 +322,7 @@ class StatisticaClient(object):
             description.append(u'**Note:** {0}'
                                .format(orig_dataset['Note']))
 
-        new_dataset['notes'] = u'\n'.join(description)
+        new_dataset['notes'] = u'\n\n'.join(description)
 
         ##------------------------------------------------------------
         ## Add groups
