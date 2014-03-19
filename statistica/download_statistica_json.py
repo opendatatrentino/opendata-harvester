@@ -39,32 +39,44 @@ for name in ('dataset', 'group', 'organization'):
 del dirname
 
 
-client = StatisticaClient()
-for dataset in client.iter_datasets():
-    logger.info("Dataset: {0}".format(dataset['id']))
-    destfile = os.path.join(destination, 'dataset',
-                            '{0}.json'.format(dataset['id']))
-    with open(destfile, 'wb') as f:
-        json.dump(dataset, f)
+def download_datasets(destination):
+    ## Download datasets
+    client = StatisticaClient()
+    for dataset in client.iter_datasets():
+        logger.info("Dataset: {0}".format(dataset['id']))
+        destfile = os.path.join(destination, 'dataset',
+                                '{0}.json'.format(dataset['id']))
+        with open(destfile, 'wb') as f:
+            json.dump(dataset, f)
 
-## Write organization to file
-destfile = os.path.join(destination, 'organization', 'pat-s-statistica.json')
-with open(destfile, 'wb') as f:
-    json.dump({
-        "name": "pat-s-statistica",
-        "description":
-        "Censimenti, analisi, indagine statistiche, indicatori, ...",
-        "display_name": "PAT S. Statistica",
-        "image_url": "http://dati.trentino.it/images/logo.png",
-        "is_organization": True,
-        "state": "active",
-        "tags": [],
-        "title": "PAT S. Statistica",
-        "type": "organization"
-    }, f)
 
-## Write groups to file
-for key, val in CATEGORIES.iteritems():
-    destfile = os.path.join(destination, 'group', '{0}.json'.format(key))
+def write_organizations(destination):
+    ## Write organization to file
+    destfile = os.path.join(destination, 'organization',
+                            'pat-s-statistica.json')
     with open(destfile, 'wb') as f:
-        json.dump(val, f)
+        json.dump({
+            "name": "pat-s-statistica",
+            "description":
+            "Censimenti, analisi, indagine statistiche, indicatori, ...",
+            "display_name": "PAT S. Statistica",
+            "image_url": "http://dati.trentino.it/images/logo.png",
+            "is_organization": True,
+            "state": "active",
+            "tags": [],
+            "title": "PAT S. Statistica",
+            "type": "organization"
+        }, f)
+
+
+def write_groups(destination):
+    ## Write groups to file
+    for key, val in CATEGORIES.iteritems():
+        destfile = os.path.join(destination, 'group', '{0}.json'.format(key))
+        with open(destfile, 'wb') as f:
+            json.dump(val, f)
+
+
+write_organizations(destination)
+write_groups(destination)
+# download_datasets(destination)
