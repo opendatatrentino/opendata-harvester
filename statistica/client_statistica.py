@@ -1,13 +1,22 @@
+# -*- coding: utf-8 -*-
+
 """
 API client for statweb.provincia.tn.it
 """
 
 import json
+import logging
 import re
+from textwrap import dedent
 
 import requests
 
-DEFAULT_BASE_URL = 'http://www.statweb.provincia.tn.it/indicatoristrutturali/exp.aspx'
+
+logger = logging.getLogger(__name__)
+
+
+DEFAULT_BASE_URL = \
+    'http://www.statweb.provincia.tn.it/indicatoristrutturali/exp.aspx'
 INDEX_URL = DEFAULT_BASE_URL + "?fmt=json"
 DATASET_URLS = {
     "metadata": DEFAULT_BASE_URL + '?fmt=json&idind={id}',
@@ -54,7 +63,7 @@ class StatisticaClient(object):
             try:
                 yield self.get_dataset_meta(record['id'])
             except:
-                pass
+                logger.exception('Failure retrieving dataset')
 
     def get_dataset_meta(self, id):
         """Get metadata for a given dataset"""
@@ -93,41 +102,50 @@ class StatisticaClient(object):
         #     "TabNumeratore",
         #     "TabNumeratoreCSV",
 
-        dataset_title = orig_dataset['Note']
-        dataset_name = re.sub(r'[^a-z0-9]', '-', dataset_title.lower())
+        # dataset_title = orig_dataset['Note']
+        # dataset_name = re.sub(r'[^a-z0-9]', '-', dataset_title.lower())
 
         new_dataset = {
             'id': id,
 
+            # 'name' -> added later
+            # 'title' -> added later
+
+            ## Fixed values
             'author': 'Servizio Statistica',
             'author_email': 'serv.statistica@provincia.tn.it',
-            'license_id': 'cc-by',
             'maintainer': 'Servizio Statistica',
             'maintainer_email': 'serv.statistica@provincia.tn.it',
-            'notes': orig_dataset['Note'],
+
+            ## Documentation
+            'url': 'http://www.statweb.provincia.tn.it/INDICATORISTRUTTURALI'
+            '/ElencoIndicatori.aspx',
+
+            'license_id': 'cc-by',
             'owner_org': 'pat-s-statistica',  # org name
-            'groups': [],  # group names
-            'name': dataset_name,
-            'title': orig_dataset['Descrizione'],
+
+            # 'notes' -> added later
+
+            'groups': [],  # group names -> should be populated from map
 
             'extras': {
+                'Copertura Geografica': 'Provincia di Trento',
+                'Copertura Temporale (Data di inizio)': '{0}-01-01T00:00:00'
+                .format(orig_dataset['AnnoInizio']),
+                ## UltimoAggiornamento -> data di fine
                 'Aggiornamento': orig_dataset['FreqAggiornamento'],
                 'Codifica Caratteri': 'UTF-8',
-                'Copertura Geografica': orig_dataset['Area'],
 
-                'Copertura Temporale (Data di inizio)': '{0}-01-01T00:00:00'\
-                .format(orig_dataset['AnnoInizio']),
-
-                # 'Data di aggiornamento': '2013-05-28T00:00:00',
-                # 'Data di pubblicazione': '2013-06-16T11:15:18.217230',
                 'Titolare': 'Provincia Autonoma di Trento',
 
-                ## More extras
+                ## Extra extras ----------------------------------------
                 'algoritmo': orig_dataset['Algoritmo'],
                 'anno_inizio': orig_dataset['AnnoInizio'],
-                'confronti_territoriali': orig_dataset['ConfrontiTerritoriali'],
+                'confronti_territoriali':
+                orig_dataset['ConfrontiTerritoriali'],
                 'fenomeno': orig_dataset['Fenomeno'],
-                'unita_misura': orig_dataset['UM'],
+
+                'measurement_unit': orig_dataset['UM'],
             },
 
             'resources': [],
@@ -140,7 +158,7 @@ class StatisticaClient(object):
         ind_name = _slugify(ind_title)
 
         new_dataset['title'] = ind_title
-        new_dataset['name'] = ind_name[:100]  # MAX ALLOWED SIZE
+        new_dataset['name'] = ind_name[:50]  # max title length is 100
 
         resources = [
             {
@@ -207,6 +225,39 @@ class StatisticaClient(object):
 
         new_dataset['resources'] = resources
 
+        ##------------------------------------------------------------
+        ## Add description
+
+        description = []
+
+        if 'Area' in orig_dataset:
+            description.append('**Area:** {0}'.format(orig_dataset['Area']))
+
+        if 'Settore' in orig_dataset:
+            description.append('**Settore:** {0}'.format(
+                orig_dataset['Settore']))
+
+        if 'Algoritmo' in orig_dataset:
+            description.append('**Algoritmo:** {0}'.format(
+                orig_dataset['Algoritmo']))
+
+        if 'UM' in orig_dataset:
+            description.append(u'**Unità di misura:** {0}'.format(
+                orig_dataset['UM']))
+
+        if 'Fenomeno' in orig_dataset:
+            description.append('**Fenomeno:** {0}'.format(
+                orig_dataset['Fenomeno']))
+
+        if 'ConfrontiTerritoriali' in orig_dataset:
+            description.append('**Confronti territoriali:** {0}'.format(
+                orig_dataset['ConfrontiTerritoriali']))
+
+        if 'Note' in orig_dataset:
+            description.append('**Note:** {0}'.format(orig_dataset['Note']))
+
+        new_dataset['description'] = '\n'.join(description)
+
         return new_dataset
 
     def _get_name(self, url):
@@ -219,7 +270,7 @@ class StatisticaClient(object):
 
 
 def _slugify(text):
-    return re.sub(r'[^a-z0-9]', '-', text.lower())
+    return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
 
 
 def _json_decode(text):
