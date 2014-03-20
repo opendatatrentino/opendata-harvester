@@ -32,7 +32,8 @@ import logging
 import os
 import sys
 
-from client_statistica import (StatisticaClient, CATEGORIES, ORGANIZATIONS,
+from client_statistica import (StatisticaClient, StatisticaSubproClient,
+                               CATEGORIES, ORGANIZATIONS,
                                dataset_statistica_to_ckan,
                                dataset_statistica_subpro_to_ckan)
 from sqlite_kvstore import SQLiteKeyValueStore
@@ -70,7 +71,10 @@ class Downloader(object):
             self.db.set('dataset_statistica', dataset['id'], dataset)
 
     def download_datasets_statistica_subpro(self):
-        pass
+        client = StatisticaSubproClient()
+        for dataset in client.iter_datasets(clean=False):
+            logger.info('Dataset: {0}'.format(dataset['id']))
+            self.db.set('dataset_statistica_subpro', dataset['id'], dataset)
 
 
 def convert_data(infile, outfile):
@@ -88,6 +92,7 @@ def convert_data(infile, outfile):
 
     ##------------------------------------------------------------
     ## Convert datasets for statistica_subpro
+
     for dataset in indb.get_all('dataset_statistica_subpro'):
         logger.info("Converting dataset statistica sub-pro {0}"
                     .format(dataset['id']))
