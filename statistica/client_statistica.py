@@ -121,6 +121,12 @@ ORGANIZATIONS = {
 for key, val in ORGANIZATIONS.iteritems():
     val['image_url'] = _robohash(key)  # PHUN!
 
+LEGEND_TIPO_INDICATORE = {
+    'R': 'rapporto',
+    'M': 'media',
+    'I': "incremento rispetto all'anno precedente",
+}
+
 
 ##----------------------------------------------------------------------
 ## Clients
@@ -267,11 +273,13 @@ class StatisticaSubproClient(StatisticaClient):
                 logger.exception('Failure retrieving dataset')
 
     def _add_extra_metadata(self, record):
-        if 'URLTabNumMD' in record:
+        ## todo: we can cache sub-tables!
+
+        if record.get('URLTabNumMD'):  # non empty!
             response = requests.get(record['URLTabNumMD'])
             record['metadata_numeratore'] = response.json()
 
-        if 'URLTabDenMD' in record:
+        if record.get('URLTabDenMD'):  # non empty!
             response = requests.get(record['URLTabDenMD'])
             record['metadata_denominatore'] = response.json()
 
@@ -456,4 +464,201 @@ def dataset_statistica_to_ckan(orig_dataset):
 
 
 def dataset_statistica_subpro_to_ckan(orig_dataset):
-    raise NotImplementedError
+    dataset_title = orig_dataset['Descrizione']
+    dataset_name = _slugify(dataset_title)
+
+    new_dataset = {
+        'id': orig_dataset['id'],
+        'name': dataset_name,
+        'title': dataset_title,
+
+        # 'notes' -> added later
+
+        ## Fixed values
+        'author': 'Servizio Statistica',
+        'author_email': 'serv.statistica@provincia.tn.it',
+        'maintainer': 'Servizio Statistica',
+        'maintainer_email': 'serv.statistica@provincia.tn.it',
+
+        ## Documentation
+        'url': 'http://www.statweb.provincia.tn.it/'
+        'INDICATORISTRUTTURALISubPro/',
+        'license_id': 'cc-by',
+        'owner_org': 'pat-s-statistica',  # org name
+
+        'groups': [],  # group names -> should be populated from map
+
+        'extras': {
+            'Copertura Geografica': 'Provincia di Trento',
+            'Copertura Temporale (Data di inizio)': '{0}-01-01T00:00:00'
+            .format(orig_dataset['AnnoInizio']),
+            ## UltimoAggiornamento -> data di fine
+            'Aggiornamento': orig_dataset['FrequenzaAggiornamento'],
+            "Ultimo aggiornamento": orig_dataset["UltimoAggiornamento"],
+            'Codifica Caratteri': 'UTF-8',
+            'Titolare': 'Provincia Autonoma di Trento',
+
+            ## Extra extras ----------------------------------------
+            "Algoritmo": orig_dataset["Algoritmo"],
+            "Anno di base": orig_dataset["AnnoBase"],
+            "Anno di inizio": orig_dataset["AnnoInizio"],
+            "Area": orig_dataset["Area"],
+            # "Descrizione": orig_dataset["Descrizione"],
+            # "DescrizioneEstesa": orig_dataset["DescrizioneEstesa"],
+            # "DescrizioneTabDen": orig_dataset["DescrizioneTabDen"],
+            # "DescrizioneTabNum": orig_dataset["DescrizioneTabNum"],
+            "Fonte": orig_dataset["Fonte"],
+            "Frequenza di aggiornamento":
+            orig_dataset["FrequenzaAggiornamento"],
+            "Gruppo": orig_dataset["Gruppo"],
+            "LivelloGeograficoMinimo": orig_dataset["LivelloGeograficoMinimo"],
+            # "NomeTabDen": orig_dataset["NomeTabDen"],
+            # "NomeTabNum": orig_dataset["NomeTabNum"],
+            "Settore": orig_dataset["Settore"],
+            "Tipo di Fenomeno": orig_dataset["TipoFenomento"],  # mind the typo
+            "Tipo di Indicatore": orig_dataset["TipoIndicatore"],
+            # "URLIndicatoreD": orig_dataset["URLIndicatoreD"],
+            # "URLTabDenMD": orig_dataset["URLTabDenMD"],
+            # "URLTabNumMD": orig_dataset["URLTabNumMD"],
+            "Unità di misura": orig_dataset["UnitàMisura"],
+        },
+
+        'resources': [],
+    }
+
+    ##------------------------------------------------------------
+    ## Add resources
+
+    ## The main resources share title with the dataset.
+
+    new_dataset['resources'] = [
+        {
+            'name': dataset_name,
+            'description': dataset_title,
+            'format': 'JSON',
+            'mimetype': 'application/json',
+            'url': orig_dataset['URLIndicatoreD'],
+        },
+        {
+            'name': dataset_name,
+            'description': dataset_title,
+            'format': 'CSV',
+            'mimetype': 'text/csv',
+            'url': (orig_dataset['URLIndicatoreD']
+                    .replace('fmt=json', 'fmt=csv')),  # F** this
+        },
+    ]
+
+    ##------------------------------------------------------------
+    ## Add resources for the "numeratore" table
+
+    if 'metadata_numeratore' in orig_dataset:
+        num_title = orig_dataset['metadata_numeratore']
+        num_name = _slugify(num_title)
+
+        new_dataset['resources'].extend([
+            {
+                'name': num_name,
+                'description': num_title,
+                'format': 'JSON',
+                'mimetype': 'application/json',
+                'url': orig_dataset['metadata_numeratore']['URLTabD'],
+            },
+            {
+                'name': num_name,
+                'description': num_title,
+                'format': 'CSV',
+                'mimetype': 'text/csv',
+                'url': (orig_dataset['metadata_numeratore']['URLTabD']
+                        .replace('fmt=json', 'fmt=csv')),  # F** this
+            },
+        ])
+
+    ##------------------------------------------------------------
+    ## Add resources for the "denominatore" table
+
+    if 'metadata_denominatore' in orig_dataset:
+        den_title = orig_dataset['metadata_denominatore']
+        den_name = _slugify(den_title)
+
+        new_dataset['resources'].extend([
+            {
+                'name': den_name,
+                'description': den_title,
+                'format': 'JSON',
+                'mimetype': 'application/json',
+                'url': orig_dataset['metadata_denominatore']['URLTabD'],
+            },
+            {
+                'name': den_name,
+                'description': den_title,
+                'format': 'CSV',
+                'mimetype': 'text/csv',
+                'url': (orig_dataset['metadata_denominatore']['URLTabD']
+                        .replace('fmt=json', 'fmt=csv')),  # F** this
+            },
+        ])
+
+    ##------------------------------------------------------------
+    ## Add description, aggregating value from some fields.
+
+    description = []
+
+    if orig_dataset.get('Area'):
+        description.append(u'**Area:** {0}'
+                           .format(orig_dataset['Area']))
+
+    if orig_dataset.get('Settore'):
+        description.append(u'**Settore:** {0}'
+                           .format(orig_dataset['Settore']))
+
+    if orig_dataset.get('Algoritmo'):
+        description.append(u'**Algoritmo:** {0}'
+                           .format(orig_dataset['Algoritmo']))
+
+    if orig_dataset.get('UnitàMisura'):
+        description.append(u'**Unità di misura:** {0}'
+                           .format(orig_dataset['UnitàMisura']))
+
+    if orig_dataset.get('TipoFenomeno'):
+        description.append(u'**Fenomeno:** {0}'
+                           .format(orig_dataset['TipoFenomeno']))
+
+    if orig_dataset.get('TipoIndicatore'):
+        _orig_value = orig_dataset['TipoIndicatore']
+        _value = LEGEND_TIPO_INDICATORE.get(_orig_value)
+        if _value is None:
+            _value = 'unknown ({0!r})'.format(_orig_value)
+        description.append(u'**Tipo di indicatore:** {0}'.format(_value))
+        del _orig_value, _value  # clean garbage..
+
+    if orig_dataset.get('AnnoBase'):
+        description.append(u'**Anno di base:** {0}'
+                           .format(orig_dataset['AnnoBase']))
+
+    if orig_dataset.get('ConfrontiTerritoriali'):
+        description.append(u'**Confronti territoriali:** {0}'
+                           .format(orig_dataset['ConfrontiTerritoriali']))
+
+    if orig_dataset.get('LivelloGeograficoMinimo'):
+        description.append(u'**Livello geografico minimo:** {0}'
+                           .format(orig_dataset['LivelloGeograficoMinimo']))
+
+    if orig_dataset.get('Note'):
+        description.append(u'**Note:** {0}'
+                           .format(orig_dataset['Note']))
+
+    new_dataset['notes'] = u'\n\n'.join(description)
+
+    ##------------------------------------------------------------
+    ## Add groups
+
+    groups = []
+    settore = orig_dataset['Settore']
+    if settore in CATEGORIES_MAP:
+        groups.append(CATEGORIES_MAP[settore])
+    new_dataset['groups'] = groups
+
+    ## todo: add tags from area + settore
+
+    return new_dataset
