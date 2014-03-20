@@ -162,7 +162,7 @@ Linked by ``URLTabNumMD`` and ``URLTabDenMD`` fields.
 
 URL: http://www.statweb.provincia.tn.it/indicatoristrutturalisubpro/exp.aspx?ntab=Sub_Popolazione_0-2&info=md&fmt=json
 
-```
+```json
 {
   "Popolazione residente da 0 a 2 anni - metadati": [
     {
