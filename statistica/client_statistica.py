@@ -36,6 +36,31 @@ def _robohash(text):
     return 'http://robohash.org/{0}.png?set=set1&bgset=bg1'.format(h)
 
 
+def _clean_metadata_dict_for_subpro_num_den(dct):
+    """
+    Clean metadata dictionary for numeratore/denominatore in
+    "indicatori sub-provinciali".
+
+    >>> _clean_metadata_dict_for_subpro_num_den({
+    ...   'Title' : [{
+    ...     'hello': 'world',
+    ...   }]
+    ... })
+    ('Title', {'hello': 'world'})
+    """
+    if not isinstance(dct, dict):
+        raise TypeError("Expected a dict")
+    if len(dct) != 1:
+        raise ValueError("Expected a single-key dict")
+    title = dct.keys()[0]
+    if not isinstance(dct[title], list):
+        raise ValueError("Expected a single-key dict containing a list")
+    if len(dct[title]) != 1:
+        raise ValueError(
+            "Expected a single-key dict containing a single-item list")
+    return title, dct[title][0]
+
+
 ##----------------------------------------------------------------------
 ## Constants
 ##----------------------------------------------------------------------
@@ -499,10 +524,10 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
             'Titolare': 'Provincia Autonoma di Trento',
 
             ## Extra extras ----------------------------------------
-            "Algoritmo": orig_dataset["Algoritmo"],
-            "Anno di base": orig_dataset["AnnoBase"],
-            "Anno di inizio": orig_dataset["AnnoInizio"],
-            "Area": orig_dataset["Area"],
+            u"Algoritmo": orig_dataset["Algoritmo"],
+            u"Anno di base": orig_dataset["AnnoBase"],
+            u"Anno di inizio": orig_dataset["AnnoInizio"],
+            u"Area": orig_dataset["Area"],
             # "Descrizione": orig_dataset["Descrizione"],
             # "DescrizioneEstesa": orig_dataset["DescrizioneEstesa"],
             # "DescrizioneTabDen": orig_dataset["DescrizioneTabDen"],
@@ -511,7 +536,8 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
             "Frequenza di aggiornamento":
             orig_dataset["FrequenzaAggiornamento"],
             "Gruppo": orig_dataset["Gruppo"],
-            "LivelloGeograficoMinimo": orig_dataset["LivelloGeograficoMinimo"],
+            "Livello Geografico Minimo":
+            orig_dataset["LivelloGeograficoMinimo"],
             # "NomeTabDen": orig_dataset["NomeTabDen"],
             # "NomeTabNum": orig_dataset["NomeTabNum"],
             "Settore": orig_dataset["Settore"],
@@ -520,7 +546,7 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
             # "URLIndicatoreD": orig_dataset["URLIndicatoreD"],
             # "URLTabDenMD": orig_dataset["URLTabDenMD"],
             # "URLTabNumMD": orig_dataset["URLTabNumMD"],
-            "Unità di misura": orig_dataset["UnitàMisura"],
+            u"Unità di misura": orig_dataset[u"UnitàMisura"],
         },
 
         'resources': [],
@@ -553,8 +579,11 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
     ## Add resources for the "numeratore" table
 
     if 'metadata_numeratore' in orig_dataset:
-        num_title = orig_dataset['metadata_numeratore']
-        num_name = _slugify(num_title)
+        _title, _md = _clean_metadata_dict_for_subpro_num_den(
+            orig_dataset['metadata_numeratore'])
+
+        num_title = _title
+        num_name = _slugify(_title)
 
         new_dataset['resources'].extend([
             {
@@ -562,14 +591,14 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
                 'description': num_title,
                 'format': 'JSON',
                 'mimetype': 'application/json',
-                'url': orig_dataset['metadata_numeratore']['URLTabD'],
+                'url': _md['URLTabD'],
             },
             {
                 'name': num_name,
                 'description': num_title,
                 'format': 'CSV',
                 'mimetype': 'text/csv',
-                'url': (orig_dataset['metadata_numeratore']['URLTabD']
+                'url': (_md['URLTabD']
                         .replace('fmt=json', 'fmt=csv')),  # F** this
             },
         ])
@@ -578,8 +607,11 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
     ## Add resources for the "denominatore" table
 
     if 'metadata_denominatore' in orig_dataset:
-        den_title = orig_dataset['metadata_denominatore']
-        den_name = _slugify(den_title)
+        _title, _md = _clean_metadata_dict_for_subpro_num_den(
+            orig_dataset['metadata_denominatore'])
+
+        den_title = _title
+        den_name = _slugify(_title)
 
         new_dataset['resources'].extend([
             {
@@ -587,14 +619,14 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
                 'description': den_title,
                 'format': 'JSON',
                 'mimetype': 'application/json',
-                'url': orig_dataset['metadata_denominatore']['URLTabD'],
+                'url': _md['URLTabD'],
             },
             {
                 'name': den_name,
                 'description': den_title,
                 'format': 'CSV',
                 'mimetype': 'text/csv',
-                'url': (orig_dataset['metadata_denominatore']['URLTabD']
+                'url': (_md['URLTabD']
                         .replace('fmt=json', 'fmt=csv')),  # F** this
             },
         ])

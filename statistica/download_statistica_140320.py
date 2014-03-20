@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!ipython -i
 
 """
 Script to download data from Statistica/StatisticaSubPro
@@ -27,7 +27,6 @@ containing data ready for insertion into Ckan
 
 from __future__ import print_function
 
-import json
 import logging
 import os
 import sys
@@ -116,22 +115,35 @@ def convert_data(infile, outfile):
 
 
 class App(object):
-    def __init__(self):
+    def __init__(self, dest_base=None):
         ## Make sure we have an handler for the root logger
         _logger = logging.getLogger()
         _logger.addHandler(logging.StreamHandler(sys.stderr))
         _logger.setLevel(logging.DEBUG)
 
-        base = os.path.dirname(__file__)
+        if dest_base is None:
+            dest_base = os.getcwd()
+
         self.raw_data_file = os.path.join(
-            base, '.statistica-140320-rawdata.sqlite')
+            dest_base, '.statistica-140320-rawdata.sqlite')
         self.clean_data_file = os.path.join(
-            base, '.statistica-140320-clean.sqlite')
+            dest_base, '.statistica-140320-clean.sqlite')
+
+    @property
+    def downloader(self):
+        if not hasattr(self, '_downloader'):
+            self._downloader = Downloader(self.raw_data_file)
+        return self._downloader
 
     def download_raw_data(self):
-        downloader = Downloader(self.raw_data_file)
-        downloader.download_datasets_statistica()
-        downloader.download_datasets_statistica_subpro()
+        self.download_datasets_statistica()
+        self.download_datasets_statistica_subpro()
+
+    def download_datasets_statistica(self):
+        return self.downloader.download_datasets_statistica()
+
+    def download_datasets_statistica_subpro(self):
+        return self.downloader.download_datasets_statistica_subpro()
 
     def cleanup_data(self):
         if os.path.exists(self.clean_data_file):
@@ -139,7 +151,45 @@ class App(object):
         convert_data(self.raw_data_file, self.clean_data_file)
 
 
+def is_interactive_mode():
+    return sys.flags.interactive
+
+
+INT_MODE_WELCOME = """
+**********************************************************************
+
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Welcome to downloader script for statistica datasets
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    First, you need to instantiate the application:
+
+        app = App()  # save stuff in current directory
+        app = App('/tmp')  # save stuff in /tmp/
+
+    Then, you can download some data:
+
+        app.download_raw_data()
+
+    Or download individual sets with:
+
+        app.download_datasets_statistica()
+        app.download_datasets_statistica_subpro()
+
+    To cleanup the data, just use:
+
+        app.cleanup_data()
+
+**********************************************************************
+"""
+
+
 if __name__ == '__main__':
-    app = App()
-    app.download_raw_data()
-    app.cleanup_data()
+    print(INT_MODE_WELCOME)
+
+    # else:
+    #     ## When run in non-interactive mode, store
+    #     ## files in the same path of this script.
+    #     app = App(os.path.dirname(__file__))
+    #     app.download_raw_data()
+    #     app.cleanup_data()
