@@ -2,7 +2,9 @@
 
 """
 Script to download data from Statistica/StatisticaSubPro
-into a sqlite database.
+into sqlite databases for further cleanup / retrieval.
+
+Raw data will be stored as:
 
 Will create the following tables:
 
@@ -28,75 +30,28 @@ from __future__ import print_function
 import json
 import logging
 import os
-import re
-import sqlite3
 import sys
 
-from client_statistica import StatisticaClient, CATEGORIES
+from client_statistica import (StatisticaClient, CATEGORIES, ORGANIZATIONS,
+                               dataset_statistica_to_ckan,
+                               dataset_statistica_subpro_to_ckan)
+from sqlite_kvstore import SQLiteKeyValueStore
 
 logger = logging.getLogger(__name__)
 
 
-class BaseDBWrapper(object):
-    def __init__(self, filename):
-        self.filename = filename
-
-    @property
-    def connection(self):
-        if getattr(self, '_connection', None) is None:
-            self._connection = sqlite3.connect(self.filename)
-        return self._connection
-
-    def cursor(self, *a, **kw):
-        return self.connection.cursor(*a, **kw)
-
-    def execute(self, *a, **kw):
-        return self.cursor().execute(*a, **kw)
-
-    def commit(self):
-        self.connection.commit()
-
+class RawDataDB(SQLiteKeyValueStore):
     def create_tables(self):
-        pass
-
-    def _check_table_name(self, name):
-        if not re.match(r'^[A-Za-z0-9_]+$', name):
-            raise ValueError("Invalid table name")
+        self._create_table('dataset_statistica', numeric_key=True)
+        self._create_table('dataset_statistica_subpro', numeric_key=True)
 
 
-class RawDataDB(BaseDBWrapper):
+class CleanDataDB(SQLiteKeyValueStore):
     def create_tables(self):
-        c = self.cursor()
-        c.execute("""
-        CREATE TABLE IF NOT EXISTS "dataset_statistica"
-        ( id INT PRIMARY KEY, metadata_json TEXT );
-        """)
-        c.execute("""
-        CREATE TABLE IF NOT EXISTS "dataset_statistica_subpro"
-        ( id INT PRIMARY KEY, metadata_json TEXT );
-        """)
-        c.execute("""
-        CREATE TABLE IF NOT EXISTS "group"
-        ( id VARCHAR(128) PRIMARY KEY, metadata_json TEXT );
-        """)
-        c.execute("""
-        CREATE TABLE IF NOT EXISTS "organization"
-        ( id VARCHAR(128) PRIMARY KEY, metadata_json TEXT );
-        """)
-        self.commit()
-
-    def upsert(self, table, record):
-        self._check_table_name(table)
-        if table in ('group', 'organization'):
-            key = record['name']
-        else:
-            key = record['id']
-        self.execute('DELETE FROM "{0}" WHERE id=?;'.format(table),
-                     (key,))
-        query = ('INSERT INTO "{0}" (id, metadata_json) VALUES (?, ?);'
-                 .format(table))
-        self.execute(query, (key, json.dumps(record)))
-        self.commit()
+        self._create_table('dataset_statistica', numeric_key=True)
+        self._create_table('dataset_statistica_subpro', numeric_key=True)
+        self._create_table('group', numeric_key=False)
+        self._create_table('organization', numeric_key=False)
 
 
 ##-----------------------------------------------------------------------------
@@ -110,44 +65,76 @@ class Downloader(object):
 
     def download_datasets_statistica(self):
         client = StatisticaClient()
-        for dataset in client.iter_raw_datasets():
-            logger.info("Dataset: {0}".format(dataset['id']))
-            self.db.upsert('dataset_statistica', dataset)
+        for dataset in client.iter_datasets(clean=False):
+            logger.info('Dataset: {0}'.format(dataset['id']))
+            self.db.set('dataset_statistica', dataset['id'], dataset)
 
     def download_datasets_statistica_subpro(self):
         pass
 
-    def download_groups(self):
-        for key, val in CATEGORIES.iteritems():
-            self.db.upsert('group', val)
 
-    def download_organizations(self):
-        self.db.upsert('organization', {
-            "name": "pat-s-statistica",
-            "title": "PAT S. Statistica",
-            "description":
-            "Censimenti, analisi, indagine statistiche, indicatori, ...",
-            "image_url": "http://dati.trentino.it/images/logo.png",
-            "type": "organization",
-            "is_organization": True,
-            "state": "active",
-            "tags": [],
-        })
+def convert_data(infile, outfile):
+    indb = RawDataDB(infile)
+    outdb = CleanDataDB(outfile)
+    outdb.create_tables()
+
+    ##------------------------------------------------------------
+    ## Convert datasets for statistica
+
+    for dataset in indb.get_all('dataset_statistica'):
+        logger.info("Converting dataset statistica {0}".format(dataset['id']))
+        clean_dataset = dataset_statistica_to_ckan(dataset)
+        outdb.set('dataset_statistica', clean_dataset['id'], clean_dataset)
+
+    ##------------------------------------------------------------
+    ## Convert datasets for statistica_subpro
+    for dataset in indb.get_all('dataset_statistica_subpro'):
+        logger.info("Converting dataset statistica sub-pro {0}"
+                    .format(dataset['id']))
+        clean_dataset = dataset_statistica_subpro_to_ckan(dataset)
+        outdb.set('dataset_statistica_subpro', clean_dataset['id'],
+                  clean_dataset)
+
+    ##------------------------------------------------------------
+    ## Groups are hard-coded
+
+    logger.info("Adding groups")
+    for group in CATEGORIES.itervalues():
+        outdb.set('group', group['name'], group)
+
+    ##------------------------------------------------------------
+    ## Organizations are hard-coded
+
+    logger.info("Adding organization")
+    for org in ORGANIZATIONS.itervalues():
+        outdb.set('organization', org['name'], org)
+
+
+class App(object):
+    def __init__(self):
+        ## Make sure we have an handler for the root logger
+        _logger = logging.getLogger()
+        _logger.addHandler(logging.StreamHandler(sys.stderr))
+        _logger.setLevel(logging.DEBUG)
+
+        base = os.path.dirname(__file__)
+        self.raw_data_file = os.path.join(
+            base, '.statistica-140320-rawdata.sqlite')
+        self.clean_data_file = os.path.join(
+            base, '.statistica-140320-clean.sqlite')
+
+    def download_raw_data(self):
+        downloader = Downloader(self.raw_data_file)
+        downloader.download_datasets_statistica()
+        downloader.download_datasets_statistica_subpro()
+
+    def cleanup_data(self):
+        if os.path.exists(self.clean_data_file):
+            os.unlink(self.clean_data_file)
+        convert_data(self.raw_data_file, self.clean_data_file)
 
 
 if __name__ == '__main__':
-    ## Make sure we have an handler for the root logger
-    _logger = logging.getLogger()
-    _logger.addHandler(logging.StreamHandler(sys.stderr))
-    _logger.setLevel(logging.DEBUG)
-
-    destfile = os.path.join(
-        os.path.dirname(__file__),
-        '.statistica-140320-rawdata.sqlite')
-
-    ## Do stuff!
-    downloader = Downloader(destfile)
-    downloader.download_datasets_statistica()
-    downloader.download_datasets_statistica_subpro()
-    downloader.download_groups()
-    downloader.download_organizations()
+    app = App()
+    app.download_raw_data()
+    app.cleanup_data()
