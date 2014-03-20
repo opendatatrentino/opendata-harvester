@@ -4,6 +4,9 @@
 API client for statweb.provincia.tn.it
 """
 
+# todo: we should make this a two-step thing, downloading data in a
+#       temporary db and cleaning it up later..
+
 import json
 import logging
 import re
@@ -12,13 +15,30 @@ import hashlib
 import requests
 
 
+logger = logging.getLogger(__name__)
+
+
+##----------------------------------------------------------------------
+## Utilities
+##----------------------------------------------------------------------
+
+def _slugify(text):
+    return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
+
+
+def _json_decode(text):
+    text = text.replace('\n', ' ').replace('\r', '')
+    return json.loads(text)
+
+
 def _robohash(text):
     h = hashlib.sha1(text).hexdigest()
     return 'http://robohash.org/{0}.png?set=set1&bgset=bg1'.format(h)
 
 
-logger = logging.getLogger(__name__)
-
+##----------------------------------------------------------------------
+## Constants
+##----------------------------------------------------------------------
 
 DEFAULT_BASE_URL = \
     'http://www.statweb.provincia.tn.it/indicatoristrutturali/exp.aspx'
@@ -90,7 +110,15 @@ CATEGORIES_MAP = {
 }
 
 
+##----------------------------------------------------------------------
+## Clients
+##----------------------------------------------------------------------
+
 class StatisticaClient(object):
+    """
+    Client for statweb.provincia.tn.it "indicatori strutturali" API
+    """
+
     def __init__(self, base_url=None):
         self._base_url = base_url or DEFAULT_BASE_URL
 
@@ -99,18 +127,6 @@ class StatisticaClient(object):
 
     def metadata_url(self, id):
         return "{base}?fmt=json&idind={id}".format(
-            base=self._base_url, id=id)
-
-    def indicatore_url(self, id):
-        return "{base}?fmt=json&idind={id}&t=i".format(
-            base=self._base_url, id=id)
-
-    def numeratore_url(self, id):
-        return "{base}?fmt=json&idind={id}&t=n".format(
-            base=self._base_url, id=id)
-
-    def denominatore_url(self, id):
-        return "{base}?fmt=json&idind={id}&t=d".format(
             base=self._base_url, id=id)
 
     def list_datasets(self):
@@ -122,15 +138,26 @@ class StatisticaClient(object):
 
         return data['IndicatoriStrutturali']
 
-    def iter_datasets(self):
+    def iter_datasets(self, suppress_exceptions=True):
         for record in self.list_datasets():
             try:
                 yield self.get_dataset_meta(record['id'])
             except:
+                if not suppress_exceptions:
+                    raise
                 logger.exception('Failure retrieving dataset')
 
-    def get_dataset_meta(self, id):
-        """Get metadata for a given dataset"""
+    def iter_raw_datasets(self, suppress_exceptions=True):
+        for record in self.list_datasets():
+            try:
+                yield self.get_raw_dataset_meta(record['id'])
+            except:
+                if not suppress_exceptions:
+                    raise
+                logger.exception('Failure retrieving dataset')
+
+    def get_raw_dataset_meta(self, id):
+        """Get raw metadata for a given dataset"""
 
         url = self.metadata_url(id)
         response = requests.get(url)
@@ -143,34 +170,18 @@ class StatisticaClient(object):
         assert isinstance(data[_ds_key], list)
         assert len(data[_ds_key]) == 1
         orig_dataset = data[_ds_key][0]
+        orig_dataset['id'] = id
+        return orig_dataset
 
-        # xxx "Algoritmo",
-        # xxx "AnnoInizio",
-        #     "Area",
-        #     "ConfrontiTerritoriali",
-        # xxx "Descrizione",
-        #     "Fenomeno",
-        # xxx "FreqAggiornamento",
-        #     "LivelloGeografico",
-        # xxx "Note",
-        #     "ProxDispDatoDefinitivo",
-        #     "ProxDispDatoProvvisorio",
-        #     "Settore",   -->   need map for groups!
-        #     "UM",
-        #     "UltimoAggiornamento"
+    def get_dataset_meta(self, id):
+        """Get cleaned metadata for a given dataset"""
 
-        #     "Indicatore",
-        #     "IndicatoreCSV",
-        #     "TabDenominatore",
-        #     "TabDenominatoreCSV",
-        #     "TabNumeratore",
-        #     "TabNumeratoreCSV",
+        orig_dataset = self.get_raw_dataset_meta(id)
+        return self.source_dataset_to_ckan(orig_dataset)
 
-        # dataset_title = orig_dataset['Note']
-        # dataset_name = re.sub(r'[^a-z0-9]', '-', dataset_title.lower())
-
+    def source_dataset_to_ckan(self, orig_dataset):
         new_dataset = {
-            'id': id,
+            'id': orig_dataset['id'],
 
             # 'name' -> added later
             # 'title' -> added later
@@ -221,10 +232,14 @@ class StatisticaClient(object):
         ind_title = self._get_name(orig_dataset['Indicatore'])
         ind_name = _slugify(ind_title)
 
+        ## We need the indicatore title in order to build title / name
         new_dataset['title'] = ind_title
-        new_dataset['name'] = ind_name[:50]  # max title length is 100
 
-        resources = [
+        ## Maximum length for the name is 100 characters, but it is not
+        ## a good idea to have too-long urls..
+        new_dataset['name'] = ind_name[:60]
+
+        new_dataset['resources'] = [
             {
                 'name': ind_name,
                 'description': ind_title,
@@ -241,13 +256,14 @@ class StatisticaClient(object):
             },
         ]
 
-        try:
-            num_title = self._get_name(orig_dataset['TabNumeratore'])
-        except:
-            pass
-        else:
+        ##------------------------------------------------------------
+        ## Add resources for the "numeratore" table
+
+        num_url = orig_dataset.get('TabNumeratore')
+        if num_url:
+            num_title = self._get_name(num_url)
             num_name = _slugify(num_title)
-            resources.extend([
+            new_dataset['resources'].extend([
                 {
                     'name': num_name,
                     'description': num_title,
@@ -264,13 +280,14 @@ class StatisticaClient(object):
                 },
             ])
 
-        try:
-            den_title = self._get_name(orig_dataset['TabDenominatore'])
-        except:
-            pass
-        else:
+        ##------------------------------------------------------------
+        ## Add resources for the "denominatore" table
+
+        den_url = orig_dataset.get('TabDenominatore')
+        if den_url:
+            den_title = self._get_name(den_url)
             den_name = _slugify(den_title)
-            resources.extend([
+            new_dataset['resources'].extend([
                 {
                     'name': den_name,
                     'description': den_title,
@@ -287,11 +304,8 @@ class StatisticaClient(object):
                 },
             ])
 
-        new_dataset['resources'] = resources
-
         ##------------------------------------------------------------
-        ## Add description
-        ## We omit missing / non-empty fields
+        ## Add description, aggregating value from some fields.
 
         description = []
 
@@ -334,21 +348,24 @@ class StatisticaClient(object):
             groups.append(CATEGORIES_MAP[settore])
         new_dataset['groups'] = groups
 
+        ## todo: add tags
+
         return new_dataset
 
     def _get_name(self, url):
+        """
+        Get name from a json files at a URL.
+
+        It will:
+
+        - download the json data
+        - make sure it is a one-key dictionary
+        - return the value of the one key
+        """
+
         response = requests.get(url)
         assert response.ok
         data = _json_decode(response.text)
         assert isinstance(data, dict)
         assert len(data) == 1
         return data.keys()[0]
-
-
-def _slugify(text):
-    return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
-
-
-def _json_decode(text):
-    text = text.replace('\n', ' ').replace('\r', '')
-    return json.loads(text)
