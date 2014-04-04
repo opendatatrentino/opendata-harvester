@@ -8,10 +8,20 @@ install_requires = [
 ]
 
 entry_points = {
-    'harvester.plugins': [
-        'pat_statistica = harvester.plugins.odt.pat_statistica:Statistica',
-        'pat_statistica_subpro = harvester.plugins.odt.pat_statistica:StatisticaSubPro',  # noqa
-    ]
+    'harvester.ext.crawlers': [
+
+        'pat_statistica = harvester.ext.crawlers.odt'
+        '.pat_statistica:Statistica',
+
+        'pat_statistica_subpro = harvester.ext.crawlers.odt'
+        '.pat_statistica:StatisticaSubPro',
+    ],
+    'harvester.ext.storage': [
+        "jsondir = harvester.ext.storage.jsondir:JsonDirStorage",
+        "memory = harvester.ext.storage.memory:MemoryStorage",
+        "mongodb = harvester.ext.storage.mongodb:MongodbStorage",
+        "sqlite = harvester.ext.storage.sqlite:SQLiteStorage",
+    ],
 }
 
 setup(
