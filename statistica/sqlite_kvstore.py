@@ -64,8 +64,7 @@ class SQLiteKeyValueStore(object):
 
     def set(self, table, key, record):
         self._check_table_name(table)
-        self.execute('DELETE FROM "{0}" WHERE id=?;'.format(table),
-                     (key,))
+        self.execute('DELETE FROM "{0}" WHERE id=?;'.format(table), (key,))
         query = ('INSERT INTO "{0}" (id, json_data) VALUES (?, ?);'
                  .format(table))
         self.execute(query, (key, json.dumps(record)))

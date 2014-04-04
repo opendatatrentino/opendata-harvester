@@ -54,9 +54,9 @@ class CleanDataDB(SQLiteKeyValueStore):
         self._create_table('organization', numeric_key=False)
 
 
-##-----------------------------------------------------------------------------
-## Actual operations
-##-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Actual operations
+# -----------------------------------------------------------------------------
 
 class Downloader(object):
     def __init__(self, filename):
@@ -81,16 +81,16 @@ def convert_data(infile, outfile):
     outdb = CleanDataDB(outfile)
     outdb.create_tables()
 
-    ##------------------------------------------------------------
-    ## Convert datasets for statistica
+    # ------------------------------------------------------------
+    # Convert datasets for statistica
 
     for dataset in indb.get_all('dataset_statistica'):
         logger.info("Converting dataset statistica {0}".format(dataset['id']))
         clean_dataset = dataset_statistica_to_ckan(dataset)
         outdb.set('dataset_statistica', clean_dataset['id'], clean_dataset)
 
-    ##------------------------------------------------------------
-    ## Convert datasets for statistica_subpro
+    # ------------------------------------------------------------
+    # Convert datasets for statistica_subpro
 
     for dataset in indb.get_all('dataset_statistica_subpro'):
         logger.info("Converting dataset statistica sub-pro {0}"
@@ -99,15 +99,15 @@ def convert_data(infile, outfile):
         outdb.set('dataset_statistica_subpro', clean_dataset['id'],
                   clean_dataset)
 
-    ##------------------------------------------------------------
-    ## Groups are hard-coded
+    # ------------------------------------------------------------
+    # Groups are hard-coded
 
     logger.info("Adding groups")
     for group in CATEGORIES.itervalues():
         outdb.set('group', group['name'], group)
 
-    ##------------------------------------------------------------
-    ## Organizations are hard-coded
+    # ------------------------------------------------------------
+    # Organizations are hard-coded
 
     logger.info("Adding organization")
     for org in ORGANIZATIONS.itervalues():
@@ -116,7 +116,7 @@ def convert_data(infile, outfile):
 
 class App(object):
     def __init__(self, dest_base=None):
-        ## Make sure we have an handler for the root logger
+        # Make sure we have an handler for the root logger
         _logger = logging.getLogger()
         _logger.addHandler(logging.StreamHandler(sys.stderr))
         _logger.setLevel(logging.DEBUG)
@@ -188,8 +188,8 @@ if __name__ == '__main__':
     print(INT_MODE_WELCOME)
 
     # else:
-    #     ## When run in non-interactive mode, store
-    #     ## files in the same path of this script.
-    #     app = App(os.path.dirname(__file__))
-    #     app.download_raw_data()
-    #     app.cleanup_data()
+    #    # When run in non-interactive mode, store
+    #    # files in the same path of this script.
+    #    app = App(os.path.dirname(__file__))
+    #    app.download_raw_data()
+    #    app.cleanup_data()
