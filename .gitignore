@@ -1,4 +1,9 @@
-*~
-*.pyc
 *.db
+*.egg
+*.egg-info
+*.pyc
+*~
+.cache
+.coverage
 /.venv*
+__pycache__
