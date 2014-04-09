@@ -5,7 +5,7 @@ Tests for the SQLite storage
 import pytest
 
 
-def test_storage(storage):
+def test_storages(storage):
     assert storage.list_object_types() == []
 
     with pytest.raises(Exception):
