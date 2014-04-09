@@ -2,15 +2,10 @@
 Tests for the SQLite storage
 """
 
-from harvester.ext.storage.sqlite import SQLiteStorage
-from harvester.ext.storage.memory import MemoryStorage
-from harvester.ext.storage.jsondir import JsonDirStorage
-from harvester.ext.storage.mongodb import MongodbStorage
-
 import pytest
 
 
-def _test_storage(storage):
+def test_storage(storage):
     assert storage.list_object_types() == []
 
     with pytest.raises(Exception):
@@ -45,26 +40,3 @@ def _test_storage(storage):
 
     with pytest.raises(Exception):
         storage.get_object('dataset', '1')
-
-
-def test_sqlite_storage(tmpdir):
-    myfilename = str(tmpdir.join('example.sqlite'))
-    storage = SQLiteStorage(myfilename)
-    _test_storage(storage)
-
-
-def test_memory_storage():
-    storage = MemoryStorage()
-    _test_storage(storage)
-
-
-@pytest.mark.skipif(True, reason='Not implemented yet', run=False)
-def test_jsondir_storage(tmpdir):
-    pass
-
-
-@pytest.mark.skipif(True, reason='Not implemented yet', run=False)
-def test_mongodb_storage():
-    # todo: need a mongodb URL passed through environment
-    # otherwise, we need to skip/xfail this test
-    pass
