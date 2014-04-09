@@ -22,7 +22,7 @@ services:
 
 env:
   global:
-    - MONGODB_URL=mongodb://localhost:27017/test_data_crawlers
+    - MONGO_URL=mongodb://localhost:27017/test_data_crawlers
 
   matrix:
     - TOXENV=py26
