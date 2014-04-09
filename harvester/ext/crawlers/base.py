@@ -9,15 +9,16 @@ class HarvesterPluginBase(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, url, conf=None):
+        # todo: configuration can be read from URL fragment
         self.url = url
         self.conf = conf or {}
 
     @abc.abstractmethod
-    def fetch_data(self, collection):
+    def fetch_data(self, storage):
         """
-        Download data into a collection.
+        Download data into a storage.
 
-        We expect to be able to manipulate the collection as it
+        We expect to be able to manipulate the storage as it
         were a dict of dicts::
 
             {
@@ -25,13 +26,5 @@ class HarvesterPluginBase(object):
                 "object-id": { ..the object.. }
               }
             }
-        """
-        pass
-
-    @abc.abstractmethod
-    def clean_data(self, in_collection, out_collection):
-        """
-        Clean raw data into another collection, ready for importing
-        in ckan using the "synchronization" client.
         """
         pass
