@@ -3,8 +3,9 @@ from setuptools import setup, find_packages
 version = '0.1a'
 
 install_requires = [
-    'stevedore',
-    'pymongo',
+    'stevedore',  # to load plugins
+    'pymongo',  # for the mongodb-based storage
+    'cliff',  # for the CLI
 ]
 
 entry_points = {
@@ -22,6 +23,13 @@ entry_points = {
         "mongodb = harvester.ext.storage.mongodb:MongodbStorage",
         "sqlite = harvester.ext.storage.sqlite:SQLiteStorage",
     ],
+    'harvester.commands': [
+        'list_crawlers = harvester.commands:ListCrawlers',
+        'list_storages = harvester.commands:ListStorages',
+    ],
+    'console_scripts': [
+        'harvester = harvester.cli:main',
+    ]
 }
 
 setup(
@@ -40,8 +48,10 @@ setup(
     classifiers=[
         "License :: OSI Approved :: BSD License",
         "Development Status :: 3 - Alpha",
+        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
     ],
     package_data={'': ['README.md', 'LICENSE']},
-    # cmdclass={'test': PyTest},
+    include_package_data=True,
+    zip_safe=False,
     entry_points=entry_points)
