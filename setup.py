@@ -6,6 +6,7 @@ install_requires = [
     'stevedore',  # to load plugins
     'pymongo',  # for the mongodb-based storage
     'cliff',  # for the CLI
+    'requests',  # for crawlers
 ]
 
 entry_points = {
@@ -26,6 +27,7 @@ entry_points = {
     'harvester.commands': [
         'list_crawlers = harvester.commands:ListCrawlers',
         'list_storages = harvester.commands:ListStorages',
+        'crawl = harvester.commands:Crawl',
     ],
     'console_scripts': [
         'harvester = harvester.cli:main',
@@ -33,10 +35,10 @@ entry_points = {
 }
 
 setup(
-    name='ckan-api-client',
+    name='harvester',
     version=version,
     packages=find_packages(),
-    url='http://rshk.github.io/ckan-api-client',
+    url='http://opendatatrentino.github.io/harvester',
     license='BSD License',
     author='Samuele Santi',
     author_email='s.santi@trentorise.eu',
@@ -44,7 +46,7 @@ setup(
     long_description='',
     install_requires=install_requires,
     # tests_require=tests_require,
-    test_suite='ckan_api_client.tests',
+    test_suite='harvester.tests',
     classifiers=[
         "License :: OSI Approved :: BSD License",
         "Development Status :: 3 - Alpha",
