@@ -3,32 +3,47 @@ from setuptools import setup, find_packages
 version = '0.1a'
 
 install_requires = [
-    'stevedore',  # to load plugins
-    'pymongo',  # for the mongodb-based storage
     'cliff',  # for the CLI
+    'pymongo',  # for the mongodb-based storage
     'requests',  # for crawlers
+    'stevedore',  # to load plugins
 ]
 
 entry_points = {
     'harvester.ext.crawlers': [
-
-        'pat_statistica = harvester.ext.crawlers.odt'
-        '.pat_statistica:Statistica',
-
-        'pat_statistica_subpro = harvester.ext.crawlers.odt'
-        '.pat_statistica:StatisticaSubPro',
+        'pat_statistica = harvester_odt.pat_statistica.crawler:Statistica',
+        'pat_statistica_subpro = harvester_odt.pat_statistica.crawler:StatisticaSubPro',  # noqa
     ],
+
     'harvester.ext.storage': [
         "jsondir = harvester.ext.storage.jsondir:JsonDirStorage",
         "memory = harvester.ext.storage.memory:MemoryStorage",
         "mongodb = harvester.ext.storage.mongodb:MongodbStorage",
         "sqlite = harvester.ext.storage.sqlite:SQLiteStorage",
     ],
+
+    'harvester.ext.converters': [
+        'pat_statistica_to_ckan = harvester_odt.pat_statistica.'
+        'converter:StatisticaToCkan',
+
+        'pat_statistica_subpro_to_ckan = harvester_odt.pat_statistica.'
+        'converter:StatisticaSubProToCkan',
+    ],
+
+    'harvester.ext.importers': [
+        "ckan = harvester.ext.importers.ckan:CkanImporter",
+    ],
+
     'harvester.commands': [
         'list_crawlers = harvester.commands:ListCrawlers',
         'list_storages = harvester.commands:ListStorages',
+        'list_converters = harvester.commands:ListConverters',
+        'list_importers = harvester.commands:ListImporters',
         'crawl = harvester.commands:Crawl',
+        'convert = harvester.commands:Convert',
+        'import = harvester.commands:Import',
     ],
+
     'console_scripts': [
         'harvester = harvester.cli:main',
     ]
