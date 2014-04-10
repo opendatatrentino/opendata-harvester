@@ -1,6 +1,5 @@
 """In-memory database backed by dictionaries"""
 
-from collections import defaultdict
 import copy
 
 from .base import BaseStorage

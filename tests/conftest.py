@@ -15,7 +15,7 @@ def storage(request, tmpdir):
         return MemoryStorage()
 
     elif request.param == 'jsondir':
-        from harvester.ext.storage.jsondir import JsonDirStorage
+        # from harvester.ext.storage.jsondir import JsonDirStorage
         pytest.skip('Not implemented yet')
         pass
 
