@@ -33,6 +33,8 @@ class BaseStorage(object):
     def del_object(self, obj_type, obj_id):
         pass
 
+# We need the objects below in order to use the sync client
+
 
 # class StorageDatabase(collections.MutableMapping):
 #     def __init__(self, storage):
