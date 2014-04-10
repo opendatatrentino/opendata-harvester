@@ -2,6 +2,7 @@
 pytest
 pytest-pep8
 pytest-cov
+tox
 
 ## Documentation
 sphinx
