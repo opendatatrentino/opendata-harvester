@@ -6,7 +6,7 @@ from .base import BaseStorage
 
 
 class MongodbStorage(BaseStorage):
-    def __init__(self, url):
+    def __init__(self, url, conf=None):
         """
         MongoDB storage takes a URL like:
 
@@ -25,6 +25,8 @@ class MongodbStorage(BaseStorage):
             self._mongo_collection_prefix = parsed_path[1]
         else:
             self._mongo_collection_prefix = None
+
+        self.conf = conf
 
     @property
     def _connection(self):
