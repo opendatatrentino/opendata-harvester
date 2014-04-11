@@ -45,4 +45,26 @@ harvester -vvv --debug convert \
 
 Actually load data to Ckan:
 
-todo
+```
+harvester -vvv --debug import \
+	--storage mongodb+mongodb://database.local/harvester_data/statistica_clean \
+	--importer ckan+http://127.0.0.1:5000 \
+	--importer-option api_key=00112233-4455-6677-8899-aabbccddeeff \
+	--importer-option source_name=statistica
+```
+
+```
+harvester -vvv --debug import \
+	--storage mongodb+mongodb://database.local/harvester_data/statistica_subpro_clean \
+	--importer ckan+http://127.0.0.1:5000 \
+	--importer-option api_key=00112233-4455-6677-8899-aabbccddeeff \
+	--importer-option source_name=statistica_subpro
+```
+
+## Running with debugger
+
+Use something like this:
+
+```
+pdb $( which harvester ) -vvv --debug ....
+```
