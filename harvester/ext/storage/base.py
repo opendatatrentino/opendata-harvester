@@ -13,6 +13,10 @@ class NotFound(StorageError):
 class BaseStorage(object):
     __metaclass__ = abc.ABCMeta
 
+    def __init__(self, url, conf=None):
+        self.url = url
+        self.conf = conf or {}
+
     @abc.abstractmethod
     def list_object_types(self):
         pass
@@ -32,6 +36,9 @@ class BaseStorage(object):
     @abc.abstractmethod
     def del_object(self, obj_type, obj_id):
         pass
+
+    # todo: we need to store metadata too
+
 
 # We need the objects below in order to use the sync client
 
