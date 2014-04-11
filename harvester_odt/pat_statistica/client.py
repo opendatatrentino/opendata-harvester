@@ -185,10 +185,10 @@ class StatisticaClient(object):
 
         return data['IndicatoriStrutturali']
 
-    def iter_datasets(self, clean=True, suppress_exceptions=True):
+    def iter_datasets(self, clean=False, suppress_exceptions=True):
         for record in self.list_datasets():
             try:
-                yield self.get_dataset(record['id'], clean=clean)
+                yield self.get_dataset(record['id'], clean=False)
             except:
                 if not suppress_exceptions:
                     raise
@@ -260,8 +260,8 @@ class StatisticaClient(object):
     def get_dataset(self, id, clean=True):
         """Get cleaned metadata for a given dataset"""
         orig_dataset = self.download_extended_metadata(id)
-        if clean:
-            return dataset_statistica_to_ckan(orig_dataset)
+        # if clean:
+        #     return dataset_statistica_to_ckan(orig_dataset)
         return orig_dataset
 
 
