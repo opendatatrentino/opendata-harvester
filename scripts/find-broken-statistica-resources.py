@@ -60,9 +60,12 @@ def check_resources(resources, checker):
         elapsed = time.time() - start_time
         eta = (elapsed * cnt / n) - elapsed
         eta = str(datetime.timedelta(seconds=int(eta)))
+        elapsed = str(datetime.timedelta(seconds=int(elapsed)))
         print("\x1b[K\x1b[1;32mProcessed:\x1b[0m {done}/{total} ({pc:.1f}%) "
-              "\x1b[1;32mETA:\x1b[0m {eta} \n\x1b[F"
-              .format(done=n, total=cnt, pc=pc, eta=eta), end='')
+              "\x1b[1;32mElapsed:\x1b[0m {elapsed} "
+              "\x1b[1;32mETA:\x1b[0m {eta}\n\x1b[F"
+              .format(done=n, total=cnt, pc=pc, eta=eta, elapsed=elapsed),
+              end='')
     print()
 
 
