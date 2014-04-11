@@ -1,9 +1,12 @@
 # Download all the csv / json resources and print links of the "broken" ones
 
-from __future__ import print_function
+from __future__ import print_function, division
 
 import csv
 import json
+import time
+import datetime
+from collections import defaultdict
 
 import pymongo
 import requests
@@ -42,36 +45,64 @@ def find_datasets():
 
 def check_resources(resources, checker):
     cnt = len(resources)
+    start_time = time.time()
     for i, url in enumerate(resources):
         try:
             data = download(url)
         except:
-            print("Download failed: {0}".format(url))
+            print("\x1b[1;31mDownload failed:\x1b[0m {0}".format(url))
         else:
             if not checker(data):
-                print("Check failed: {0}".format(url))
-                print(url)
-        print("\x1b[K    processed: {0}/{1} \n\x1b[F"
-              .format(i, cnt), end='')
+                print("\x1b[1;33mCheck failed:\x1b[0m {0}".format(url))
+
+        n = i + 1
+        pc = n * 100.0 / cnt
+        elapsed = time.time() - start_time
+        eta = (elapsed * cnt / n) - elapsed
+        eta = str(datetime.timedelta(seconds=int(eta)))
+        print("\x1b[K\x1b[1;32mProcessed:\x1b[0m {done}/{total} ({pc:.1f}%) "
+              "\x1b[1;32mETA:\x1b[0m {eta} \n\x1b[F"
+              .format(done=n, total=cnt, pc=pc, eta=eta), end='')
     print()
 
 
-csv_resources = []
-json_resources = []
+def split_resources(datasets):
+    resources = defaultdict(list)
+    for row in datasets:
+        for resource in row['resources']:
+            resources[resource['format'].lower()].append(resource['url'])
+    return resources
 
-for row in find_datasets():
-    for resource in row['resources']:
-        if resource['format'] == 'JSON':
-            json_resources.append(resource['url'])
-        elif resource['format'] == 'CSV':
-            csv_resources.append(resource['url'])
 
-print("We have {0} csv resources".format(len(csv_resources)))
-print("We have {0} json resources".format(len(json_resources)))
+resources = {}
+
+conn = pymongo.MongoClient('database.local')
+db = conn['harvester_data']
+
+resources['statistica'] = split_resources(
+    db['statistica_clean.dataset'].find())
+resources['statistica_subpro'] = split_resources(
+    db['statistica_subpro_clean.dataset'].find())
+
+# --- print summary
+for k1 in sorted(resources.keys()):
+    for k2 in sorted(resources[k1].keys()):
+        print("{0} has {1} {2} datasets"
+              .format(k1, len(resources[k1][k2]), k2))
 print()
 
-print("Looking for broken CSV files")
-check_resources(csv_resources, check_csv)
+# --- check all files
+for source_id in sorted(resources.keys()):
+    for type_id in sorted(resources[source_id].keys()):
+        print("\x1b[1mChecking {0} datasets in {1}\x1b[0m"
+              .format(type_id, source_id))
+        if type_id == 'csv':
+            check_resources(resources[source_id][type_id], check_csv)
 
-print("Looking for broken JSON files")
-check_resources(csv_resources, check_json)
+        elif type_id == 'json':
+            check_resources(resources[source_id][type_id], check_json)
+
+        else:
+            print("No checker for this type!!")
+
+        print()
