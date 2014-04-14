@@ -8,8 +8,8 @@ to data catalogs.
 
 | Branch | Status |
 | ------ | ------ |
-| master | [![Build Status](https://travis-ci.org/opendatatrentino/data-crawlers.svg?branch=master)](https://travis-ci.org/opendatatrentino/data-crawlers) |
-| develop | [![Build Status](https://travis-ci.org/opendatatrentino/data-crawlers.svg?branch=develop)](https://travis-ci.org/opendatatrentino/data-crawlers) |
+| master | [![Build Status](https://travis-ci.org/opendatatrentino/opendata-harvester.svg?branch=master)](https://travis-ci.org/opendatatrentino/opendata-harvester) |
+| develop | [![Build Status](https://travis-ci.org/opendatatrentino/opendata-harvester.svg?branch=develop)](https://travis-ci.org/opendatatrentino/opendata-harvester) |
 
 ## Installation
 
