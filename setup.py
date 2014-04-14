@@ -11,6 +11,7 @@ install_requires = [
 
 entry_points = {
     'harvester.ext.crawlers': [
+        'ckan = harvester.ext.crawlers.ckan:CkanCrawler',
         'pat_statistica = harvester_odt.pat_statistica.crawler:Statistica',
         'pat_statistica_subpro = harvester_odt.pat_statistica.crawler:StatisticaSubPro',  # noqa
     ],

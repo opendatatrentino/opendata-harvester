@@ -9,7 +9,6 @@ class HarvesterPluginBase(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, url, conf=None):
-        # todo: configuration can be read from URL fragment
         self.url = url
         self.conf = conf or {}
 
