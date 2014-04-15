@@ -19,6 +19,8 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+ADD_ROBOHASH = False
+
 
 # ----------------------------------------------------------------------
 # Utilities
@@ -88,7 +90,8 @@ CATEGORIES = {
 for key, val in CATEGORIES.iteritems():
     val['name'] = key
     val['description'] = ''  # todo: we need to preserve the original one!
-    val['image_url'] = _robohash(key)  # PHUN!
+    if ADD_ROBOHASH:
+        val['image_url'] = _robohash(key)  # PHUN!
 
 # 'source -> ckan' map
 CATEGORIES_MAP = {
@@ -145,8 +148,9 @@ ORGANIZATIONS = {
         'tags': [],
     }
 }
-for key, val in ORGANIZATIONS.iteritems():
-    val['image_url'] = _robohash(key)  # PHUN!
+if ADD_ROBOHASH:
+    for key, val in ORGANIZATIONS.iteritems():
+        val['image_url'] = _robohash(key)  # PHUN!
 
 LEGEND_TIPO_INDICATORE = {
     'R': 'rapporto',
@@ -166,7 +170,10 @@ class StatisticaClient(object):
 
     default_base_url = DEFAULT_BASE_URL
 
-    def __init__(self, base_url=None):
+    def __init__(self, base_url=None, brute_force=False):
+        """
+        :param base_url: Base URL for Ckan
+        """
         self._base_url = base_url or self.default_base_url
 
     def index_url(self):
@@ -185,14 +192,24 @@ class StatisticaClient(object):
 
         return data['IndicatoriStrutturali']
 
-    def iter_datasets(self, clean=False, suppress_exceptions=True):
+    def iter_datasets(self, suppress_exceptions=True):
         for record in self.list_datasets():
             try:
-                yield self.get_dataset(record['id'], clean=False)
+                yield self.get_dataset(record['id'])
             except:
                 if not suppress_exceptions:
                     raise
                 logger.exception('Failure retrieving dataset')
+
+    def force_iter_datasets(self):
+        """Iterate datasets, then try guessing numbers"""
+        found = set()
+        for record in self.iter_datasets():
+            found.add(record['id'])
+
+        # Let's try guessing numbers up to 20% more than the highest
+        # id found in the list.
+        pass
 
     def download_metadata(self, id):
         """
@@ -257,11 +274,8 @@ class StatisticaClient(object):
 
         return dataset
 
-    def get_dataset(self, id, clean=True):
-        """Get cleaned metadata for a given dataset"""
+    def get_dataset(self, id):
         orig_dataset = self.download_extended_metadata(id)
-        # if clean:
-        #     return dataset_statistica_to_ckan(orig_dataset)
         return orig_dataset
 
 
@@ -284,14 +298,12 @@ class StatisticaSubproClient(StatisticaClient):
         assert data.keys() == ["Lista indicatori strutturali SP"]
         return data["Lista indicatori strutturali SP"]
 
-    def iter_datasets(self, clean=True, suppress_exceptions=True):
+    def iter_datasets(self, suppress_exceptions=True):
         for record in self.list_datasets():
             # Record already has all the information we need.
             # Now, we just need to add extra data..
             try:
                 record = self._add_extra_metadata(record)
-                if clean:
-                    record = dataset_statistica_subpro_to_ckan(record)
                 yield record
 
             except:
@@ -318,7 +330,7 @@ class StatisticaSubproClient(StatisticaClient):
     def download_extended_metadata(self, id):
         raise NotImplementedError
 
-    def get_dataset(self, id, clean=True):
+    def get_dataset(self, id):
         raise NotImplementedError
 
 
