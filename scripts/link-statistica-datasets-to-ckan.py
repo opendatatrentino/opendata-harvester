@@ -249,6 +249,7 @@ if resp.lower() != 'y':
     sys.exit(1)
 
 client = CkanHighlevelClient(TARGET_CKAN_URL, api_key=TARGET_CKAN_APIKEY)
+
 for ds, (s_name, s_id) in sorted(datasets_to_associate.iteritems()):
     print('Update {0}: source={1}:{2}'.format(ds, s_name, s_id))
     dataset = client.get_dataset(ds)
@@ -257,7 +258,7 @@ for ds, (s_name, s_id) in sorted(datasets_to_associate.iteritems()):
 
 for ds in datasets_to_delete:
     print('Delete: {0}'.format(ds))
-    client.delete_dataset(dataset)
+    client.delete_dataset(ds)
 
 print()
 print("Ok, now you can run the harvester to import stuff.")
