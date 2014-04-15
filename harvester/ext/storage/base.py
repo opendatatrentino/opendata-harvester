@@ -37,6 +37,10 @@ class BaseStorage(object):
     def del_object(self, obj_type, obj_id):
         pass
 
+    def iter_objects(self, obj_type):
+        for objid in self.list_objects(obj_type):
+            yield self.get_object(obj_type, objid)
+
     # todo: we need to store metadata too
 
 
