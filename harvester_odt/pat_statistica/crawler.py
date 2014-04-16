@@ -12,7 +12,7 @@ class Statistica(HarvesterPluginBase):
         self.logger.info("Fetching data from statistica")
 
         client = StatisticaClient()
-        for dataset in client.iter_datasets(clean=False):
+        for dataset in client.iter_datasets():
             self.logger.info('Got dataset: {0}'.format(dataset['id']))
             storage.set_object('dataset', dataset['id'], dataset)
 
@@ -24,6 +24,6 @@ class StatisticaSubPro(HarvesterPluginBase):
         self.logger.info("Fetching data from statistica-subpro")
 
         client = StatisticaSubproClient()
-        for dataset in client.iter_datasets(clean=False):
+        for dataset in client.iter_datasets():
             self.logger.info('Dataset: {0}'.format(dataset['id']))
             storage.set_object('dataset', dataset['id'], dataset)
