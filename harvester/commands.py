@@ -1,7 +1,10 @@
 import logging
+
 from cliff.command import Command
 from cliff.lister import Lister
 from stevedore.extension import ExtensionManager
+
+from .utils import get_plugin
 
 
 class PluginLister(Lister):
@@ -35,41 +38,6 @@ class ListConverters(PluginLister):
 class ListImporters(PluginLister):
     """list available importer plugins"""
     plugin_namespace = 'harvester.ext.importers'
-
-
-def get_plugin(plugin_type, url, options):
-    def _to_bool(s):
-        s = s.lower()
-        if s in ['0', 'false', 'off', 'no']:
-            return False
-        if s in ['1', 'true', 'on', 'yes']:
-            return True
-        raise ValueError("Not a boolean: {0}".format(s))
-
-    type_converters = {
-        'int': int,
-        'bool': _to_bool,
-    }
-
-    crawler_mgr = ExtensionManager('harvester.ext.{0}'.format(plugin_type))
-
-    name, url = url.split('+', 1) if '+' in url else (url, None)
-
-    try:
-        ep = crawler_mgr[name]
-    except KeyError:
-        raise ValueError("Invalid plugin name: {0}" .format(name))
-
-    conf = {}
-    if options is not None:
-        for option in options:
-            key, value = [x.strip() for x in option.split('=', 1)]
-            if ':' in key:
-                k_type, key = key.split(':', 1)
-                value = type_converters[k_type](value)
-            conf[key] = value
-
-    return ep.plugin(url, conf)
 
 
 class Crawl(Command):
