@@ -9,6 +9,7 @@ API client for statweb.provincia.tn.it
 
 # todo: make robohash-powered images optional
 
+import abc
 import json
 import logging
 import re
@@ -163,12 +164,12 @@ LEGEND_TIPO_INDICATORE = {
 # Clients
 # ----------------------------------------------------------------------
 
-class StatisticaClient(object):
-    """
-    Client for statweb.provincia.tn.it "indicatori strutturali" API
-    """
 
-    default_base_url = DEFAULT_BASE_URL
+class StatisticaClientBase(object):
+    __metaclass__ = abc.ABCMeta
+
+    default_base_url = abc.abstractproperty(lambda self: None)
+    index_page_main_key = abc.abstractproperty(lambda self: None)
 
     def __init__(self, base_url=None, brute_force=False):
         """
@@ -176,21 +177,21 @@ class StatisticaClient(object):
         """
         self._base_url = base_url or self.default_base_url
 
+    @abc.abstractmethod
     def index_url(self):
-        return self._base_url + '?fmt=json'
+        pass
 
+    @abc.abstractmethod
     def metadata_url(self, id):
-        return "{base}?fmt=json&idind={id}".format(
-            base=self._base_url, id=id)
+        pass
 
-    def list_datasets(self):
+    def list_datasets(self):  # todo: check this
         response = requests.get(self.index_url())
         assert response.ok
         data = _json_decode(response.text)
         assert isinstance(data, dict)
-        assert data.keys() == ['IndicatoriStrutturali']
-
-        return data['IndicatoriStrutturali']
+        assert data.keys() == [self.index_page_main_key]
+        return data[self.index_page_main_key]
 
     def iter_datasets(self, suppress_exceptions=True):
         for record in self.list_datasets():
@@ -203,19 +204,26 @@ class StatisticaClient(object):
 
     def force_iter_datasets(self):
         """Iterate datasets, then try guessing numbers"""
+
         found = set()
         for record in self.iter_datasets():
-            found.add(record['id'])
+            found.add(int(record['id']))
+            yield record
 
         # Let's try guessing numbers up to 20% more than the highest
         # id found in the list.
-        pass
+        stop = int(max(int(x) for x in found) * 1.2)
+        for i in xrange(1, stop + 1):
+            if i in found:
+                # We already returned this one
+                continue
+            try:
+                yield self.get_dataset(i)
+            except:  # Simply ignore anything bad that would happen..
+                logger.exception("Exception while trying to brute-force "
+                                 "get dataset {0}".format(i))
 
-    def download_metadata(self, id):
-        """
-        Get raw metadata for a given dataset.
-        """
-
+    def get_dataset(self, id):
         url = self.metadata_url(id)
         response = requests.get(url)
         assert response.ok
@@ -231,11 +239,36 @@ class StatisticaClient(object):
 
         return orig_dataset
 
-    def download_extended_metadata(self, id):
+
+class StatisticaClient(StatisticaClientBase):
+    """
+    Client for statweb.provincia.tn.it "indicatori strutturali" API
+    """
+
+    default_base_url = DEFAULT_BASE_URL
+    index_page_main_key = 'IndicatoriStrutturali'
+
+    def __init__(self, base_url=None, brute_force=False):
+        """
+        :param base_url: Base URL for Ckan
+        """
+        self._base_url = base_url or self.default_base_url
+
+    def index_url(self):
+        return self._base_url + '?fmt=json'
+
+    def metadata_url(self, id):
+        return "{base}?fmt=json&idind={id}".format(
+            base=self._base_url, id=id)
+
+    def get_dataset(self, id):
+        dataset = super(StatisticaClient, self).get_dataset(id)
+        self._add_extended_metadata(dataset)
+        return dataset
+
+    def _add_extended_metadata(self, dataset):
         """Download extended metadata for this dataset
         """
-
-        dataset = self.download_metadata(id)
 
         # Download linked resources, to extract metadata
         # ------------------------------------------------------------
@@ -274,36 +307,24 @@ class StatisticaClient(object):
 
         return dataset
 
-    def get_dataset(self, id):
-        orig_dataset = self.download_extended_metadata(id)
-        return orig_dataset
 
-
-class StatisticaSubproClient(StatisticaClient):
+class StatisticaSubproClient(StatisticaClientBase):
     default_base_url = DEFAULT_BASE_URL_SUBPRO
+    index_page_main_key = "Lista indicatori strutturali SP"
 
     def index_url(self):
         return self._base_url + '?fmt=json&list=i'
 
     def metadata_url(self, id):  # todo: check this
-        return "{base}?fmt=json&idind={id}".format(
+        return "{base}?fmt=json&idind={id}&info=md".format(
             base=self._base_url, id=id)
-
-    def list_datasets(self):  # todo: check this
-        response = requests.get(self.index_url())
-        assert response.ok
-
-        data = _json_decode(response.text)
-        assert isinstance(data, dict)
-        assert data.keys() == ["Lista indicatori strutturali SP"]
-        return data["Lista indicatori strutturali SP"]
 
     def iter_datasets(self, suppress_exceptions=True):
         for record in self.list_datasets():
             # Record already has all the information we need.
             # Now, we just need to add extra data..
             try:
-                record = self._add_extra_metadata(record)
+                record = self._add_extended_metadata(record)
                 yield record
 
             except:
@@ -311,7 +332,12 @@ class StatisticaSubproClient(StatisticaClient):
                     raise
                 logger.exception('Failure retrieving dataset')
 
-    def _add_extra_metadata(self, record):
+    def get_dataset(self, id):
+        dataset = super(StatisticaSubproClient, self).get_dataset(id)
+        self._add_extended_metadata(dataset)
+        return dataset
+
+    def _add_extended_metadata(self, record):
         # todo: we can cache sub-tables!
 
         if record.get('URLTabNumMD'):  # non empty!
@@ -324,14 +350,11 @@ class StatisticaSubproClient(StatisticaClient):
 
         return record
 
-    def download_metadata(self, id):
-        raise NotImplementedError
+    # def download_metadata(self, id):
+    #     raise NotImplementedError
 
-    def download_extended_metadata(self, id):
-        raise NotImplementedError
-
-    def get_dataset(self, id):
-        raise NotImplementedError
+    # def download_extended_metadata(self, id):
+    #     raise NotImplementedError
 
 
 # ----------------------------------------------------------------------
