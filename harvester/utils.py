@@ -109,11 +109,11 @@ def _colorer(*args, **kwargs):
 
 class ColorLogFormatter(logging.Formatter):
     level_colors = {
-        logging.DEBUG: ('white', 'blue', 'cyan'),
-        logging.INFO: ('white', 'green', 'green'),
-        logging.WARNING: ('white', 'yellow', 'yellow'),
-        logging.ERROR: ('white', 'red', 'red'),
-        logging.CRITICAL: ('yellow', 'red', 'red'),
+        logging.DEBUG: 'cyan',
+        logging.INFO: 'green',
+        logging.WARNING: 'yellow',
+        logging.ERROR: 'red',
+        logging.CRITICAL: 'red',
     }
 
     def _get_exc_info(self, record):
@@ -139,14 +139,13 @@ class ColorLogFormatter(logging.Formatter):
     def format(self, record):
         """Format logs nicely"""
 
-        fgcolor, bgcolor, msgcolor = \
-            self.level_colors.get(record.levelno, 'white')
+        color = self.level_colors.get(record.levelno, 'white')
         levelname = colored(' {0:<6} '.format(record.levelname),
-                            fgcolor, 'on_' + bgcolor)
+                            color, attrs=['reverse'])
         if POWERLINE_STYLE:
-            levelname += colored(u'\ue0b0', bgcolor)
+            levelname += colored(u'\ue0b0', color)
 
-        message = colored(record.getMessage(), msgcolor)
+        message = colored(record.getMessage(), color)
 
         s = ' '.join((levelname, message))
 
