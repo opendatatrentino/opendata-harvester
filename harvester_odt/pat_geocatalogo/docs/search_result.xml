@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csw:GetRecordsResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd">
+  <csw:SearchStatus timestamp="2014-04-23T09:28:09" />
+  <geonet:Summary xmlns:geonet="http://www.fao.org/geonetwork" count="168" type="local">
+    <denominators>
+      <denominator count="15" name="1000" />
+      <denominator count="3" name="2880" />
+      <denominator count="4" name="5000" />
+      <denominator count="141" name="10000" />
+      <denominator count="3" name="25000" />
+      <denominator count="1" name="50000" />
+      <denominator count="3" name="100000" />
+    </denominators>
+    <keywords>
+      <keyword count="80" name="RNDT" />
+      <keyword count="42" name="Idrografia" />
+      <keyword count="37" name="SIAT" />
+      <keyword count="34" name="PUP" />
+      <keyword count="25" name="Siti protetti" />
+      <keyword count="25" name="SIAT, RNDT" />
+      <keyword count="17" name="PUP, RNDT" />
+      <keyword count="15" name="Parcelle catastali" />
+      <keyword count="15" name="Servizi di pubblica utilità e servizi amministrativi" />
+      <keyword count="13" name="Unità amministrative" />
+    </keywords>
+    <categories>
+      <category count="13" name="boundaries" />
+      <category count="10" name="economy" />
+      <category count="7" name="elevation" />
+      <category count="36" name="environment" />
+      <category count="1" name="farming" />
+      <category count="8" name="geoscientificInformation" />
+      <category count="12" name="imageryBaseMapsEarthCover" />
+      <category count="43" name="inlandWaters" />
+      <category count="6" name="location" />
+      <category count="1" name="oceans" />
+    </categories>
+    <spatialRepresentations />
+    <organizationNames>
+      <organizationName count="90" name="Servizio Urbanistica e Tutela del Paesaggio" />
+      <organizationName count="15" name="AGENZIA PROVINCIALE PER LA PROTEZIONE DELL'AMBIENTE PROVINCIA AUTONOMA DI TRENTO" />
+      <organizationName count="12" name="Dipartimento Protezione Civile e infrastrutture-Ufficio Studi e pianificazione" />
+      <organizationName count="8" name="Provincia Autonoma di Trento - Servizio Foreste e fauna" />
+      <organizationName count="7" name="Provincia Autonoma di Trento - Servizio Conservazione della Natura e Valorizzazione ambientale" />
+      <organizationName count="7" name="Provincia Autonoma di Trento - Servizio Bacini Montani" />
+      <organizationName count="5" name="Provincia Autonoma di Trento - Servizio minerario" />
+      <organizationName count="5" name="Provincia Autonoma di Trento - Servizio Prevenzione Rischi" />
+      <organizationName count="4" name="Servizio Geologico" />
+      <organizationName count="4" name="Agenzia provinciale per la protezione dell'ambiente" />
+    </organizationNames>
+    <serviceTypes />
+    <types>
+      <type count="164" name="dataset" />
+    </types>
+    <created>
+      <created count="4" name="2010-07-26T15:59:29" />
+      <created count="4" name="2010-07-26T15:58:40" />
+      <created count="3" name="2010-07-26T15:58:25" />
+      <created count="3" name="2010-07-26T15:59:30" />
+      <created count="3" name="2010-07-26T15:59:41" />
+      <created count="3" name="2010-07-26T15:59:40" />
+      <created count="3" name="2010-07-26T15:42:58" />
+      <created count="3" name="2010-07-26T15:42:59" />
+      <created count="3" name="2010-07-26T15:43:21" />
+      <created count="3" name="2010-07-26T15:58:45" />
+    </created>
+  </geonet:Summary>
+  <csw:SearchResults numberOfRecordsMatched="168" numberOfRecordsReturned="10" elementSet="summary" nextRecord="11">
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:Bacino_Torrente_Noce</dc:identifier>
+      <dc:title>IFF2007 nel BACINO DEL TORRENTE NOCE</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>conservazione ambientale</dc:subject>
+      <dc:subject>paesaggio</dc:subject>
+      <dc:subject>qualità dell'acqua</dc:subject>
+      <dc:subject>uso del suolo</dc:subject>
+      <dc:subject>indice di funzionalità fluviale</dc:subject>
+      <dc:subject>Idrografia</dc:subject>
+      <dc:subject>inlandWaters</dc:subject>
+      <dc:subject>environment</dc:subject>
+      <dc:subject>planningCadastre</dc:subject>
+      <dc:format>Shapefile</dc:format>
+      <dc:relation>p_tn:Bacino_Torrente_Noce</dc:relation>
+      <dct:modified>2013-06-28</dct:modified>
+      <dct:abstract>La previsione di ambiti fluviali nel Piano Generale Utilizzo Acque Pubbliche della Provincia Autonoma di Trento –PGUAP- è stata sicuramente una decisione illuminata e lungimirante, dove si considerano gli ecosistemi fluviali per la loro funzione ecologica. Una valida classificazione degli ambiti fluviali ecologici si basa su un’approfondita valutazione dei principali parametri morfologici,strutturali e biotici dell’ecosistema in esame, interpretati alla luce dei principi dell’ecologia fluviale e l’IFF è un metodo finalizzato alla valutazione della funzionalità ecologica dell’ecosistema fluviale. Al fine di ottenere un database dell’IFF aggiornato e omogeneo per tutto il reticolo provinciale, nell’anno 2009 è stato attivato il progetto “Applicazione dell’IFF al reticolo idrografico del territorio provinciale”. Il gruppo di lavoro dell’Agenzia per la protezione dell’ambiente ha applicato l’IFF su tutti i corsi d’acqua tipizzati della provincia per un totale di 1509 km, percorrendo a piedi i corsi d’acqua dalla confluenza con il ricettore principale fine alla quota di 1800 m, limite ultimo di applicazione dell’Indice per la scarsa presenza di vegetazione arborea - arbustiva. L’organizzazione, sistemazione e archiviazione dei dati in un database denominato Banca dati IFF del Trentino, ha migliorato la loro utilizzazione anche per la consultazione e la visualizzazione su mappa dei risultati, nonché per la loro divulgazione in rete.</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco">
+        <id>1919</id>
+        <schema>iso19139</schema>
+        <createDate>2013-07-08T02:46:42</createDate>
+        <changeDate>2013-07-08T13:47:32</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>3efe23ac-d252-4a59-95d1-2cf9c97b9e83</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>28</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>1919</rootid>
+        <parentid>-1</parentid>
+        <islast>y</islast>
+        <datastatus>1</datastatus>
+        <guid>g1919</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/1919_IFF2007_nel_BACINO_DEL_TORRENTE_NOCE_15_07_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/1919_IFF2007_nel_BACINO_DEL_TORRENTE_NOCE_15_07_2013.zip</ogd_zip>
+        <ogd_rdf />
+        <licenseType>1</licenseType>
+        <uuidEscaped>3efe23ac-d252-4a59-95d1-2cf9c97b9e83</uuidEscaped>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>true</dynamic>
+        <featured>true</featured>
+        <ownername>FRANCESCON MAURIZIO</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>APPA</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:Bacino_Fiume_Chiese</dc:identifier>
+      <dc:title>IFF2007 nel BACINO del FIUME CHIESE</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>conservazione ambientale</dc:subject>
+      <dc:subject>paesaggio</dc:subject>
+      <dc:subject>qualità dell'acqua</dc:subject>
+      <dc:subject>uso del suolo</dc:subject>
+      <dc:subject>indice di funzionalità fluviale</dc:subject>
+      <dc:subject>Idrografia</dc:subject>
+      <dc:subject>inlandWaters</dc:subject>
+      <dc:subject>environment</dc:subject>
+      <dc:subject>planningCadastre</dc:subject>
+      <dc:format>Shapefile</dc:format>
+      <dc:relation>p_tn:Bacino_Fiume_Chiese</dc:relation>
+      <dct:modified>2013-06-28</dct:modified>
+      <dct:abstract>La previsione di ambiti fluviali nel Piano Generale Utilizzo Acque Pubbliche della Provincia Autonoma di Trento –PGUAP- è stata sicuramente una decisione illuminata e lungimirante, dove si considerano gli ecosistemi fluviali per la loro funzione ecologica. Una valida classificazione degli ambiti fluviali ecologici si basa su un’approfondita valutazione dei principali parametri morfologici,strutturali e biotici dell’ecosistema in esame, interpretati alla luce dei principi dell’ecologia fluviale e l’IFF è un metodo finalizzato alla valutazione della funzionalità ecologica dell’ecosistema fluviale. Al fine di ottenere un database dell’IFF aggiornato e omogeneo per tutto il reticolo provinciale, nell’anno 2009 è stato attivato il progetto “Applicazione dell’IFF al reticolo idrografico del territorio provinciale”. Il gruppo di lavoro dell’Agenzia per la protezione dell’ambiente ha applicato l’IFF su tutti i corsi d’acqua tipizzati della provincia per un totale di 1509 km, percorrendo a piedi i corsi d’acqua dalla confluenza con il ricettore principale fine alla quota di 1800 m, limite ultimo di applicazione dell’Indice per la scarsa presenza di vegetazione arborea - arbustiva. L’organizzazione, sistemazione e archiviazione dei dati in un database denominato Banca dati IFF del Trentino, ha migliorato la loro utilizzazione anche per la consultazione e la visualizzazione su mappa dei risultati, nonché per la loro divulgazione in rete.</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco">
+        <id>1926</id>
+        <schema>iso19139</schema>
+        <createDate>2013-08-08T10:22:57</createDate>
+        <changeDate>2013-08-08T11:01:45</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>f9266825-c52e-4e92-8836-c278915cd8f2</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>21</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>1926</rootid>
+        <parentid>-1</parentid>
+        <islast>y</islast>
+        <datastatus>1</datastatus>
+        <guid>g1926</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/1926_IFF2007_nel_BACINO_del_FIUME_CHIESE_08_08_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/1926_IFF2007_nel_BACINO_del_FIUME_CHIESE_08_08_2013.zip</ogd_zip>
+        <ogd_rdf />
+        <licenseType>1</licenseType>
+        <uuidEscaped>f9266825-c52e-4e92-8836-c278915cd8f2</uuidEscaped>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>true</dynamic>
+        <featured>true</featured>
+        <ownername>FRANCESCON MAURIZIO</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>APPA</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:PGUAP relativa gli Ambiti fluviali ecologici con valenza mediocre ed elevata</dc:identifier>
+      <dc:title>carta del Piano Generale di Utilizzazione delle Acque Pubbliche relativa gli Ambiti fluviali ecologici con valenza mediocre ed elevata</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>SIAT, RNDT</dc:subject>
+      <dc:subject>Idrografia</dc:subject>
+      <dc:subject>inlandWaters</dc:subject>
+      <dc:format>Arcview shape</dc:format>
+      <dc:relation>p_tn:PGUAP relativa gli Ambiti fluviali ecologici con valenza mediocre ed elevata</dc:relation>
+      <dct:abstract>Ambiti fluviali ecologici con valenza mediocre ed elevata</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2">
+        <id>856</id>
+        <schema>iso19139</schema>
+        <createDate>2010-07-26T15:43:14</createDate>
+        <changeDate>2011-11-30T15:44:58</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>p_tn:metadati del Piano Generale di Utilizzazione delle Acque Pubbliche relativa gli Ambiti fluviali ecologici con valenza mediocre ed elevata</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>79</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>76</rootid>
+        <parentid>76</parentid>
+        <islast>n</islast>
+        <datastatus>1</datastatus>
+        <guid>{7B02F1D1-0262-1703-E044-400163573B38}</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/856_p_tn_metadati_del_Piano_Generale_di_Utilizzazione_delle_Acque_Pubbliche_relativa_gli_Ambiti_fluviali_ecologici_con_valenza_mediocre_ed_elevata_16_05_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/856_carta_del_Piano_Generale_di_Utilizzazione_delle_Acque_Pubbliche_relativa_gli_Ambiti_fluviali_ecologici_con_valenza_mediocre_ed_elevata_12_12_2011.zip</ogd_zip>
+        <ogd_rdf>http://www.territorio.provincia.tn.it/geodati/856_carta_del_Piano_Generale_di_Utilizzazione_delle_Acque_Pubbliche_relativa_gli_Ambiti_fluviali_ecologici_con_valenza_mediocre_ed_elevata_12_12_2011.rdf</ogd_rdf>
+        <licenseType>1</licenseType>
+        <uuidEscaped>p_tn%3Ametadati%20del%20Piano%20Generale%20di%20Utilizzazione%20delle%20Acque%20Pubbliche%20relativa%20gli%20Ambiti%20fluviali%20ecologici%20con%20valenza%20mediocre%20ed%20elevata</uuidEscaped>
+        <version>ver-2</version>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>false</dynamic>
+        <featured>false</featured>
+        <ownername>LUNARDELLI ROBERTO</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>I.S. Protezione Civile</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:Bacino_Fiume_Sarca</dc:identifier>
+      <dc:title>IFF2007 nel BACINO DEL FIUME SARCA</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>conservazione ambientale</dc:subject>
+      <dc:subject>paesaggio</dc:subject>
+      <dc:subject>qualità dell'acqua</dc:subject>
+      <dc:subject>uso del suolo</dc:subject>
+      <dc:subject>indice di funzionalità fluviale</dc:subject>
+      <dc:subject>Idrografia</dc:subject>
+      <dc:subject>inlandWaters</dc:subject>
+      <dc:subject>environment</dc:subject>
+      <dc:subject>planningCadastre</dc:subject>
+      <dc:format>Shapefile</dc:format>
+      <dc:relation>p_tn:Bacino_Fiume_Sarca</dc:relation>
+      <dct:modified>2013-07-18</dct:modified>
+      <dct:abstract>La previsione di ambiti fluviali nel Piano Generale Utilizzo Acque Pubbliche della Provincia Autonoma di Trento –PGUAP- è stata sicuramente una decisione illuminata e lungimirante, dove si considerano gli ecosistemi fluviali per la loro funzione ecologica. Una valida classificazione degli ambiti fluviali ecologici si basa su un’approfondita valutazione dei principali parametri morfologici,strutturali e biotici dell’ecosistema in esame, interpretati alla luce dei principi dell’ecologia fluviale e l’IFF è un metodo finalizzato alla valutazione della funzionalità ecologica dell’ecosistema fluviale. Al fine di ottenere un database dell’IFF aggiornato e omogeneo per tutto il reticolo provinciale, nell’anno 2009 è stato attivato il progetto “Applicazione dell’IFF al reticolo idrografico del territorio provinciale”. Il gruppo di lavoro dell’Agenzia per la protezione dell’ambiente ha applicato l’IFF su tutti i corsi d’acqua tipizzati della provincia per un totale di 1509 km, percorrendo a piedi i corsi d’acqua dalla confluenza con il ricettore principale fine alla quota di 1800 m, limite ultimo di applicazione dell’Indice per la scarsa presenza di vegetazione arborea - arbustiva. L’organizzazione, sistemazione e archiviazione dei dati in un database denominato Banca dati IFF del Trentino, ha migliorato la loro utilizzazione anche per la consultazione e la visualizzazione su mappa dei risultati, nonché per la loro divulgazione in rete.</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco">
+        <id>1923</id>
+        <schema>iso19139</schema>
+        <createDate>2013-07-18T04:04:25</createDate>
+        <changeDate>2013-07-18T14:21:54</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>c721f3ea-def7-4cf1-a9f8-20246b67d514</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>23</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>1923</rootid>
+        <parentid>-1</parentid>
+        <islast>y</islast>
+        <datastatus>1</datastatus>
+        <guid>g1923</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/1923_IFF2007_nel_BACINO_DEL_FIUME_SARCA_22_07_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/1923_IFF2007_nel_BACINO_DEL_FIUME_SARCA_22_07_2013.zip</ogd_zip>
+        <ogd_rdf />
+        <licenseType>1</licenseType>
+        <uuidEscaped>c721f3ea-def7-4cf1-a9f8-20246b67d514</uuidEscaped>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>true</dynamic>
+        <featured>true</featured>
+        <ownername>FRANCESCON MAURIZIO</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>APPA</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:Corpi glaciali minori 2003</dc:identifier>
+      <dc:title>Corpi glaciali minori 2003</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>SIAT, ghiacciai, RNDT</dc:subject>
+      <dc:subject>Idrografia</dc:subject>
+      <dc:subject>inlandWaters</dc:subject>
+      <dc:format>Shapefile</dc:format>
+      <dc:relation>P_TN:Corpi glaciali minori 2003</dc:relation>
+      <dct:modified>2011-09-30</dct:modified>
+      <dct:abstract>Nel sottotema, a tipologia poligonale, sono individuati piccoli corpi glaciali, rappresentati generalmente da placche di ghiaccio residuo derivate dalla frammentazione dei ghiacciai principali del territorio provinciale. Le informazioni raccolte fanno riferimento a riprese aerofotogrammetriche realizzate nel settembre del 2003</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2">
+        <id>953</id>
+        <schema>iso19139</schema>
+        <createDate>2010-07-26T15:49:25</createDate>
+        <changeDate>2011-12-14T08:20:08</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>p_tn:Corpi glaciali minori 2003</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>109</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>168</rootid>
+        <parentid>168</parentid>
+        <islast>n</islast>
+        <datastatus>1</datastatus>
+        <guid>{7B02F1D1-0139-1703-E044-400163573B38}</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/953_p_tn_Corpi_glaciali_minori_2003_16_05_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/953_Corpi_glaciali_minori_2003_12_12_2011.zip</ogd_zip>
+        <ogd_rdf>http://www.territorio.provincia.tn.it/geodati/953_Corpi_glaciali_minori_2003_12_12_2011.rdf</ogd_rdf>
+        <licenseType>1</licenseType>
+        <uuidEscaped>p_tn%3ACorpi%20glaciali%20minori%202003</uuidEscaped>
+        <version>ver-2</version>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>false</dynamic>
+        <featured>false</featured>
+        <ownername>GADOTTI MARCO</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>Servizio Prevenzione Rischi</name>
+          </record>
+          <record>
+            <name>all</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:Bacino_Torrente_Fersina</dc:identifier>
+      <dc:title>IFF2007 nel BACINO DEL TORRENTE FERSINA</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>conservazione ambientale</dc:subject>
+      <dc:subject>paesaggio</dc:subject>
+      <dc:subject>qualità dell'acqua</dc:subject>
+      <dc:subject>uso del suolo</dc:subject>
+      <dc:subject>indice di funzionalità fluviale</dc:subject>
+      <dc:subject>Idrografia</dc:subject>
+      <dc:subject>inlandWaters</dc:subject>
+      <dc:subject>environment</dc:subject>
+      <dc:subject>planningCadastre</dc:subject>
+      <dc:format>Shapefile</dc:format>
+      <dc:relation>p_tn:Bacino_Torrente_Fersina</dc:relation>
+      <dct:modified>2013-05-15</dct:modified>
+      <dct:abstract>La previsione di ambiti fluviali nel Piano Generale Utilizzo Acque Pubbliche della Provincia Autonoma di Trento –PGUAP- è stata sicuramente una decisione illuminata e lungimirante, dove si considerano gli ecosistemi fluviali per la loro funzione ecologica. Una valida classificazione degli ambiti fluviali ecologici si basa su un’approfondita valutazione dei principali parametri morfologici,strutturali e biotici dell’ecosistema in esame, interpretati alla luce dei principi dell’ecologia fluviale e l’IFF è un metodo finalizzato alla valutazione della funzionalità ecologica dell’ecosistema fluviale. Al fine di ottenere un database dell’IFF aggiornato e omogeneo per tutto il reticolo provinciale, nell’anno 2009 è stato attivato il progetto “Applicazione dell’IFF al reticolo idrografico del territorio provinciale”. Il gruppo di lavoro dell’Agenzia per la protezione dell’ambiente ha applicato l’IFF su tutti i corsi d’acqua tipizzati della provincia per un totale di 1509 km, percorrendo a piedi i corsi d’acqua dalla confluenza con il ricettore principale fine alla quota di 1800 m, limite ultimo di applicazione dell’Indice per la scarsa presenza di vegetazione arborea - arbustiva. L’organizzazione, sistemazione e archiviazione dei dati in un database denominato Banca dati IFF del Trentino, ha migliorato la loro utilizzazione anche per la consultazione e la visualizzazione su mappa dei risultati, nonché per la loro divulgazione in rete.</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2">
+        <id>1904</id>
+        <schema>iso19139</schema>
+        <createDate>2013-05-22T04:00:26</createDate>
+        <changeDate>2013-05-23T11:30:57</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>08a76b52-c436-4d90-9f88-d57a1a628f7e</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>65</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>1904</rootid>
+        <parentid>-1</parentid>
+        <islast>y</islast>
+        <datastatus>1</datastatus>
+        <guid>{guid-1904}</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/1904_IFF2007_nel_BACINO_DEL_TORRENTE_FERSINA_13_08_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/1904_IFF2007_nel_BACINO_DEL_TORRENTE_FERSINA_13_08_2013.zip</ogd_zip>
+        <ogd_rdf />
+        <licenseType>1</licenseType>
+        <uuidEscaped>08a76b52-c436-4d90-9f88-d57a1a628f7e</uuidEscaped>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>false</dynamic>
+        <featured>false</featured>
+        <ownername>HARVESTING USER</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>APPA</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>P_TN:e54cfb63-dde4-49cc-90ae-c531a5b349a2</dc:identifier>
+      <dc:title>IFF2007_TN_RACCOLTA FILE DI UTILITA'</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>imageryBaseMapsEarthCover</dc:subject>
+      <dc:format>SHP</dc:format>
+      <dc:relation>P_TN: APPA_953FE800-CA1F-455C-BFCF-CCDC2D91D9ED</dc:relation>
+      <dct:abstract>Raccolta dei file utili per la rappresentazione in ARCMAP dei file shape della libreria IFF2007_TN
+( file .lyr e .style)</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gml="http://www.opengis.net/gml" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <id>1933</id>
+        <schema>iso19139</schema>
+        <createDate>2013-08-13T12:10:42</createDate>
+        <changeDate>2014-01-30T09:16:00</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>P_TN:e54cfb63-dde4-49cc-90ae-c531a5b349a2</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>58</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>1933</rootid>
+        <parentid>-1</parentid>
+        <islast>y</islast>
+        <datastatus>1</datastatus>
+        <guid>{guid-1933}</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/1933_IFF2007_TN_RACCOLTA_FILE_DI_UTILITA__30_01_2014.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/1933_IFF2007_TN_RACCOLTA_FILE_DI_UTILITA__30_01_2014.zip</ogd_zip>
+        <ogd_rdf />
+        <licenseType>1</licenseType>
+        <uuidEscaped>P_TN%3Ae54cfb63-dde4-49cc-90ae-c531a5b349a2</uuidEscaped>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>false</dynamic>
+        <featured>false</featured>
+        <ownername>FRANCESCON MAURIZIO</ownername>
+        <category>mapsAndGraphics</category>
+        <category>Datasets</category>
+        <category>Applicazioni</category>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>APPA</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>P_TN:03cf5c8f-1830-4a75-b170-365b6f77409b</dc:identifier>
+      <dc:title>Incendi dal 1984 al 2013</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>siat</dc:subject>
+      <dc:subject>dipartimento foreste</dc:subject>
+      <dc:subject>incendi</dc:subject>
+      <dc:subject>foreste</dc:subject>
+      <dc:subject>Nomi geografici</dc:subject>
+      <dc:subject>environment</dc:subject>
+      <dc:format>shp</dc:format>
+      <dc:relation>p_tn:Incendi dal 1984 al 2013</dc:relation>
+      <dct:modified>2013-12-31</dct:modified>
+      <dct:abstract>mappa delle aree percorse da incendi nel periodo 1984-2013. Le aree sono state definite con basso livello di accuratezza su carta a scala 1:10.000, il rilievo non ha valore legale ai fini dell'individuazione della proprietà</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <id>1939</id>
+        <schema>iso19139</schema>
+        <createDate>2014-01-07T10:57:54</createDate>
+        <changeDate>2014-02-19T14:24:03</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>P_TN:03cf5c8f-1830-4a75-b170-365b6f77409b</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>32</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>1939</rootid>
+        <parentid>-1</parentid>
+        <islast>y</islast>
+        <datastatus>1</datastatus>
+        <guid>{guid-1939}</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/1939_Incendi_dal_1984_al_2013_19_02_2014.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/1939_Incendi_dal_1984_al_2013_19_02_2014.zip</ogd_zip>
+        <ogd_rdf />
+        <licenseType>1</licenseType>
+        <uuidEscaped>P_TN%3A03cf5c8f-1830-4a75-b170-365b6f77409b</uuidEscaped>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>true</dynamic>
+        <featured>true</featured>
+        <ownername>ZANOLINI ROBERTO</ownername>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>all</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:Metadati di: Aree di altitudine superiore a 1600m.</dc:identifier>
+      <dc:title>Aree di altitudine superiore a 1600m -pup-</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>PUP, RNDT</dc:subject>
+      <dc:subject>altitudine</dc:subject>
+      <dc:subject>Elevazione</dc:subject>
+      <dc:subject>elevation</dc:subject>
+      <dc:format>ESRI Shape</dc:format>
+      <dc:relation>p_tn:Metadati di: Aree di altitudine superiore a 1600m.</dc:relation>
+      <dct:abstract>Rappresenta la perimetrazione delle aree di altitudine superiore a 1600m</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2">
+        <id>797</id>
+        <schema>iso19139</schema>
+        <createDate>2010-07-26T15:42:58</createDate>
+        <changeDate>2014-02-07T07:34:13</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>p_tn:Metadati di: Aree di altitudine superiore a 1600m.</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>30</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>15</rootid>
+        <parentid>15</parentid>
+        <islast>n</islast>
+        <datastatus>1</datastatus>
+        <guid>{7B02F1D1-0119-1703-E044-400163573B38}</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/797_p_tn_Metadati_di__Aree_di_altitudine_superiore_a_1600m__16_05_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/797_aree_di_altitudine_superiore_a_1600m__pup__12_12_2011.zip</ogd_zip>
+        <ogd_rdf>http://www.territorio.provincia.tn.it/geodati/797_aree_di_altitudine_superiore_a_1600m__pup__12_12_2011.rdf</ogd_rdf>
+        <licenseType>1</licenseType>
+        <uuidEscaped>p_tn%3AMetadati%20di%3A%20Aree%20di%20altitudine%20superiore%20a%201600m.</uuidEscaped>
+        <version>ver-2</version>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>false</dynamic>
+        <featured>false</featured>
+        <ownername>LAUDADIO MONICA</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>S. Urbanistica e Tut. Paesaggio</name>
+          </record>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>Segreteria S.I.A.T.</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+    <csw:SummaryRecord xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:dct="http://purl.org/dc/terms/">
+      <dc:identifier>p_tn:Metadati di: Collegamenti funzionali</dc:identifier>
+      <dc:title>Collegamenti funzionali -pup-</dc:title>
+      <dc:type>dataset</dc:type>
+      <dc:subject>PUP</dc:subject>
+      <dc:subject>RNDT</dc:subject>
+      <dc:subject>collegamenti funzionali</dc:subject>
+      <dc:subject>viabilità di progetto</dc:subject>
+      <dc:subject>Servizi di pubblica utilità e servizi amministrativi</dc:subject>
+      <dc:subject>utilitiesCommunication</dc:subject>
+      <dc:format>ESRI Shape</dc:format>
+      <dc:relation>p_tn:Metadati di: Collegamenti funzionali</dc:relation>
+      <dct:abstract>Indicazione di massima sui futuri collegamenti stradali e ferroviari (Trento - Malè) dei quali non esiste ancora alcuna soluzione progettuale.</dct:abstract>
+      <geonet:info xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2">
+        <id>804</id>
+        <schema>iso19139</schema>
+        <createDate>2010-07-26T15:43:00</createDate>
+        <changeDate>2011-11-29T10:33:42</changeDate>
+        <isTemplate>n</isTemplate>
+        <title />
+        <source>de555167-3cf2-4b6d-9d80-df646efde40d</source>
+        <uuid>p_tn:Metadati di: Collegamenti funzionali</uuid>
+        <isHarvested>n</isHarvested>
+        <popularity>27</popularity>
+        <rating>0</rating>
+        <status>2</status>
+        <rootid>22</rootid>
+        <parentid>22</parentid>
+        <islast>n</islast>
+        <datastatus>1</datastatus>
+        <guid>{7B02F1D1-010F-1703-E044-400163573B38}</guid>
+        <motivation>n</motivation>
+        <flag>2</flag>
+        <is_ogd>y</is_ogd>
+        <ogd_xml>http://www.territorio.provincia.tn.it/geodati/804_p_tn_Metadati_di__Collegamenti_funzionali_16_05_2013.xml</ogd_xml>
+        <ogd_zip>http://www.territorio.provincia.tn.it/geodati/804_Collegamenti_funzionali__pup__12_12_2011.zip</ogd_zip>
+        <ogd_rdf>http://www.territorio.provincia.tn.it/geodati/804_Collegamenti_funzionali__pup__12_12_2011.rdf</ogd_rdf>
+        <licenseType>1</licenseType>
+        <uuidEscaped>p_tn%3AMetadati%20di%3A%20Collegamenti%20funzionali</uuidEscaped>
+        <version>ver-2</version>
+        <view>true</view>
+        <notify>false</notify>
+        <download>true</download>
+        <dynamic>false</dynamic>
+        <featured>false</featured>
+        <ownername>LAUDADIO MONICA</ownername>
+        <category>openData</category>
+        <subtemplates />
+        <groups>
+          <record>
+            <name>S. Urbanistica e Tut. Paesaggio</name>
+          </record>
+          <record>
+            <name>all</name>
+          </record>
+          <record>
+            <name>Segreteria S.I.A.T.</name>
+          </record>
+        </groups>
+      </geonet:info>
+    </csw:SummaryRecord>
+  </csw:SearchResults>
+</csw:GetRecordsResponse>
+

@@ -7,6 +7,8 @@ install_requires = [
     'pymongo',  # for the mongodb-based storage
     'requests',  # for crawlers
     'stevedore',  # to load plugins
+    'owslib',  # for geocatalogo CSW
+    'lxml',  # for geocatalogo CSW
 ]
 
 entry_points = {
