@@ -9,13 +9,12 @@ install_requires = [
     'stevedore',  # to load plugins
     'owslib',  # for geocatalogo CSW
     'lxml',  # for geocatalogo CSW
+    'unidecode',  # to transliterate characters
 ]
 
 entry_points = {
     'harvester.ext.crawlers': [
         'ckan = harvester.ext.crawlers.ckan:CkanCrawler',
-        'pat_statistica = harvester_odt.pat_statistica.crawler:Statistica',
-        'pat_statistica_subpro = harvester_odt.pat_statistica.crawler:StatisticaSubPro',  # noqa
     ],
 
     'harvester.ext.storage': [
@@ -26,11 +25,6 @@ entry_points = {
     ],
 
     'harvester.ext.converters': [
-        'pat_statistica_to_ckan = harvester_odt.pat_statistica.'
-        'converter:StatisticaToCkan',
-
-        'pat_statistica_subpro_to_ckan = harvester_odt.pat_statistica.'
-        'converter:StatisticaSubProToCkan',
     ],
 
     'harvester.ext.importers': [
@@ -51,6 +45,29 @@ entry_points = {
         'harvester = harvester.cli:main',
     ]
 }
+
+entry_points_odt = {
+    'harvester.ext.crawlers': [
+        'pat_statistica = harvester_odt.pat_statistica.crawler:Statistica',
+        'pat_statistica_subpro = harvester_odt.pat_statistica.crawler:StatisticaSubPro',  # noqa
+        'pat_geocatalogo = harvester_odt.pat_geocatalogo.crawler:Geocatalogo',
+    ],
+
+    'harvester.ext.converters': [
+        'pat_statistica_to_ckan = harvester_odt.pat_statistica.'
+        'converter:StatisticaToCkan',
+        'pat_statistica_subpro_to_ckan = harvester_odt.pat_statistica.'
+        'converter:StatisticaSubProToCkan',
+        'pat_geocatalogo_to_ckan = harvester_odt.pat_geocatalogo.'
+        'converter:GeoCatalogoToCkan',
+    ],
+}
+
+for epname, eplist in entry_points_odt.iteritems():
+    if epname not in entry_points:
+        entry_points[epname] = []
+    entry_points[epname].extend(eplist)
+
 
 setup(
     name='harvester',
