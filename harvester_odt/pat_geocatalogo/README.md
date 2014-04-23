@@ -11,15 +11,13 @@ Instantiate the client:
 
 ```python
 from owslib.csw import CatalogueServiceWeb
-csw = CatalogueServiceWeb(
-    'http://www.territorio.provincia.tn.it/geoportlet/srv/eng/csw')
+csw = CatalogueServiceWeb('http://www.territorio.provincia.tn.it/geoportlet/srv/eng/csw')
 ```
 
 Query:
 
 ```python
-csw.getrecords2(
-    resulttype='results_with_summary', startposition=0, maxrecords=10)
+csw.getrecords2(resulttype='results_with_summary', startposition=0, maxrecords=10)
 ```
 
 Get pagination information:

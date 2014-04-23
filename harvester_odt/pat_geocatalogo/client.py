@@ -5,18 +5,18 @@ DEFAULT_URL = 'http://www.territorio.provincia.tn.it/geoportlet/srv/eng/csw'
 
 
 class GeoCatalogoClient(object):
-    """
-    """
+    """Client for the PAT Geocatalogo CSW service"""
 
     def __init__(self, url):
-        self.url = url
+        self.url = url or DEFAULT_URL
 
     def iter_datasets(self):
-        client = CatalogueServiceWeb(self.catalog_url)
+        client = CatalogueServiceWeb(self.url)
         PAGE_SIZE = 20
         startpos = 0
         while True:
             client.getrecords2(
+                # We need to use this type in order to get links!
                 resulttype='results_with_summary',
                 startposition=startpos,
                 maxrecords=PAGE_SIZE)

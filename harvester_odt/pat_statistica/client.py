@@ -10,12 +10,11 @@ API client for statweb.provincia.tn.it
 # todo: make robohash-powered images optional
 
 import abc
-import json
 import logging
-import re
-import hashlib
 
 import requests
+
+from harvester.utils import slugify, decode_faulty_json, get_robohash_url
 
 
 logger = logging.getLogger(__name__)
@@ -27,24 +26,12 @@ ADD_ROBOHASH = False
 # Utilities
 # ----------------------------------------------------------------------
 
-def _slugify(text):
-    return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
-
-
-def _json_decode(text):
-    text = text.replace('\n', ' ').replace('\r', '')
-    return json.loads(text)
-
-
-def _robohash(text):
-    h = hashlib.sha1(text).hexdigest()
-    return 'http://robohash.org/{0}.png?set=set1&bgset=bg1'.format(h)
-
 
 def _clean_metadata_dict_for_subpro_num_den(dct):
     """
     Clean metadata dictionary for numeratore/denominatore in
-    "indicatori sub-provinciali".
+    "indicatori sub-provinciali", checking that the passed-in
+    format is consistent with the expected one..
 
     >>> _clean_metadata_dict_for_subpro_num_den({
     ...   'Title' : [{
@@ -92,7 +79,7 @@ for key, val in CATEGORIES.iteritems():
     val['name'] = key
     val['description'] = ''  # todo: we need to preserve the original one!
     if ADD_ROBOHASH:
-        val['image_url'] = _robohash(key)  # PHUN!
+        val['image_url'] = get_robohash_url(key)  # PHUN!
 
 # 'source -> ckan' map
 CATEGORIES_MAP = {
@@ -151,7 +138,7 @@ ORGANIZATIONS = {
 }
 if ADD_ROBOHASH:
     for key, val in ORGANIZATIONS.iteritems():
-        val['image_url'] = _robohash(key)  # PHUN!
+        val['image_url'] = get_robohash_url(key)  # PHUN!
 
 LEGEND_TIPO_INDICATORE = {
     'R': 'rapporto',
@@ -188,7 +175,7 @@ class StatisticaClientBase(object):
     def list_datasets(self):  # todo: check this
         response = requests.get(self.index_url())
         assert response.ok
-        data = _json_decode(response.text)
+        data = decode_faulty_json(response.text)
         assert isinstance(data, dict)
         assert data.keys() == [self.index_page_main_key]
         return data[self.index_page_main_key]
@@ -227,7 +214,7 @@ class StatisticaClientBase(object):
         url = self.metadata_url(id)
         response = requests.get(url)
         assert response.ok
-        data = _json_decode(response.text)
+        data = decode_faulty_json(response.text)
 
         assert isinstance(data, dict)
         assert len(data.keys()) == 1
@@ -297,13 +284,13 @@ class StatisticaClient(StatisticaClientBase):
         # ------------------------------------------------------------
 
         dataset['title'] = _extract_title(dataset_data['indicatore'])
-        dataset['name'] = _slugify(dataset['title'])
+        dataset['name'] = slugify(dataset['title'])
 
         for key in ('numeratore', 'denominatore'):
             if key in dataset_data:
                 title = _extract_title(dataset_data[key])
                 dataset[key + '_title'] = title
-                dataset[key + '_name'] = _slugify(title)
+                dataset[key + '_name'] = slugify(title)
 
         return dataset
 
@@ -527,7 +514,7 @@ def dataset_statistica_to_ckan(orig_dataset):
 
 def dataset_statistica_subpro_to_ckan(orig_dataset):
     dataset_title = orig_dataset['Descrizione']
-    dataset_name = _slugify(dataset_title)
+    dataset_name = slugify(dataset_title)
 
     new_dataset = {
         'id': orig_dataset['id'],
@@ -620,7 +607,7 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
             orig_dataset['metadata_numeratore'])
 
         num_title = _title
-        num_name = _slugify(_title)
+        num_name = slugify(_title)
 
         new_dataset['resources'].extend([
             {
@@ -648,7 +635,7 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
             orig_dataset['metadata_denominatore'])
 
         den_title = _title
-        den_name = _slugify(_title)
+        den_name = slugify(_title)
 
         new_dataset['resources'].extend([
             {
