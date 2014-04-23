@@ -2,9 +2,13 @@
 Miscellaneous utilities
 """
 
+import hashlib
+import json
 import logging
+import re
 import sys
 
+from unidecode import unidecode
 from stevedore.extension import ExtensionManager
 
 
@@ -156,3 +160,33 @@ class ColorLogFormatter(logging.Formatter):
             s += colored(exc_info, 'grey', attrs=['bold'])
 
         return s
+
+
+def slugify(text):
+    """
+    Convert a string of text to a more compact representation,
+    suitable to be used in a URL.
+
+    The unidecode library will be used to transliterate non-ascii
+    letters too..
+
+    >>> slugify('Hello, world!')
+    'hello-world'
+    """
+    text = unidecode(text)
+    text = text.lower()
+    return re.sub(r'[^a-z0-9]+', '-', text).strip('-')
+
+
+def decode_faulty_json(text):
+    """
+    Attempt to decode json containing newlines inside strings,
+    which is invalid for the JSON standard.
+    """
+    text = text.replace('\n', ' ').replace('\r', '')
+    return json.loads(text)
+
+
+def get_robohash_url(text):
+    h = hashlib.sha1(text).hexdigest()
+    return 'http://robohash.org/{0}.png?set=set1&bgset=bg1'.format(h)
