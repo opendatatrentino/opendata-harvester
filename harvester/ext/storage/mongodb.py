@@ -97,8 +97,8 @@ class MongodbStorage(BaseStorage):
         """List full names of our collections"""
         return self._list_sub_collections(strip=False)
 
-    def _list_buckets(self, bucket_name):
-        return self._list_sub_collections(bucket_name)
+    def _list_buckets(self, bucket_type):
+        return self._list_sub_collections(bucket_type)
 
     def flush_storage(self):
         # If no prefix was configured, we can just drop the whole
@@ -111,14 +111,14 @@ class MongodbStorage(BaseStorage):
 
 
 class BaseMongoBucket(object):
-    bucket_name = None  # to be overwritten by subclasses
+    bucket_type = None  # to be overwritten by subclasses
 
     @classmethod
     def list_buckets(cls, storage):
-        return storage._list_buckets(cls.bucket_name)
+        return storage._list_buckets(cls.bucket_type)
 
     def _get_collection(self):
-        return self.storage._get_collection([self.bucket_name, self.name])
+        return self.storage._get_collection([self.bucket_type, self.name])
 
     def __iter__(self):
         coll = self._get_collection()
@@ -155,17 +155,17 @@ class BaseMongoBucket(object):
 
 
 class MongoDocumentBucket(BaseMongoBucket, BaseDocumentBucket):
-    bucket_name = 'document'
+    bucket_type = 'document'
 
 
 class MongoBlobBucket(BaseMongoBucket, BaseBlobBucket):
     """MongoDB "blob" bucket uses GridFS to store binary data"""
 
-    bucket_name = 'blob'
+    bucket_type = 'blob'
 
     def _get_gridfs(self):
         coll_name = self.storage._get_collection_name(
-            [self.bucket_name, self.name])
+            [self.bucket_type, self.name])
         return GridFS(self.storage._database, collection=coll_name)
 
     @classmethod
@@ -174,7 +174,7 @@ class MongoBlobBucket(BaseMongoBucket, BaseBlobBucket):
         # Eg, we will get a list like:
         # ['foo.chunks', 'foo.files', 'bar.chunks', 'bar.files']
         # but we want: ['foo', 'bar']
-        buckets = storage._list_buckets(cls.bucket_name)
+        buckets = storage._list_buckets(cls.bucket_type)
         for x in set(b.split('.')[0] for b in buckets):
             yield x
 
@@ -207,7 +207,7 @@ class MongoKeyvalBucket(BaseMongoBucket, BaseKeyvalBucket):
     but we need to store value inside a key of the document..
     """
 
-    bucket_name = 'keyval'
+    bucket_type = 'keyval'
 
     def _serialize(self, obj):
         return {'value': obj}
