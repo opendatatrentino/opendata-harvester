@@ -35,10 +35,10 @@ plugins.
 
 There are four plugin types that can be defined:
 
-- crawler -- to download raw data from a source
-- storage -- to keep temporary storage of data
-- converter -- to convert data between two formats
-- importer -- to import data to a catalog
+- storage -- abstraction for different types of storage
+- crawler -- download data from source, store in storage
+- converter -- convert data from a storage to another one
+- importer -- import data from a storage to a catalog
 
 
 ## Core plugins
@@ -47,20 +47,22 @@ There are four plugin types that can be defined:
 
 - ``pat_statistica`` -- for ODT / servizio statistica
 - ``pat_statistica_subpro`` -- for ODT / servizio statistica
+- ``pat_geocatalogo`` -- for ODT / GeoCatalogo PAT
 
 
 **Storages:**
 
-- ``jsondir`` -- keep data as json files in a directory
 - ``memory`` -- keep data in memory (mainly for testing)
-- ``mongodb`` -- keep data in a mongodb database (preferred)
+- ``jsondir`` -- keep data as json files in a directory (for local testing)
 - ``sqlite`` -- keep data in a sqlite database (for local testing)
+- ``mongodb`` -- keep data in a mongodb database (recommended for production)
 
 
 **Converters:**
 
 - ``pat_statistica_subpro_to_ckan`` -- for ODT / servizio statistica
 - ``pat_statistica_to_ckan`` -- for ODT / servizio statistica
+- ``pat_geocatalogo_to_ckan`` -- for ODT / GeoCatalogo PAT
 
 
 **Importers:**
