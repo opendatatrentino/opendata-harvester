@@ -1,11 +1,11 @@
 import logging
 
-from harvester.ext.crawlers.base import HarvesterPluginBase
+from harvester.ext.crawlers.base import CrawlerPluginBase
 
 from .client import (StatisticaClient, StatisticaSubproClient)
 
 
-class Statistica(HarvesterPluginBase):
+class Statistica(CrawlerPluginBase):
     """
     Crawler for statweb.provincia.tn.it (indicatori strutturali).
 
@@ -35,7 +35,7 @@ class Statistica(HarvesterPluginBase):
             # todo: we could download resources as blobs too..
 
 
-class StatisticaSubPro(HarvesterPluginBase):
+class StatisticaSubPro(CrawlerPluginBase):
     """
     Crawler for statweb.provincia.tn.it (indicatori strutturali
     sub-provinciali).

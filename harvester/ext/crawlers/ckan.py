@@ -1,11 +1,11 @@
 import logging
 
-from harvester.ext.crawlers.base import HarvesterPluginBase
+from harvester.ext.crawlers.base import CrawlerPluginBase
 
 from ckan_api_client.high_level import CkanHighlevelClient
 
 
-class CkanCrawler(HarvesterPluginBase):
+class CkanCrawler(CrawlerPluginBase):
     logger = logging.getLogger(__name__)
 
     def fetch_data(self, storage):

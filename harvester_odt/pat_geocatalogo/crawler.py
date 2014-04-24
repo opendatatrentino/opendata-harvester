@@ -3,13 +3,13 @@ import logging
 import lxml
 import requests
 
-from harvester.ext.crawlers.base import HarvesterPluginBase
+from harvester.ext.crawlers.base import CrawlerPluginBase
 from .client import GeoCatalogoClient
 
 logger = logging.getLogger(__name__)
 
 
-class Geocatalogo(HarvesterPluginBase):
+class Geocatalogo(CrawlerPluginBase):
     """
     Crawler for http://www.territorio.provincia.tn.it/
 
