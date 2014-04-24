@@ -21,12 +21,15 @@ def storage(request, tmpdir):
         pass
 
     elif request.param == 'mongodb':
-        pytest.skip('Not implemented yet')
         from harvester.ext.storage.mongodb import MongodbStorage
+
+        # We need a configured MONGO_URL in order to run mongodb-based tests
+        # Also, we want to make sure the storage is empty before running
+        # tests, so we call ``flush_storage()``
         if 'MONGO_URL' in os.environ:
             mongo_url = os.environ['MONGO_URL']
             st = MongodbStorage(mongo_url)
-            st._flush_db()
+            st.flush_storage()
             return st
 
         else:
