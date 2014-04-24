@@ -30,7 +30,9 @@ class Statistica(HarvesterPluginBase):
 
         for dataset in datasets:
             self.logger.info('Got dataset: {0}'.format(dataset['id']))
-            storage.set_object('dataset', dataset['id'], dataset)
+            storage.documents['dataset'][dataset['id']] = dataset
+
+            # todo: we could download resources as blobs too..
 
 
 class StatisticaSubPro(HarvesterPluginBase):
@@ -59,4 +61,6 @@ class StatisticaSubPro(HarvesterPluginBase):
 
         for dataset in datasets:
             self.logger.info('Dataset: {0}'.format(dataset['id']))
-            storage.set_object('dataset', dataset['id'], dataset)
+            storage.documents['dataset'][dataset['id']] = dataset
+
+            # todo: we could download resources as blobs too..

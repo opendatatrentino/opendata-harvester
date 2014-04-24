@@ -49,6 +49,7 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
     _ds_license = xp('geonet:info/licenseType/text()')[0]
     _ds_groups = xp('geonet:info/groups/record/name/text()')
     _ds_owner = xp('geonet:info/ownername/text()')
+    _ds_schema = xp('geonet:info/schema/text()')
 
     new_dataset = {
         'id': _ds_id,
