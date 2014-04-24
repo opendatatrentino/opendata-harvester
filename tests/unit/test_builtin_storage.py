@@ -4,39 +4,38 @@ Tests for the SQLite storage
 
 import pytest
 
+from harvester.ext.storage.base import NotFound
+
 
 def test_storages(storage):
-    assert storage.list_object_types() == []
+    assert list(storage.documents) == []
+    assert list(storage.documents['invalid_type']) == []
 
-    with pytest.raises(Exception):
-        storage.list_objects('invalid_type')
-
-    with pytest.raises(Exception):
-        storage.get_object('invalid_type', 'invalid_id')
+    with pytest.raises(NotFound):
+        storage.documents['footype']['fooid']
 
     # Create object
     # -------------
 
-    storage.set_object('dataset', '1', {'title': 'Example dataset'})
-    assert storage.list_object_types() == ['dataset']
-    assert storage.list_objects('dataset') == ['1']
-    assert storage.get_object('dataset', '1') == {'title': 'Example dataset'}
+    storage.documents['dataset']['1'] = {'title': 'Example dataset'}
+    assert list(storage.documents) == ['dataset']
+    assert list(storage.documents['dataset']) == ['1']
+    assert storage.documents['dataset']['1'] == {'title': 'Example dataset'}
 
     # Update object
     # -------------
 
-    storage.set_object('dataset', '1', {'title': 'NEW TITLE'})
-    assert storage.list_object_types() == ['dataset']
-    assert storage.list_objects('dataset') == ['1']
-    assert storage.get_object('dataset', '1') == {'title': 'NEW TITLE'}
+    storage.documents['dataset']['1'] = {'title': 'NEW TITLE'}
+    assert list(storage.documents) == ['dataset']
+    assert list(storage.documents['dataset']) == ['1']
+    assert storage.documents['dataset']['1'] == {'title': 'NEW TITLE'}
 
     # Delete object
     # -------------
 
-    storage.del_object('dataset', '1')
+    del storage.documents['dataset']['1']
+    assert list(storage.documents) == ['dataset']
+    assert list(storage.documents['dataset']) == []
 
-    assert storage.list_object_types() == ['dataset']
-    assert storage.list_objects('dataset') == []
-
-    with pytest.raises(Exception):
-        storage.get_object('dataset', '1')
+    with pytest.raises(NotFound):
+        storage.documents['dataset']['1']

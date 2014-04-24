@@ -6,6 +6,7 @@ import pytest
 @pytest.fixture(params=['sqlite', 'memory', 'jsondir', 'mongodb'])
 def storage(request, tmpdir):
     if request.param == 'sqlite':
+        pytest.skip('Not implemented yet')
         from harvester.ext.storage.sqlite import SQLiteStorage
         myfilename = str(tmpdir.join('example.sqlite'))
         return SQLiteStorage(myfilename)
@@ -20,6 +21,7 @@ def storage(request, tmpdir):
         pass
 
     elif request.param == 'mongodb':
+        pytest.skip('Not implemented yet')
         from harvester.ext.storage.mongodb import MongodbStorage
         if 'MONGO_URL' in os.environ:
             mongo_url = os.environ['MONGO_URL']
