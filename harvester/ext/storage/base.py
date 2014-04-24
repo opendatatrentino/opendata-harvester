@@ -34,7 +34,12 @@ class BaseStorage(object):
     blob_bucket_class = None
     keyval_bucket_class = None
 
-    def __init__(self, url, conf=None):
+    def __init__(self, url=None, conf=None):
+        """
+        :param url: connection url
+        :param conf: dictionary holding configuration
+        """
+
         self.url = url
         self.conf = conf or {}
 
@@ -61,8 +66,12 @@ class BaseStorage(object):
 
 class BaseBucketManager(collections.MutableMapping):
     """
-    A bucket manager simulate a dictionary of buckets
-    for a given storage.
+    A bucket manager is responsible to returning instances
+    of the appropriate bucket class, instantiated for the
+    parent storage + requested name.
+
+    It also allow listing buckets of a given type, by calling
+    the ``list_buckets()`` class method.
     """
 
     def __init__(self, storage, bucket_class):
@@ -96,9 +105,9 @@ class BaseBucket(collections.MutableMapping):
     - __getitem__, __setitem__, __delitem__, __iter__, __len__
     """
 
-    def __init__(self, storage, myname):
+    def __init__(self, storage, name):
         self.storage = storage
-        self.myname = myname
+        self.name = name
 
     @classmethod
     def list_buckets(cls, storage):
@@ -107,14 +116,17 @@ class BaseBucket(collections.MutableMapping):
 
 
 class BaseDocumentBucket(BaseBucket):
+    """Base for "document" buckets"""
     pass
 
 
 class BaseBlobBucket(BaseBucket):
+    """Base for "blob" buckets"""
     pass
 
 
 class BaseKeyvalBucket(BaseBucket):
+    """Base for "keyval" buckets"""
     pass
 
 
