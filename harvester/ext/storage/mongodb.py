@@ -1,38 +1,41 @@
 import urlparse
 
-import pymongo
+from pymongo import MongoClient
+from gridfs import GridFS
 
 from .base import (BaseStorage, BaseDocumentBucket, BaseBlobBucket,
-                   BaseKeyvalBucket)
+                   BaseKeyvalBucket, NotFound)
 
 
 class MongodbStorage(BaseStorage):
-    def __init__(self, url, conf=None):
+    def __init__(self, *a, **kw):
         """
         MongoDB storage takes a URL like:
 
         mongodb://host:port/database.name/collection.name
         """
-        parsed_url = urlparse.urlparse(url)
+
+        super(MongodbStorage, self).__init__(*a, **kw)
+
+        # Now, extract information from the connection URL
+        parsed_url = urlparse.urlparse(self.url)
         parsed_path = parsed_url.path.strip('/').split('/')
 
         if len(parsed_path) < 1:
             raise ValueError("Invalid MongoDB url (missing database name)")
 
+        # Store a URL suitable for passing to MongoClient
+        # i.e. remove the path
         self._mongo_url = parsed_url._replace(path='').geturl()
+
+        # Store separately databse name and collection prefix
         self._mongo_db_name = parsed_path[0]
-
-        if len(parsed_path) >= 2:
-            self._mongo_collection_prefix = parsed_path[1]
-        else:
-            self._mongo_collection_prefix = None
-
-        self.conf = conf
+        self._mongo_prefix = parsed_path[1] if len(parsed_path) >= 2 else None
 
     @property
     def _connection(self):
         if getattr(self, '_cached_connection', None) is None:
-            self._cached_connection = pymongo.MongoClient(self._mongo_url)
+            self._cached_connection = MongoClient(self._mongo_url)
         return self._cached_connection
 
     @property
@@ -40,152 +43,179 @@ class MongodbStorage(BaseStorage):
         return self._connection[self._mongo_db_name]
 
     def _get_collection(self, name):
-        """Return a sub-collection object, by name"""
-        prefix = self._mongo_collection_prefix
-        root = self._database[prefix] if prefix else self._database
-        return root[name]
+        """
+        Return collection object, by name.
+        Prefix will be prepended automatically.
+        """
+        name = self._get_collection_name(name)
+        return self._database[name]
 
     def _get_collection_name(self, name):
-        if self._mongo_collection_prefix:
-            return '.'.join((self._mongo_collection_prefix, name))
-        return name
-
-    def _list_sub_collections(self, prefix, strip_prefix=True):
         """
-        List all collections with name starting with the
-        configured prefix.
+        Return a collection name, with prepended prefix.
+        """
+        if not isinstance(name, (list, tuple)):
+            name = (name,)
+        name = list(name)
+        name.insert(0, self._mongo_prefix)
+        return '.'.join(filter(None, name))
 
-        :param strip_prefix:
-            if set to True (the default) will strip the prefix from returned
-            collection names
+    def _join_prefix(self, *parts):
+        _prefix = []
+        for part in parts:
+            if not part:
+                continue
+            if isinstance(part, (list, tuple)):
+                _prefix.extend(part)
+            else:
+                _prefix.append(part)
+        return _prefix
+
+    def _list_sub_collections(self, prefix=None, strip=True):
+        """
+        List all the collections having the selected prefix.
+
+        :param prefix: string or list/tuple containing prefix parts.
+        :param strip: if True (default), strip prefix from names
         """
 
-        prefix = (prefix + '.') if prefix else None
+        prefix = self._join_prefix(self._mongo_prefix, prefix)
+        prefix = '.'.join(prefix)
+        if prefix:
+            prefix += '.'
+
+        striplen = len(prefix) if strip else 0
 
         for name in self._database.collection_names():
             if name.startswith('system.'):
-                # Ignore system collections
-                continue
+                continue  # Ignore system collections
 
-            if prefix is None:
-                yield name
-
-            elif name.startswith(prefix):
-                if strip_prefix:
-                    name = name[len(prefix):]
-                yield name
+            if (not prefix) or name.startswith(prefix):
+                yield name[striplen:]
 
     def _list_our_collections(self):
-        """List full names of our collection"""
+        """List full names of our collections"""
+        return self._list_sub_collections(strip=False)
 
-        prefix = self._mongo_collection_prefix
-        prefix = (prefix + '.') if prefix else None
+    def _list_buckets(self, bucket_name):
+        return self._list_sub_collections(bucket_name)
 
-        for name in self._database.collection_names():
-            if name.startswith('system.'):
-                # Ignore system collections
-                continue
-
-            if (prefix is None) or name.startswith(prefix):
-                yield name
-
-    def _list_buckets(self, bucket_type):
-        """List all the sub-collections matching a given prefix"""
-
-        full_prefix = bucket_type + '.'
-        if self._mongo_collection_prefix:
-            full_prefix = '.'.join((
-                self._mongo_collection_prefix, full_prefix))
-
-        for name in self._database.collection_names():
-            if name.startswith('system.'):
-                # Skip system collections..
-                continue
-
-            if name.startswith(full_prefix):
-                yield name[len(full_prefix):]
-
-    # def _list_collections(self, strip_prefix=True):
-    #     return self._list_sub_collections(
-    #         self._mongo_collection_prefix, strip_prefix=strip_prefix)
-
-    # def flush_storage(self):
-    #     if self._mongo_collection_prefix is None:
-    #         # We can directly drop database
-    #         self._connection.drop_database(self._mongo_db_name)
-
-    #     else:
-    #         # Just drop tables matching prefix..
-    #         for name in self._list_collections(strip_prefix=False):
-    #             self._database.drop_collection(name)
-
-    # def list_object_types(self):
-    #     return list(self._list_collections())
-
-    # def list_objects(self, obj_type):
-    #     if obj_type not in self.list_object_types():
-    #         raise ValueError('Missing object')
-    #     coll = self._collection[obj_type]
-    #     return [o['_id'] for o in coll.find(fields=['_id'])]
-
-    # def get_object(self, obj_type, obj_id):
-    #     coll = self._collection[obj_type]
-    #     obj = coll.find_one(obj_id)
-    #     obj.pop('_id', None)
-    #     return obj
-
-    # def set_object(self, obj_type, obj_id, obj):
-    #     coll = self._collection[obj_type]
-    #     obj['_id'] = obj_id
-    #     coll.update({'_id': obj['_id']}, obj, upsert=True)
-    #     return self.get_object(obj_type, obj_id)
-
-    # def del_object(self, obj_type, obj_id):
-    #     coll = self._collection[obj_type]
-    #     coll.remove({'_id': obj_id})
+    def flush_storage(self):
+        # If no prefix was configured, we can just drop the whole
+        # database. Otherwise, we need to drop our collections one-by-one.
+        if self._mongo_prefix is None:
+            self._connection.drop_database(self._mongo_db_name)
+        else:
+            for name in self._list_our_collections():
+                self._database.drop_collection(name)
 
 
-class MongoDocumentBucket(BaseDocumentBucket):
+class BaseMongoBucket(object):
+    bucket_name = None  # to be overwritten by subclasses
+
     @classmethod
     def list_buckets(cls, storage):
-        """
-        To list buckets we want to list all the sub-collections
-        matching the 'document.' prefix.
-        """
-        return storage._list_buckets('document')
+        return storage._list_buckets(cls.bucket_name)
 
-    @property
-    def _collection_name(self):
-        """Get the name of the collection name for this kind of documents"""
-        return self.storage._get_collection_name(
-            '.'.join(('document', self.myname)))
-
-    @property
-    def _collection(self):
-        return self.storage.get_dataset
+    def _get_collection(self):
+        return self.storage._get_collection([self.bucket_name, self.name])
 
     def __iter__(self):
-        if self.mytype not in self.list_buckets(self.storage):
-            raise ValueError('Missing object')
+        coll = self._get_collection()
+        for obj in coll.find(fields=['_id']):
+            yield obj['_id']
 
-        coll = self._collection[obj_type]
-        return [o['_id'] for o in coll.find(fields=['_id'])]
+    def __len__(self):
+        coll = self._get_collection()
+        return coll.count()
 
-    def get_object(self, obj_type, obj_id):
-        coll = self._collection[obj_type]
-        obj = coll.find_one(obj_id)
+    def __getitem__(self, name):
+        coll = self._get_collection()
+        obj = coll.find_one(name)
+        if obj is None:
+            raise NotFound('Object not found')
         obj.pop('_id', None)
+        return self._deserialize(obj)
+
+    def __setitem__(self, name, value):
+        coll = self._get_collection()
+        value = self._serialize(value)
+        value['_id'] = name
+        coll.update({'_id': value['_id']}, value, upsert=True)
+
+    def __delitem__(self, name):
+        coll = self._get_collection()
+        coll.remove({'_id': name})
+
+    def _serialize(self, obj):
         return obj
 
-    def set_object(self, obj_type, obj_id, obj):
-        coll = self._collection[obj_type]
-        obj['_id'] = obj_id
-        coll.update({'_id': obj['_id']}, obj, upsert=True)
-        return self.get_object(obj_type, obj_id)
+    def _deserialize(self, obj):
+        return obj
 
-    def del_object(self, obj_type, obj_id):
-        coll = self._collection[obj_type]
-        coll.remove({'_id': obj_id})
+
+class MongoDocumentBucket(BaseMongoBucket, BaseDocumentBucket):
+    bucket_name = 'document'
+
+
+class MongoBlobBucket(BaseMongoBucket, BaseBlobBucket):
+    """MongoDB "blob" bucket uses GridFS to store binary data"""
+
+    bucket_name = 'blob'
+
+    def _get_gridfs(self):
+        coll_name = self.storage._get_collection_name(
+            [self.bucket_name, self.name])
+        return GridFS(self.storage._database, collection=coll_name)
+
+    @classmethod
+    def list_buckets(cls, storage):
+        # We want to list only first-level collection names.
+        # Eg, we will get a list like:
+        # ['foo.chunks', 'foo.files', 'bar.chunks', 'bar.files']
+        # but we want: ['foo', 'bar']
+        buckets = storage._list_buckets(cls.bucket_name)
+        for x in set(b.split('.')[0] for b in buckets):
+            yield x
+
+    def __iter__(self):
+        grid = self._get_gridfs()
+        for g in grid.find():
+            yield g._id
+
+    def __len__(self):
+        grid = self._get_gridfs()
+        return len(grid.find())  # todo: improve this!
+
+    def __getitem__(self, name):
+        grid = self._get_gridfs()
+        return grid.get(name).read()
+
+    def __setitem__(self, name, value):
+        grid = self._get_gridfs()
+        grid.delete(name)
+        grid.put(value, _id=name)
+
+    def __delitem__(self, name):
+        grid = self._get_gridfs()
+        grid.delete(name)
+
+
+class MongoKeyvalBucket(BaseMongoBucket, BaseKeyvalBucket):
+    """
+    MongoDB key/val bucket is similar to document bucket,
+    but we need to store value inside a key of the document..
+    """
+
+    bucket_name = 'keyval'
+
+    def _serialize(self, obj):
+        return {'value': obj}
+
+    def _deserialize(self, obj):
+        return obj['value']
 
 
 MongodbStorage.document_bucket_class = MongoDocumentBucket
+MongodbStorage.blob_bucket_class = MongoBlobBucket
+MongodbStorage.keyval_bucket_class = MongoKeyvalBucket
