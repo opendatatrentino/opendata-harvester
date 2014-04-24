@@ -6,10 +6,9 @@ import pytest
 @pytest.fixture(params=['sqlite', 'memory', 'jsondir', 'mongodb'])
 def storage(request, tmpdir):
     if request.param == 'sqlite':
-        pytest.skip('Not implemented yet')
         from harvester.ext.storage.sqlite import SQLiteStorage
         myfilename = str(tmpdir.join('example.sqlite'))
-        return SQLiteStorage(myfilename)
+        return SQLiteStorage('file://' + myfilename)
 
     elif request.param == 'memory':
         from harvester.ext.storage.memory import MemoryStorage
