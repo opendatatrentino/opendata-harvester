@@ -12,13 +12,12 @@ logger = logging.getLogger(__name__)
 class Geocatalogo(CrawlerPluginBase):
     """
     Crawler for http://www.territorio.provincia.tn.it/
-
-    Configuration options:
-
-    - ``bruteforce_find`` (bool, default=False):
-      if set to True, will use brute force to
-      find datasets, instead of just listing them.
     """
+
+    options = [
+        ('with_resources', 'bool', True,
+         'Whether to download resources (data) too.'),
+    ]
 
     def fetch_data(self, storage):
         logger.info("Fetching data from geocatalogo")

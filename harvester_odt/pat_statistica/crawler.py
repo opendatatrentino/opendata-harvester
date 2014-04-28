@@ -17,6 +17,11 @@ class Statistica(CrawlerPluginBase):
     """
 
     logger = logging.getLogger(__name__)
+    options = [
+        ('bruteforce_find', 'bool', False,
+         'If set to True, will use brute force to find datasets, '
+         'instead of just listing them.'),
+    ]
 
     def fetch_data(self, storage):
         self.logger.info("Fetching data from statistica")
@@ -48,6 +53,11 @@ class StatisticaSubPro(CrawlerPluginBase):
     """
 
     logger = logging.getLogger(__name__)
+    options = [
+        ('bruteforce_find', 'bool', False,
+         'If set to True, will use brute force to find datasets, '
+         'instead of just listing them.'),
+    ]
 
     def fetch_data(self, storage):
         self.logger.info("Fetching data from statistica-subpro")
