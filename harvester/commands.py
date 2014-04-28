@@ -3,6 +3,7 @@ import logging
 from cliff.command import Command
 from cliff.lister import Lister
 from stevedore.extension import ExtensionManager
+import termcolor
 
 from .utils import get_plugin
 
@@ -130,8 +131,55 @@ class StorageInspect(Command):
         return parser
 
     def take_action(self, parsed_args):
+        from prettytable import PrettyTable
+
+        # We want to list the contents of the storage, along
+        # with some information..
         storage = get_plugin(
             'storage', parsed_args.storage,
             parsed_args.storage_option)
 
-        self.stdout.write('foobar')
+        def _title(text):
+            text = "    {0:75s}\n\n".format(text)
+            ct = termcolor.colored(text, attrs=['reverse'])
+            self.app.stdout.write(ct)
+            # self.app.stdout.write('=' * 70 + '\n')
+            # self.app.stdout.write(''.join(('    ', text, '\n')))
+            # self.app.stdout.write('=' * 70 + '\n')
+
+        def _get_table(hdr1='Bucket name', hdr2='Count'):
+            pt = PrettyTable([hdr1, hdr2])
+            pt.align[hdr1] = 'l'
+            pt.align[hdr2] = 'r'
+            return pt
+
+        def _print_buckets_stats(objects):
+            items = sorted(objects.iteritems())
+
+            if len(items) < 1:
+                self.app.stdout.write('None found.\n\n')
+                return
+
+            pt = _get_table()
+            for name, objects in items:
+                pt.add_row((name, len(objects)))
+
+            self.app.stdout.write(str(pt) + '\n\n')
+
+        _title('Information')
+        if len(storage.info) > 0:
+            pt = PrettyTable(['Key', 'Value'])
+            for key, val in storage.info.iteritems():
+                pt.add_row((key, val))
+            self.app.stdout.write(str(pt) + '\n\n')
+        else:
+            self.app.stdout.write('None found.\n\n')
+
+        _title('Documents')
+        _print_buckets_stats(storage.documents)
+
+        _title('Key/value')
+        _print_buckets_stats(storage.keyvals)
+
+        _title('Blobs')
+        _print_buckets_stats(storage.blobs)

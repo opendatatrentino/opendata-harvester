@@ -185,7 +185,7 @@ class MongoBlobBucket(BaseMongoBucket, BaseBlobBucket):
 
     def __len__(self):
         grid = self._get_gridfs()
-        return len(grid.find())  # todo: improve this!
+        return len(list(grid.find()))  # todo: improve this!
 
     def __getitem__(self, name):
         grid = self._get_gridfs()

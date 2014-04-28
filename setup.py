@@ -10,6 +10,8 @@ install_requires = [
     'owslib',  # for geocatalogo CSW
     'lxml',  # for geocatalogo CSW
     'unidecode',  # to transliterate characters
+    'termcolor',  # for colored logs
+    'prettytable',  # for nicely formatted ASCII tables
 ]
 
 entry_points = {
@@ -39,6 +41,7 @@ entry_points = {
         'crawl = harvester.commands:Crawl',
         'convert = harvester.commands:Convert',
         'import = harvester.commands:Import',
+        'storage_inspect = harvester.commands:StorageInspect',
     ],
 
     'console_scripts': [

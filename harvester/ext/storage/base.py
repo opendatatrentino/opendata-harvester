@@ -59,7 +59,7 @@ class BaseStorage(PluginBase):
 
     @property
     def info(self):
-        return self.keyval['info']
+        return self.keyvals['info']
 
     def flush_storage(self):
         raise NotImplementedError(
