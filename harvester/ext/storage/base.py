@@ -1,5 +1,7 @@
 import collections
 
+from ..base import PluginBase
+
 
 class StorageError(Exception):
     pass
@@ -9,7 +11,7 @@ class NotFound(StorageError):
     pass
 
 
-class BaseStorage(object):
+class BaseStorage(PluginBase):
     """
     Storages expose a common API to store data in
     different backends.

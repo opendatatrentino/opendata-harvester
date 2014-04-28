@@ -1,18 +1,52 @@
 """
-Miscellaneous utilities
+Miscellaneous utilities.
 """
 
+from collections import namedtuple
 import hashlib
 import json
 import logging
 import re
 import sys
+import warnings
 
 from unidecode import unidecode
 from stevedore.extension import ExtensionManager
 
 
+# todo: find a nicer way to make this configurable, eg. from
+#       some environment variable..
 POWERLINE_STYLE = True
+
+
+plugin_option = namedtuple('plugin_option', 'name,type,default,doc')
+
+
+def convert_string(type_, string):
+    def _to_bool(s):
+        s = s.lower()
+        if s in ['0', 'false', 'off', 'no']:
+            return False
+        if s in ['1', 'true', 'on', 'yes']:
+            return True
+        raise ValueError("Not a boolean: {0}".format(s))
+
+    type_converters = {
+        'int': int,
+        'bool': _to_bool,
+        'str': lambda x: x,
+    }
+
+    if isinstance(type_, type):
+        return type_(string)
+
+    if callable(type_):
+        return type_(string)
+
+    if type_ in type_converters:
+        return type_converters[type_](string)
+
+    raise ValueError("Invalid type: {0!r}".format(type_))
 
 
 def get_plugin(plugin_type, url, options):
@@ -29,20 +63,6 @@ def get_plugin(plugin_type, url, options):
         (list of strings like ``key=value`` or ``type:key=value``)
     """
 
-    def _to_bool(s):
-        s = s.lower()
-        if s in ['0', 'false', 'off', 'no']:
-            return False
-        if s in ['1', 'true', 'on', 'yes']:
-            return True
-        raise ValueError("Not a boolean: {0}".format(s))
-
-    type_converters = {
-        'int': int,
-        'bool': _to_bool,
-        'str': lambda x: x,
-    }
-
     crawler_mgr = ExtensionManager('harvester.ext.{0}'.format(plugin_type))
 
     name, url = parse_plugin_url(url)
@@ -52,14 +72,55 @@ def get_plugin(plugin_type, url, options):
     except KeyError:
         raise ValueError("Invalid plugin name: {0}" .format(name))
 
-    conf = {}
+    # First, parse options passed from the command line
+    # We store a mapping of "key name" : [(type, value), ..]
+
+    conf_options = {}
     if options is not None:
         for option in options:
             key, value = [x.strip() for x in option.split('=', 1)]
             if ':' in key:
                 k_type, key = key.split(':', 1)
-                value = type_converters[k_type](value)
-            conf[key] = value
+                value = convert_string(k_type, value)
+            else:
+                k_type = None
+            conf_options[key] = (k_type, value)
+
+    # Now, we start reading actual configuration required
+    # by the plugin
+
+    def _get_options(opts):
+        for item in opts:
+            # Make sure we have all the four fields -- fill missing
+            # ones with None
+            yield plugin_option(*(item + (None,) * (4 - len(item))))
+
+    conf = {}
+    for opt_def in _get_options(ep.plugin.options):
+        if opt_def.name in conf_options:
+            # Take type, value from the passed-in value
+            type_, value = conf_options.pop(opt_def.name)
+
+            # If type is not specified on the command line,
+            # use the default type for this option.
+            if type_ is None:
+                type_ = opt_def.type
+
+            # Perform type conversion
+            value = convert_string(type_, value)
+            conf[opt_def.name] = value
+
+        else:
+            # Option was not specified -- use default
+            conf[opt_def.name] = opt_def.default
+
+    # Now trigger warnings for any option left around..
+
+    for name in conf_options:
+        warnings.warn(
+            "Unknown configuration option {0!r} passed to plugin {1!r}"
+            .format(name, ep.plugin),
+            UserWarning)
 
     return ep.plugin(url, conf)
 
@@ -144,14 +205,21 @@ class ColorLogFormatter(logging.Formatter):
         """Format logs nicely"""
 
         color = self.level_colors.get(record.levelno, 'white')
+
         levelname = colored(' {0:<6} '.format(record.levelname),
                             color, attrs=['reverse'])
+
         if POWERLINE_STYLE:
-            levelname += colored(u'\ue0b0', color)
+            levelname += colored(u'\ue0b0', color, 'on_white')
+
+        loggername = colored(' {0} '.format(record.name), 'red', 'on_white')
+
+        if POWERLINE_STYLE:
+            loggername += colored(u'\ue0b0', 'white')
 
         message = colored(record.getMessage(), color)
 
-        s = ' '.join((levelname, message))
+        s = ' '.join((''.join((levelname, loggername)), message))
 
         exc_info = self._get_exc_info(record)
         if exc_info is not None:

@@ -4,8 +4,10 @@ Base objects for the harvester plugins.
 
 import abc
 
+from ..base import PluginBase
 
-class CrawlerPluginBase(object):
+
+class CrawlerPluginBase(PluginBase):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, url, conf=None):

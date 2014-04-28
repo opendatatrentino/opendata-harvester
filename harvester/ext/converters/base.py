@@ -1,7 +1,9 @@
 import abc
 
+from ..base import PluginBase
 
-class ConverterPluginBase(object):
+
+class ConverterPluginBase(PluginBase):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, url, conf=None):

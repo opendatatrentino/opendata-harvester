@@ -116,3 +116,22 @@ class Import(Command):
             parsed_args.importer_option)
 
         importer.sync_data(storage)
+
+
+class StorageInspect(Command):
+    """inspect current state of a storage"""
+
+    logger = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(StorageInspect, self).get_parser(prog_name)
+        parser.add_argument('--storage', help='storage plugin to be used')
+        parser.add_argument('--storage-option', action='append')
+        return parser
+
+    def take_action(self, parsed_args):
+        storage = get_plugin(
+            'storage', parsed_args.storage,
+            parsed_args.storage_option)
+
+        self.stdout.write('foobar')
