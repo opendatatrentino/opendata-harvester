@@ -242,6 +242,8 @@ def slugify(text):
     >>> slugify('Hello, world!')
     'hello-world'
     """
+    if not isinstance(text, unicode):
+        text = text.decode('utf-8')
     text = unidecode(text)
     text = text.lower()
     return re.sub(r'[^a-z0-9]+', '-', text).strip('-')
@@ -268,5 +270,5 @@ def normalize_case(text):
     ]
     text = text.lower()
     for word in SPECIAL_CASE_WORDS:
-        text.replace(word.lower, word)
+        text.replace(word.lower(), word)
     return text.capitalize()
