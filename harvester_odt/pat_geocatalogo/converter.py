@@ -2,7 +2,7 @@
 
 import logging
 
-import lxml
+import lxml.etree
 
 from harvester.ext.converters.base import ConverterPluginBase
 from harvester.utils import slugify, normalize_case
@@ -15,12 +15,13 @@ class GeoCatalogoToCkan(ConverterPluginBase):
     def convert(self, storage_in, storage_out):
         logger.debug('Converting datasets PAT Geocatalogo -> ckan')
 
-        for dataset in storage_in.documents['dataset'].iteritems():
+        for dataset_id, dataset in storage_in.documents['dataset'].iteritems():
             # We load the XML from the dataset ``raw_xml`` field,
             # then we can extract relevant information.
 
             xml_obj = lxml.etree.fromstring(dataset['raw_xml'])
             converted = dataset_geocatalogo_to_ckan(xml_obj)
+            assert converted['id'] == dataset_id
             storage_out.documents['dataset'][converted['id']] = converted
 
         # todo: import organizations / groups
@@ -58,7 +59,7 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
     ckan_dataset['id'] = int(xp('geonet:info/id/text()')[0])
 
     # todo: we need to convert title to proper casing!
-    _ds_title = xp('geonet:info/title/text()')[0]
+    _ds_title = xp('dc:title/text()')[0]
     _ds_title = normalize_case(_ds_title)
     _ds_name = slugify(_ds_title)
 
@@ -77,11 +78,13 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
     except:
         _url_ogd_rdf = None  # f** this
 
-    _ds_license = xp('geonet:info/licenseType/text()')[0]
-    assert _ds_license == '1'
+    # todo: we need to consider licenses!! -> where is the definition??
+    # _ds_license = xp('geonet:info/licenseType/text()')[0]
+    # if _ds_license != '1':
+    #     raise ValueError("Invalid license: {0!r}".format(_ds_license))
 
     # _ds_groups = xp('geonet:info/groups/record/name/text()')
-    _ds_owner = xp('geonet:info/ownername/text()')
+    _ds_owner = xp('geonet:info/ownername/text()')[0]
 
     ckan_dataset['author'] = _ds_owner.lower().title()
     ckan_dataset['author_email'] = (_ds_owner + '@example.com').lower()
