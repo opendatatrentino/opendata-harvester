@@ -1,5 +1,59 @@
 # Harvesting for ODT
 
+We need to harvest the following sources:
+
+- pat_statistica
+- pat_statistica_subpro
+- pat_geocatalogo
+
+..into MongoDB; then we clean the data and import in Ckan.
+
+**Note:** The first time we import datasets in the production
+catalog, we'll need to find & add references to the old datasets.
+
+
+## Script to run all the stuff
+
+```bash
+#!/bin/bash
+
+MONGODB=mongodb://database.local/harvester-"$( date +"%Y%m%d-%H%M%S" )"
+HARVESTER=harvester
+
+$HARVESTER crawl --crawler pat_statistica --storage "${MONGODB}"/pat_statistica
+$HARVESTER crawl --crawler pat_statistica_subpro --storage "${MONGODB}"/pat_statistica_subpro
+$HARVESTER crawl --crawler pat_geocatalogo --storage "${MONGODB}"/pat_geocatalogo
+
+## Run converters
+
+$HARVESTER convert --converter pat_statistica_to_ckan \
+    --input "${MONGODB}"/pat_statistica --output "${MONGODB}"/pat_statistica_clean
+
+$HARVESTER convert --converter pat_statistica_subpro_to_ckan \
+    --input "${MONGODB}"/pat_statistica_subpro --output "${MONGODB}"/pat_statistica_subpro_clean
+
+# $HARVESTER convert --converter pat_geocatalogo_to_ckan \
+#     --input "${MONGODB}"/pat_geocatalogo --output "${MONGODB}"/pat_geocatalogo_clean
+
+## Run the importer
+
+$HARVESTER import --storage "${MONGODB}"/pat_statistica_clean \
+    --importer ckan+http://dati.trentino.it \
+	--importer-option api_key=... \
+	--importer-option source_name=statistica
+
+$HARVESTER import --storage "${MONGODB}"/pat_statistica_subpro_clean \
+    --importer ckan+http://dati.trentino.it \
+	--importer-option api_key=... \
+	--importer-option source_name=statistica_subpro
+
+# $HARVESTER import --storage "${MONGODB}"/pat_geocatalogo_clean \
+#   --importer ckan+http://dati.trentino.it \
+#   --importer-option api_key=... \
+#   --importer-option source_name=geocatalogo
+```
+
+
 ## Linking datasets in catalog with ones from source
 
 Configure variables in the script and launch:
