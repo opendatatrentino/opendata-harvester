@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import logging
 
 import lxml
@@ -31,6 +33,9 @@ class GeoCatalogoToCkan(ConverterPluginBase):
 
 
 def dataset_geocatalogo_to_ckan(dataset_xml):
+    # todo: write this!!
+    return
+
     # XPath shortcut
     xp = lambda x: dataset_xml.xpath(x, namespaces=dataset_xml.nsmap)
 
