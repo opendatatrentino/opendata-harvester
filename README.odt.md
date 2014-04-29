@@ -62,17 +62,8 @@ Configure variables in the script and launch:
 python scripts/link-statistica-datasets-to-ckan.py
 ```
 
+## Proposal: jobs director / orchestrator
 
-## Running the crawlers
-
-See ``README.md``
-
-
-## Running the converters
-
-See ``README.md``
-
-
-## Running the importers
-
-See ``README.md``
+- Handle jobs w/ mongodb storage
+- We want to keep track of executed jobs (in a separate collection / db)
+- We want to provide some "higher level" stuff on top of the harvester

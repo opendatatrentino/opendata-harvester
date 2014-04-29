@@ -10,8 +10,9 @@ import re
 import sys
 import warnings
 
-from unidecode import unidecode
 from stevedore.extension import ExtensionManager
+from termcolor import colored
+from unidecode import unidecode
 
 
 # todo: find a nicer way to make this configurable, eg. from
@@ -161,15 +162,15 @@ def parse_plugin_url(url):
     return url, None
 
 
-try:
-    from termcolor import colored
-except ImportError:
-    def colored(text, *a, **kw):
-        return text
+# try:
+#     from termcolor import colored
+# except ImportError:
+#     def colored(text, *a, **kw):
+#         return text
 
 
-def _colorer(*args, **kwargs):
-    return lambda x: colored(x, *args, **kwargs)
+# def _colorer(*args, **kwargs):
+#     return lambda x: colored(x, *args, **kwargs)
 
 
 class ColorLogFormatter(logging.Formatter):
@@ -258,3 +259,14 @@ def decode_faulty_json(text):
 def get_robohash_url(text):
     h = hashlib.sha1(text).hexdigest()
     return 'http://robohash.org/{0}.png?set=set1&bgset=bg1'.format(h)
+
+
+def normalize_case(text):
+    # todo: figure out a smarter way :)
+    SPECIAL_CASE_WORDS = [
+        'Trento', 'Provincia',
+    ]
+    text = text.lower()
+    for word in SPECIAL_CASE_WORDS:
+        text.replace(word.lower, word)
+    return text.capitalize()
