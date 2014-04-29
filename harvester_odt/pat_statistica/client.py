@@ -80,6 +80,8 @@ for key, val in CATEGORIES.iteritems():
     val['description'] = ''  # todo: we need to preserve the original one!
     if ADD_ROBOHASH:
         val['image_url'] = get_robohash_url(key)  # PHUN!
+    else:
+        val['image_url'] = ''
 
 # 'source -> ckan' map
 CATEGORIES_MAP = {
@@ -139,6 +141,9 @@ ORGANIZATIONS = {
 if ADD_ROBOHASH:
     for key, val in ORGANIZATIONS.iteritems():
         val['image_url'] = get_robohash_url(key)  # PHUN!
+    else:
+        val['image_url'] = ''
+
 
 LEGEND_TIPO_INDICATORE = {
     'R': 'rapporto',
