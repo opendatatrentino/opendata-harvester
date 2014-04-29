@@ -21,10 +21,20 @@ class GeoCatalogoToCkan(ConverterPluginBase):
 
             xml_obj = lxml.etree.fromstring(dataset['raw_xml'])
             converted = dataset_geocatalogo_to_ckan(xml_obj)
-            assert converted['id'] == dataset_id
-            storage_out.documents['dataset'][converted['id']] = converted
+            assert int(converted['id']) == dataset_id
+            storage_out.documents['dataset'][str(converted['id'])] = converted
 
         # todo: import organizations / groups
+        storage_out.documents['organization']['geocatalogo'] = {
+            'name': 'geocatalogo',
+            'title': 'PAT Geocatalogo',
+            'description': 'Geocatalogo',
+            'image_url': 'http://dati.trentino.it/images/logo.png',
+            'type': 'organization',
+            'is_organization': True,
+            'state': 'active',
+            'tags': [],
+        }
 
 
 def dataset_geocatalogo_to_ckan(dataset_xml):
@@ -47,7 +57,7 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
         'maintainer_email': None,
         'url': None,
         'license_id': 'cc-zero',  # Always cc-zero!
-        'owner_org': ['geocatalogo'],  # Mh?
+        'owner_org': 'geocatalogo',
         'groups': [],
         'extras': {},
     }
@@ -56,7 +66,7 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
     xp = lambda x: dataset_xml.xpath(x, namespaces=dataset_xml.nsmap)
 
     # Get the id (numeric)
-    ckan_dataset['id'] = int(xp('geonet:info/id/text()')[0])
+    ckan_dataset['id'] = str(int(xp('geonet:info/id/text()')[0]))
 
     # todo: we need to convert title to proper casing!
     _ds_title = xp('dc:title/text()')[0]
@@ -67,7 +77,10 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
     ckan_dataset['title'] = _ds_title
 
     # _ds_categories = xp('dc:subject/text()')
-    _ds_abstract = xp('dc:abstract/text()')
+    try:
+        _ds_abstract = xp('dc:abstract/text()')[0]
+    except IndexError:
+        _ds_abstract = ''
     ckan_dataset['notes'] = _ds_abstract
 
     _url_ogd_xml = xp('geonet:info/ogd_xml/text()')[0]
