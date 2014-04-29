@@ -12,19 +12,19 @@ class StatisticaToCkan(ConverterPluginBase):
 
     def convert(self, storage_in, storage_out):
         self.logger.debug('Converting datasets')
-        for dataset_id in storage_in.list_objects('dataset'):
-            dataset = storage_in.get_object('dataset', dataset_id)
+        for dataset_id in storage_in.documents['dataset']:
+            dataset = storage_in.documents['dataset'][dataset_id]
             clean_dataset = dataset_statistica_to_ckan(dataset)
-            storage_out.set_object(
-                'dataset', clean_dataset['id'], clean_dataset)
+            _dsid = clean_dataset['id']
+            storage_out.documents['dataset'][_dsid] = clean_dataset
 
         self.logger.debug('Importing groups')
         for group in CATEGORIES.itervalues():
-            storage_out.set_object('group', group['name'], group)
+            storage_out.documents['group'][group['name']] = group
 
         self.logger.debug('Importing organizations')
         for org in ORGANIZATIONS.itervalues():
-            storage_out.set_object('organization', org['name'], org)
+            storage_out.documents['organization'][org['name']] = org
 
 
 class StatisticaSubProToCkan(ConverterPluginBase):
@@ -32,16 +32,16 @@ class StatisticaSubProToCkan(ConverterPluginBase):
 
     def convert(self, storage_in, storage_out):
         self.logger.debug('Converting datasets')
-        for dataset_id in storage_in.list_objects('dataset'):
-            dataset = storage_in.get_object('dataset', dataset_id)
+        for dataset_id in storage_in.documents['dataset']:
+            dataset = storage_in.documents['dataset'][dataset_id]
             clean_dataset = dataset_statistica_subpro_to_ckan(dataset)
-            storage_out.set_object(
-                'dataset', clean_dataset['id'], clean_dataset)
+            _dsid = clean_dataset['id']
+            storage_out.documents['dataset'][_dsid] = clean_dataset
 
         self.logger.debug('Importing groups')
         for group in CATEGORIES.itervalues():
-            storage_out.set_object('group', group['name'], group)
+            storage_out.documents['group'][group['name']] = group
 
         self.logger.debug('Importing organizations')
         for org in ORGANIZATIONS.itervalues():
-            storage_out.set_object('organization', org['name'], org)
+            storage_out.documents['organization'][org['name']] = org
