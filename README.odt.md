@@ -32,25 +32,28 @@ $HARVESTER convert --converter pat_statistica_to_ckan \
 $HARVESTER convert --converter pat_statistica_subpro_to_ckan \
     --input "${MONGODB}"/pat_statistica_subpro --output "${MONGODB}"/pat_statistica_subpro_clean
 
-# $HARVESTER convert --converter pat_geocatalogo_to_ckan \
-#     --input "${MONGODB}"/pat_geocatalogo --output "${MONGODB}"/pat_geocatalogo_clean
+$HARVESTER convert --converter pat_geocatalogo_to_ckan \
+    --input "${MONGODB}"/pat_geocatalogo --output "${MONGODB}"/pat_geocatalogo_clean
 
 ## Run the importer
 
+CKAN_URL=http://dati.trentino.it
+CKAN_API_KEY=1234-5678-...
+
 $HARVESTER import --storage "${MONGODB}"/pat_statistica_clean \
-    --importer ckan+http://dati.trentino.it \
-	--importer-option api_key=... \
+    --importer ckan+"$CKAN_URL" \
+	--importer-option api_key="$CKAN_API_KEY" \
 	--importer-option source_name=statistica
 
 $HARVESTER import --storage "${MONGODB}"/pat_statistica_subpro_clean \
-    --importer ckan+http://dati.trentino.it \
-	--importer-option api_key=... \
+    --importer ckan+"$CKAN_URL" \
+	--importer-option api_key="$CKAN_API_KEY" \
 	--importer-option source_name=statistica_subpro
 
-# $HARVESTER import --storage "${MONGODB}"/pat_geocatalogo_clean \
-#   --importer ckan+http://dati.trentino.it \
-#   --importer-option api_key=... \
-#   --importer-option source_name=geocatalogo
+$HARVESTER import --storage "${MONGODB}"/pat_geocatalogo_clean \
+  --importer ckan+"$CKAN_URL" \
+  --importer-option api_key="$CKAN_API_KEY" \
+  --importer-option source_name=geocatalogo
 ```
 
 
