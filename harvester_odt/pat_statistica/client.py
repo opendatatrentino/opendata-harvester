@@ -401,18 +401,18 @@ def dataset_statistica_to_ckan(orig_dataset):
     # Add resources
 
     ind_title = orig_dataset['title']
-    ind_name = orig_dataset['name']
+    # ind_name = orig_dataset['name']
 
     new_dataset['resources'] = [
         {
-            'name': ind_name,
+            'name': ind_title,
             'description': ind_title,
             'format': 'JSON',
             'mimetype': 'application/json',
             'url': orig_dataset['Indicatore'],
         },
         {
-            'name': ind_name,
+            'name': ind_title,
             'description': ind_title,
             'format': 'CSV',
             'mimetype': 'text/csv',
@@ -425,18 +425,18 @@ def dataset_statistica_to_ckan(orig_dataset):
 
     if 'numeratore_title' in orig_dataset:
         num_title = orig_dataset['numeratore_title']
-        num_name = orig_dataset['numeratore_name']
+        # num_name = orig_dataset['numeratore_name']
 
         new_dataset['resources'].extend([
             {
-                'name': num_name,
+                'name': num_title,
                 'description': num_title,
                 'format': 'JSON',
                 'mimetype': 'application/json',
                 'url': orig_dataset['TabNumeratore'],
             },
             {
-                'name': num_name,
+                'name': num_title,
                 'description': num_title,
                 'format': 'CSV',
                 'mimetype': 'text/csv',
@@ -449,18 +449,18 @@ def dataset_statistica_to_ckan(orig_dataset):
 
     if 'denominatore_title' in orig_dataset:
         den_title = orig_dataset['denominatore_title']
-        den_name = orig_dataset['denominatore_name']
+        # den_name = orig_dataset['denominatore_name']
 
         new_dataset['resources'].extend([
             {
-                'name': den_name,
+                'name': den_title,
                 'description': den_title,
                 'format': 'JSON',
                 'mimetype': 'application/json',
                 'url': orig_dataset['TabDenominatore'],
             },
             {
-                'name': den_name,
+                'name': den_title,
                 'description': den_title,
                 'format': 'CSV',
                 'mimetype': 'text/csv',
