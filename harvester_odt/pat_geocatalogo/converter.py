@@ -107,14 +107,15 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
     ckan_dataset['url'] = _url_ogd_xml
 
     ckan_dataset['extras'] = {
-        'Copertura Temporale (Data di inizio)':
+        'Data di creazione':
         xp('geonet:info/createDate/text()')[0],
-        'Copertura Temporale (Data di fine)':
+        'Data di aggiornamento':
         xp('geonet:info/changeDate/text()')[0],
-        'Aggiornamento': 'yes',
+
+        'Copertura Geografica': 'Provincia di Trento',
+        'Aggiornamento': 'Non programmato',
         'Codifica Caratteri': 'utf-8',
-        'Confronti territoriali  - Copertura Geografica':
-        'Provincia di Trento',
+        'URL sito': 'http://www.territorio.provincia.tn.it',
     }
 
     ckan_dataset['resources'] = []
