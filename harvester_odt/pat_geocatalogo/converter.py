@@ -78,7 +78,7 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
 
     # _ds_categories = xp('dc:subject/text()')
     try:
-        _ds_abstract = xp('dc:abstract/text()')[0]
+        _ds_abstract = xp('dct:abstract/text()')[0]
     except IndexError:
         _ds_abstract = ''
     ckan_dataset['notes'] = _ds_abstract
@@ -117,28 +117,31 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
         'Provincia di Trento',
     }
 
-    ckan_dataset['resources'] = [
-        {
+    ckan_dataset['resources'] = []
+
+    if _url_ogd_xml:
+        ckan_dataset['resources'].append({
             'name': _ds_title,
             'description': _ds_title,
             'format': 'XML',
             'mimetype': 'application/xml',
             'url': _url_ogd_xml,
-        },
-        {
+            })
+    if _url_ogd_zip:
+        ckan_dataset['resources'].append({
             'name': _ds_title,
             'description': _ds_title,
             'format': 'ZIP',
             'mimetype': 'application/zip',
             'url': _url_ogd_zip,
-        },
-        {
+        })
+    if _url_ogd_rdf:
+        ckan_dataset['resources'].append({
             'name': _ds_title,
             'description': _ds_title,
             'format': 'RDF',
             'mimetype': 'application/rdf+xml',
             'url': _url_ogd_rdf,
-        },
-    ]
+        })
 
     return ckan_dataset
