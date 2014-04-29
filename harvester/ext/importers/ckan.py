@@ -8,6 +8,11 @@ from harvester.ext.importers.base import ImporterPluginBase
 class CkanImporter(ImporterPluginBase):
     logger = logging.getLogger(__name__)
 
+    options = [
+        ('api_key', 'str', None),
+        ('source_name', 'str', None),
+    ]
+
     def sync_data(self, storage):
         self.logger.info("Starting data synchronization to ckan")
 
@@ -21,16 +26,16 @@ class CkanImporter(ImporterPluginBase):
 
         data = {'dataset': {}, 'group': {}, 'organization': {}}
 
-        for obj_id in storage.list_objects('dataset'):
-            obj = storage.get_object('dataset', obj_id)
+        for obj_id in storage.documents['dataset']:
+            obj = storage.documents['dataset'][obj_id]
             data['dataset'][obj_id] = obj
 
-        for obj_id in storage.list_objects('group'):
-            obj = storage.get_object('group', obj_id)
+        for obj_id in storage.documents['group']:
+            obj = storage.documents['group'][obj_id]
             data['group'][obj_id] = obj
 
-        for obj_id in storage.list_objects('organization'):
-            obj = storage.get_object('organization', obj_id)
+        for obj_id in storage.documents['organization']:
+            obj = storage.documents['organization'][obj_id]
             data['organization'][obj_id] = obj
 
         client.sync(source_name, data)
