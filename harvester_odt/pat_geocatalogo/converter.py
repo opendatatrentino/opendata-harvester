@@ -10,6 +10,9 @@ from harvester.utils import slugify, normalize_case
 logger = logging.getLogger(__name__)
 
 
+DEFAULT_ORG_ID = 'pat-sistema-informativo-ambiente-e-territorio'
+
+
 class GeoCatalogoToCkan(ConverterPluginBase):
 
     def convert(self, storage_in, storage_out):
@@ -24,9 +27,9 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             assert int(converted['id']) == dataset_id
             storage_out.documents['dataset'][str(converted['id'])] = converted
 
-        # todo: import organizations / groups
-        storage_out.documents['organization']['geocatalogo'] = {
-            'name': 'geocatalogo',
+        logger.info('Importing organizations')
+        storage_out.documents['organization'][DEFAULT_ORG_ID] = {
+            'name': DEFAULT_ORG_ID,
             'title': 'PAT Geocatalogo',
             'description': 'Geocatalogo',
             'image_url': 'http://dati.trentino.it/images/logo.png',
@@ -35,6 +38,8 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             'state': 'active',
             'tags': [],
         }
+
+        # todo: import groups too..
 
 
 def dataset_geocatalogo_to_ckan(dataset_xml):
@@ -57,7 +62,7 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
         'maintainer_email': None,
         'url': None,
         'license_id': 'cc-zero',  # Always cc-zero!
-        'owner_org': 'geocatalogo',
+        'owner_org': DEFAULT_ORG_ID,
         'groups': [],
         'extras': {},
     }
