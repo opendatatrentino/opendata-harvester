@@ -20,9 +20,14 @@ LICENSES_MAP = {
 class GeoCatalogoToCkan(ConverterPluginBase):
 
     def convert(self, storage_in, storage_out):
-        logger.debug('Converting datasets PAT Geocatalogo -> ckan')
+        logger.info('Converting datasets PAT Geocatalogo -> ckan')
 
-        for dataset_id, dataset in storage_in.documents['dataset'].iteritems():
+        _num_datasets = len(storage_in.documents['dataset'])
+        all_datasets = storage_in.documents['dataset'].iteritems()
+        for i, (dataset_id, dataset) in enumerate(all_datasets):
+            logger.info('Converting dataset {0} [{1}/{2}]'
+                        .format(dataset_id, i + 1, _num_datasets))
+
             # We load the XML from the dataset ``raw_xml`` field,
             # then we can extract relevant information.
 
