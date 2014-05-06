@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_ORG_ID = 'pat-sistema-informativo-ambiente-e-territorio'
+LICENSES_MAP = {
+    1: 'cc-zero',
+    2: 'cc-by',
+}
 
 
 class GeoCatalogoToCkan(ConverterPluginBase):
@@ -96,10 +100,9 @@ def dataset_geocatalogo_to_ckan(dataset_xml):
     except:
         _url_ogd_rdf = None  # f** this
 
-    # todo: we need to consider licenses!! -> where is the definition??
-    # _ds_license = xp('geonet:info/licenseType/text()')[0]
-    # if _ds_license != '1':
-    #     raise ValueError("Invalid license: {0!r}".format(_ds_license))
+    # Set license (we need to map numerical ids to actual license ids)
+    ds_license = xp('geonet:info/licenseType/text()')[0]
+    ckan_dataset['license_id'] = LICENSES_MAP[int(ds_license)]
 
     # _ds_groups = xp('geonet:info/groups/record/name/text()')
     _ds_owner = xp('geonet:info/ownername/text()')[0]
