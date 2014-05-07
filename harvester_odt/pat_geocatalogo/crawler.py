@@ -29,7 +29,10 @@ class Geocatalogo(CrawlerPluginBase):
         # We assume we can use the <dc:identifier> as id, for the moment.
         # The xml data is stored in the "raw_xml" field.
 
+        logger.debug("Iterating datasets from geocatalogo")
         for i, dataset in enumerate(client.iter_datasets()):
+            logger.debug("Processing dataset {0}".format(i))
+
             xp = lambda x: dataset.xpath(x, namespaces=dataset.nsmap)
 
             dataset_xml = lxml.etree.tostring(dataset)

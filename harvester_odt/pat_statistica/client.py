@@ -333,12 +333,26 @@ class StatisticaSubproClient(StatisticaClientBase):
         # todo: we can cache sub-tables!
 
         if record.get('URLTabNumMD'):  # non empty!
-            response = requests.get(record['URLTabNumMD'])
-            record['metadata_numeratore'] = response.json()
+            try:
+                response = requests.get(record['URLTabNumMD'])
+            except:
+                logger.exception('Error fetching "numeratore" metadata')
+
+            try:
+                record['metadata_numeratore'] = response.json()
+            except:
+                logger.exception('Error decoding "numeratore" metadata')
 
         if record.get('URLTabDenMD'):  # non empty!
-            response = requests.get(record['URLTabDenMD'])
-            record['metadata_denominatore'] = response.json()
+            try:
+                response = requests.get(record['URLTabDenMD'])
+            except:
+                logger.exception('Error fetching "denominatore" metadata')
+
+            try:
+                record['metadata_denominatore'] = response.json()
+            except:
+                logger.exception('Error decoding "denominatore" metadata')
 
         return record
 
