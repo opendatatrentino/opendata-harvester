@@ -1,0 +1,2 @@
+recursive-include harvester *.txt *.md *.json
+recursive-include harvester_odt *.txt *.md *.json
