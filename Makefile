@@ -2,12 +2,16 @@ PYTEST = py.test
 PYTEST_ARGS = -vvv -rfEsxX --cov=harvester --cov-report=term-missing --pep8 $(PYTEST_EXTRA_ARGS)
 PYTEST_EXTRA_ARGS = ./tests
 
-.PHONY: all test
+.PHONY: all test tests check
 
 all:
 	@echo "Available targets"
 	@echo
-	@echo "test - Run tests using py.test"
+	@echo "check - Run tests using py.test"
 
-test:
+check:
 	$(PYTEST) $(PYTEST_ARGS)
+
+test: check
+
+tests: check
