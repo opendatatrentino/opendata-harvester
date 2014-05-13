@@ -82,29 +82,29 @@ def test_extracting_attributes():
     assert xml_to_json(xml, CONFIGURATION) == EXPECTED_OUTPUT
 
 
-# def test_extracting_multiple_attributes():
-#     XMLFILE = """
-#     <root>
-#         <element attr="value0" />
-#         <element attr="value1" />
-#         <element attr="value2" />
-#     </root>
-#     """
-#     CONFIGURATION = {
-#         '/root': {
-#             'element': {
-#                 '_name': 'Element',
-#                 '@attr': 'Attribute',
-#             }
-#         }
-#     }
-#     EXPECTED_OUTPUT = {
-#         'Element': {
-#             'Attribute': 'value',
-#         }
-#     }
+def test_extracting_multiple_attributes():
+    xml = lxml.etree.fromstring("""
+    <root>
+        <element attr="value0" />
+        <element attr="value1" />
+        <element attr="value2" />
+    </root>
+    """)
 
-#     xml = lxml.etree.fromstring(XMLFILE)
+    CONFIGURATION = {
+        '/root': {
+            'element': {
+                '_name': 'Element',
+                '@attr': {'_name': 'Attribute', '_type': 'list:str'},
+            }
+        }
+    }
+    EXPECTED_OUTPUT = {
+        'Element': {
+            'Attribute': ['value0', 'value1', 'value2'],
+        }
+    }
+
 #     assert xml_to_json(xml, {
 #         '/root/element': {
 #             '_name': 'Element',

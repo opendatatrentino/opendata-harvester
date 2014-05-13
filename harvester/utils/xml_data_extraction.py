@@ -8,6 +8,7 @@ a bunch of stupid xml files.
 """
 
 from collections import defaultdict, Sequence, Mapping
+import copy
 
 import lxml.etree
 
@@ -152,9 +153,13 @@ def xml_to_json(xml, conf):
     # for specifying the found item should just be used as a field.
     if isinstance(conf, basestring):
         # This is just a shortcut
-        conf = {'_name': conf, '_type': 'str'}
+        if conf.startswith('+'):
+            conf = {'_name': conf[1:], '_type': 'list:str'}
+        else:
+            conf = {'_name': conf, '_type': 'str'}
 
     # A list of possible configurations meaning we can follow various paths.
+    # Will simply keep going for each possible path, then merge the results.
     if isinstance(conf, Sequence):
         # Just keep going with each thing, then merge
         result = {}
@@ -169,26 +174,67 @@ def xml_to_json(xml, conf):
         conf.setdefault('_type', 'sub')
         _conf, _rules = _split_conf_rules(conf)
 
+        if not isinstance(xml, Sequence):
+            xml = [xml]
+
+        if conf['_type'].startswith('list:'):
+            # We want to return a list of results get by matching
+            # configuration on each XML element.
+
+            _type = conf['_type'][len('list:'):]
+            new_conf = copy.deepcopy(conf)
+            new_conf['_type'] = _type
+            return [xml_to_json(x, new_conf) for x in xml]
+
         if conf['_type'] == 'sub':
-            # For each rule, apply next step to matching elements
-            # then merge the results.
+            # We want to match sub-rules and keep matching
+            # with sub-configurations, for each element.
 
             result = {}
             for rule, ruleconf in _rules.iteritems():
-                matching_elems = xml.xpath(rule)
-                for elem in matching_elems:
-                    result.update(xml_to_json(elem, ruleconf))
+                for xml_elem in xml:
+                    matching_elems = xml_elem.xpath(rule)
+                    result.update(xml_to_json(matching_elems, ruleconf))
 
             if _conf.get('_name'):
                 return {_conf['_name']: result}
 
             return result
 
+        # This is a plain value to be returned as-is.
+        # If we still have a tag, we want to return its text;
+        # otherwise, we return the literal value.
+        if isinstance(xml, Sequence):
+            # Just take only the latest one..
+            if len(xml) < 1:
+                return None
+            xml = xml[-1]
+
+        if isinstance(xml, lxml.etree._Element):
+            value = xml.text
         else:
-            # This is a value -- figure out type and extract
-            # values accordingly
-            # todo: perform casting if required!
-            value = xml if isinstance(xml, basestring) else xml.text
-            return {conf['_name']: value}
+            value = xml
+
+        # todo: perform casting if required!
+        if conf['_type'] == 'str':
+            value = str(value)
+
+        elif conf['_type'] == 'int':
+            value = int(value)
+
+        elif conf['_type'] == 'float':
+            value = float(value)
+
+        elif conf['_type'] == 'bool':
+            if value.lower() in ('0', 'false', 'f'):
+                value = False
+
+            elif value.lower() in ('1', 'true', 't'):
+                value = True
+
+            else:
+                raise ValueError("Invalid boolean value: {0!r}".format(value))
+
+        return {conf['_name']: value}
 
     raise TypeError("Unsupported configuration type: {0!r}".format(type(conf)))
