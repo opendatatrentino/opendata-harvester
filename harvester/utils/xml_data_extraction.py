@@ -148,10 +148,13 @@ def xml_to_json(xml, conf):
                 _rules[key] = value
         return _conf, _rules
 
+    # It is possible to simply use a string as value, as a shortcut
+    # for specifying the found item should just be used as a field.
     if isinstance(conf, basestring):
         # This is just a shortcut
         conf = {'_name': conf, '_type': 'str'}
 
+    # A list of possible configurations meaning we can follow various paths.
     if isinstance(conf, Sequence):
         # Just keep going with each thing, then merge
         result = {}
