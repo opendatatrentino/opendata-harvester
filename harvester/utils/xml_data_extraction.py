@@ -7,7 +7,7 @@ Some weaponry to help fighting & getting meaningful information from
 a bunch of stupid xml files.
 """
 
-from collections import defaultdict
+from collections import defaultdict, Sequence, Mapping
 
 import lxml.etree
 
@@ -138,28 +138,54 @@ def xml_to_json(xml, conf):
     (we don't care about the fax number!)
     """
 
+    def _split_conf_rules(conf):
+        _conf = {}
+        _rules = {}
+        for key, value in conf.iteritems():
+            if key.startswith('_'):
+                _conf[key] = value
+            else:
+                _rules[key] = value
+        return _conf, _rules
+
     if isinstance(conf, basestring):
-        # This is a key name -> return {key: value}
-        return {conf: xml.text}
+        # This is just a shortcut
+        conf = {'_name': conf, '_type': 'str'}
 
-    _conf = {}
-    _rules = {}
+    if isinstance(conf, Sequence):
+        # Just keep going with each thing, then merge
+        result = {}
+        for _conf in conf:
+            result.update(xml_to_json(xml, _conf))
+        return result
 
-    for key, value in conf.iteritems():
-        if key.startswith('_'):
-            _conf[key] = value
+    if isinstance(conf, Mapping):
+        # Split configuration and rules
+        # Note: if we don't have rules
+
+        conf.setdefault('_type', 'sub')
+        _conf, _rules = _split_conf_rules(conf)
+
+        if conf['_type'] == 'sub':
+            # For each rule, apply next step to matching elements
+            # then merge the results.
+
+            result = {}
+            for rule, ruleconf in _rules.iteritems():
+                matching_elems = xml.xpath(rule)
+                for elem in matching_elems:
+                    result.update(xml_to_json(elem, ruleconf))
+
+            if _conf.get('_name'):
+                return {_conf['_name']: result}
+
+            return result
+
         else:
-            _rules[key] = value
+            # This is a value -- figure out type and extract
+            # values accordingly
+            # todo: perform casting if required!
+            value = xml if isinstance(xml, basestring) else xml.text
+            return {conf['_name']: value}
 
-    result = {}
-
-    # Iterate rules to get sub-blocks
-    for rule, ruleconf in _rules.iteritems():
-        matching_elems = xml.xpath(rule)
-        for elem in matching_elems:
-            result.update(xml_to_json(elem, ruleconf))
-
-    if _conf.get('_name'):
-        return {_conf['_name']: result}
-
-    return result
+    raise TypeError("Unsupported configuration type: {0!r}".format(type(conf)))
