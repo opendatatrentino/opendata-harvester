@@ -72,16 +72,16 @@ Informazioni sul Sistema di Riferimento: Codice|/gmd:MD_Metadata/gmd:referenceSy
 
 
 
-Identificatore del file dei metadati|/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString
-Lingua|/gmd:MD_Metadata/gmd:language/gco:CharacterString
-Set dei caratteri dei metadati|/gmd:MD_Metadata/gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue
-Identificatore del file precedente di metadato|/gmd:MD_Metadata/gmd:parentIdentifier/gco:CharacterString
-Livello gerarchico|/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue
-Data dei metadati|/gmd:MD_Metadata/gmd:dateStamp/gco:DateTime
-Nome dello standard dei metadati|/gmd:MD_Metadata/gmd:metadataStandardName/gco:CharacterString
-Versione dello Standard dei metadati|/gmd:MD_Metadata/gmd:metadataStandardVersion
-Contatto: Nome dell'Ente|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString
-Contatto: Ruolo|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode/@codeListValue
-Contatto: Telefono|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString
-Contatto: E-mail|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString
-Contatto: Risorsa Online|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL
+"Identificatore del file dei metadati": metadata("gmd:fileIdentifier/gco:CharacterString")
+"Lingua": metadata("gmd:language/gco:CharacterString")
+"Set dei caratteri dei metadati": metadata("gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue")
+"Identificatore del file precedente di metadato": metadata("gmd:parentIdentifier/gco:CharacterString")
+"Livello gerarchico": metadata("gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue")
+"Data dei metadati": metadata("gmd:dateStamp/gco:DateTime")
+"Nome dello standard dei metadati": metadata("gmd:metadataStandardName/gco:CharacterString")
+"Versione dello Standard dei metadati": metadata("gmd:metadataStandardVersion")
+"Contatto: Nome dell'Ente": metadata("gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString")
+"Contatto: Ruolo": metadata("gmd:contact/gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode/@codeListValue")
+"Contatto: Telefono": metadata("gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString")
+"Contatto: E-mail": metadata("gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString")
+"Contatto: Risorsa Online": metadata("gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL")

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 import logging
 
 import lxml.etree
 
 from harvester.ext.converters.base import ConverterPluginBase
-from harvester.utils import slugify, normalize_case
+from harvester.utils import slugify, normalize_case, XPathHelper
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,22 @@ LICENSES_MAP = {
     1: 'cc-zero',
     2: 'cc-by',
 }
+
+ORGANIZATIONS = {
+    DEFAULT_ORG_ID: {
+        'name': DEFAULT_ORG_ID,
+        'title': 'PAT Sistema Informativo Ambiente e Territorio',
+        'description': 'SIAT. Entità territoriali geo-referenziate,'
+        ' con associate informazioni sulle relative proprietà.',
+        'image_url': 'http://dati.trentino.it/images/logo.png',
+        'type': 'organization',
+        'is_organization': True,
+        'state': 'active',
+        'tags': [],
+    }
+}
+
+GROUPS = {}
 
 
 class GeoCatalogoToCkan(ConverterPluginBase):
@@ -31,131 +48,421 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             # We load the XML from the dataset ``raw_xml`` field,
             # then we can extract relevant information.
 
-            xml_obj = lxml.etree.fromstring(dataset['raw_xml'])
-            converted = dataset_geocatalogo_to_ckan(xml_obj)
+            search_result_xml = dataset['raw_xml']
+            blob_id = '{0}_{1}'.format(dataset_id, 'xml')
+            linked_xml = storage_in.blobs['resource'][blob_id]
+
+            converted = extract_metadata_from_api_xml(search_result_xml)
+            converted['resources'] = get_resources_from_api_xml(
+                search_result_xml)
+            converted['extras'] = extract_metadata_from_linked_xml(linked_xml)
+
+            # Do the actual conversion
             assert int(converted['id']) == dataset_id
             storage_out.documents['dataset'][str(converted['id'])] = converted
 
         logger.info('Importing organizations')
-        storage_out.documents['organization'][DEFAULT_ORG_ID] = {
-            'name': DEFAULT_ORG_ID,
-            'title': 'PAT Geocatalogo',
-            'description': 'Geocatalogo',
-            'image_url': 'http://dati.trentino.it/images/logo.png',
-            'type': 'organization',
-            'is_organization': True,
-            'state': 'active',
-            'tags': [],
-        }
+        for org_name, org in ORGANIZATIONS.iteritems():
+            storage_out.documents['organization'][org_name] = org
 
-        # todo: import groups too..
+        logger.info('Importing groups')
+        for group_name, group in GROUPS.iteritems():
+            storage_out.documents['group'][group_name] = group
 
 
-def dataset_geocatalogo_to_ckan(dataset_xml):
-    """
-    We need to convert a dataset from the geocatalogo
-    into a Ckan dataset.
+def extract_metadata_from_api_xml(xmldata):
+    xml = lxml.etree.fromstring(xmldata)
+    xph = XPathHelper(xml)
 
-    Beware that we actually need to parse *two* files in order
-    to extract the required information.
-    """
+    _ds_title = xph('dc:title/text()').get_one('')
+    _ds_title = normalize_case(_ds_title)
+    _ds_name = slugify(_ds_title)
+    _ds_license = int(xph('geonet:info/licenseType/text()').get_one())
+    _ds_owner = xph('geonet:info/ownername/text()').get_one().lower().title()
 
-    ckan_dataset = {
-        'id': None,  # the original one
-        'name': None,
-        'title': None,
-        'notes': None,
-        'author': None,
-        'author_email': None,
-        'maintainer': None,
-        'maintainer_email': None,
+    return {
+        'id': int(xph('geonet:info/id/text()').get_one()),
+        'name': _ds_name,
+        'title': _ds_title,
+        'notes': xph('dct:abstract/text()').get_one(''),
+        'author': _ds_owner,
+        'author_email': 'N/A',
+        'maintainer': _ds_owner,
+        'maintainer_email': 'N/A',
         'url': None,
-        'license_id': 'cc-zero',  # Always cc-zero!
+        'license_id': LICENSES_MAP[_ds_license],
         'owner_org': DEFAULT_ORG_ID,
-        'groups': [],
+        'groups': ['dati-geografici'],  # Fixed
         'extras': {},
     }
 
-    # XPath shortcut
-    xp = lambda x: dataset_xml.xpath(x, namespaces=dataset_xml.nsmap)
 
-    # Get the id (numeric)
-    ckan_dataset['id'] = str(int(xp('geonet:info/id/text()')[0]))
+def get_resources_from_api_xml(xmldata):
+    xml = lxml.etree.fromstring(xmldata)
+    xph = XPathHelper(xml)
 
-    # todo: we need to convert title to proper casing!
-    _ds_title = xp('dc:title/text()')[0]
-    _ds_title = normalize_case(_ds_title)
-    _ds_name = slugify(_ds_title)
+    _description = xph('dct:abstract/text()').get_one('')
+    _url_ogd_xml = xph('geonet:info/ogd_xml/text()').get_one()
+    _url_ogd_zip = xph('geonet:info/ogd_zip/text()').get_one()
+    _url_ogd_rdf = xph('geonet:info/ogd_rdf/text()').get_one()
 
-    ckan_dataset['name'] = _ds_name
-    ckan_dataset['title'] = _ds_title
-
-    # _ds_categories = xp('dc:subject/text()')
-    try:
-        _ds_abstract = xp('dct:abstract/text()')[0]
-    except IndexError:
-        _ds_abstract = ''
-    ckan_dataset['notes'] = _ds_abstract
-
-    _url_ogd_xml = xp('geonet:info/ogd_xml/text()')[0]
-    _url_ogd_zip = xp('geonet:info/ogd_zip/text()')[0]
-
-    try:
-        _url_ogd_rdf = xp('geonet:info/ogd_rdf/text()')[0]
-    except:
-        _url_ogd_rdf = None  # f** this
-
-    # Set license (we need to map numerical ids to actual license ids)
-    ds_license = xp('geonet:info/licenseType/text()')[0]
-    ckan_dataset['license_id'] = LICENSES_MAP[int(ds_license)]
-
-    # _ds_groups = xp('geonet:info/groups/record/name/text()')
-    _ds_owner = xp('geonet:info/ownername/text()')[0]
-
-    ckan_dataset['author'] = _ds_owner.lower().title()
-    ckan_dataset['author_email'] = (_ds_owner + '@example.com').lower()
-    ckan_dataset['maintainer'] = ckan_dataset['author']
-    ckan_dataset['maintainer_email'] = ckan_dataset['author_email']
-
-    ckan_dataset['url'] = _url_ogd_xml
-
-    ckan_dataset['extras'] = {
-        'Data di creazione':
-        xp('geonet:info/createDate/text()')[0],
-        'Data di aggiornamento':
-        xp('geonet:info/changeDate/text()')[0],
-
-        'Copertura Geografica': 'Provincia di Trento',
-        'Aggiornamento': 'Non programmato',
-        'Codifica Caratteri': 'utf-8',
-        'URL sito': 'http://www.territorio.provincia.tn.it',
-    }
-
-    ckan_dataset['resources'] = []
+    resources = []
 
     if _url_ogd_xml:
-        ckan_dataset['resources'].append({
-            'name': _ds_title,
-            'description': _ds_title,
+        resources.append({
+            'name': 'Metadati in formato XML',
+            'description': _description,
             'format': 'XML',
             'mimetype': 'application/xml',
             'url': _url_ogd_xml,
-            })
+        })
+
     if _url_ogd_zip:
-        ckan_dataset['resources'].append({
-            'name': _ds_title,
-            'description': _ds_title,
-            'format': 'ZIP',
+        resources.append({
+            'name': 'Metadati in formato Shapefile',
+            'description': _description,
+            'format': 'SHP',
             'mimetype': 'application/zip',
             'url': _url_ogd_zip,
         })
+
     if _url_ogd_rdf:
-        ckan_dataset['resources'].append({
-            'name': _ds_title,
-            'description': _ds_title,
+        resources.append({
+            'name': 'Dati in formato RDF',
+            'description': _description,
             'format': 'RDF',
             'mimetype': 'application/rdf+xml',
             'url': _url_ogd_rdf,
         })
 
-    return ckan_dataset
+    return resources
+
+
+def extract_metadata_from_linked_xml(xmldata):
+    xml = lxml.etree.fromstring(xmldata)
+    result = {}
+
+    xmlxph = XPathHelper(xml)
+
+    metadata = xmlxph('/gmd:MD_Metadata')
+
+    identification_info = metadata(
+        'gmd:identificationInfo/gmd:MD_DataIdentification')
+
+    result['Informazioni di Identificazione'] = {
+        "Titolo": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:title/gco:CharacterString"
+            "/text()").get_one(),
+        "Data": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:date/gmd:CI_Date/gmd:date/gco:Date"
+            "/text()").get_one(),
+        "Tipo data": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode"
+            "/text()").get_one(),
+        "Codice": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString"
+            "/text()").get_one(),
+        "Nome dell'Ente": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/"
+            "gmd:organisationName/gco:CharacterString"
+            "/text()").get_one(),
+        "Telefono": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/"
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"
+            "/text()").get_one(),
+        "E-mail": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/"
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:address/gmd:CI_Address/"
+            "gmd:electronicMailAddress/gco:CharacterString"
+            "/text()").get_one(),
+        "Risorsa Online": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/"
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL"
+            "/text()").get_one(),
+        "Ruolo": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/"
+            "gmd:role/gmd:CI_RoleCode"
+            "/text()").get_one(),
+        "Formato di presentazione": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:presentationForm/gmd:CI_PresentationFormCode"
+            "/text()").get_one(),
+        "Identificatore": identification_info(
+            "gmd:citation/gmd:CI_Citation/"
+            "gmd:series/gmd:CI_Series/"
+            "gmd:issueIdentification/gco:CharacterString"
+            "/text()").get_one(),
+        "Descrizione": identification_info(
+            "gmd:abstract/gco:CharacterString"
+            "/text()").get_one(),
+        "Punto di Contatto: Nome dell'Ente": identification_info(
+            "gmd:pointOfContact/gmd:CI_ResponsibleParty/"
+            "gmd:organisationName/gco:CharacterString"
+            "/text()").get_one(),
+        "Punto di Contatto: Ruolo": identification_info(
+            "gmd:pointOfContact/gmd:CI_ResponsibleParty/"
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"
+            "/text()").get_one(),
+        "Punto di Contatto: Telefono": identification_info(
+            "gmd:pointOfContact/gmd:CI_ResponsibleParty/"
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"
+            "/text()").get_one(),
+        "Punto di Contatto: E-mail": identification_info(
+            "gmd:pointOfContact/gmd:CI_ResponsibleParty/"
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:address/gmd:CI_Address/"
+            "gmd:electronicMailAddress/gco:CharacterString"
+            "/text()").get_one(),
+        "Punto di Contatto: Risorsa Online": identification_info(
+            "gmd:pointOfContact/gmd:CI_ResponsibleParty/"
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL"
+            "/text()").get_one(),
+        "Parole chiave": identification_info(
+            "gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/"
+            "gco:CharacterString"
+            "/text()").get_one(),
+        "Limitazione d'uso": identification_info(
+            "gmd:resourceConstraints/gmd:MD_LegalConstraints/"
+            "gmd:useLimitation/gco:CharacterString"
+            "/text()").get_one(),
+        "Vincoli di accesso": identification_info(
+            "gmd:resourceConstraints/gmd:MD_LegalConstraints/"
+            "gmd:accessConstraints/gmd:MD_RestrictionCode"
+            "/text()").get_one(),
+        "Vincoli di fruibilita'": identification_info(
+            "gmd:resourceConstraints/gmd:MD_LegalConstraints/"
+            "gmd:useConstraints"
+            "/text()").get_one(),
+        "Altri vincoli": identification_info(
+            "gmd:resourceConstraints/gmd:MD_LegalConstraints/"
+            "gmd:otherConstraints/gco:CharacterString"
+            "/text()").get_one(),
+        "Tipo di rappresentazione spaziale": identification_info(
+            "gmd:spatialRepresentationType/"
+            "gmd:MD_SpatialRepresentationTypeCode/"
+            "@codeListValue").get_one(),
+        "Scala Equivalente: Denominatore": identification_info(
+            "gmd:spatialResolution/gmd:MD_Resolution/"
+            "gmd:equivalentScale/gmd:MD_RepresentativeFraction/"
+            "gmd:denominator/gco:Integer"
+            "/text()").get_one(),
+        "Lingua": identification_info(
+            "gmd:language/gco:CharacterString"
+            "/text()").get_one(),
+        "Set dei caratteri dei metadati": identification_info(
+            "gmd:characterSet/gmd:MD_CharacterSetCode/"
+            "@codeListValue").get_one(),
+        "Tema": identification_info(
+            "gmd:topicCategory/gmd:MD_TopicCategoryCode"
+            "/text()").get_one(),
+    }
+    result['Codifica Caratteri'] = identification_info(
+        "gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue").get_one(),
+
+    bounding_box = identification_info(
+        'gmd:extent/gmd:EX_Extent/'
+        'gmd:geographicElement/gmd:EX_GeographicBoundingBox')
+
+    result['Estensione'] = {
+        'Localizzazione Geografica': {
+            "Latitudine Nord":
+            bounding_box("gmd:northBoundLatitude/text()").get_one(),
+            "Longitudine Ovest":
+            bounding_box("gmd:westBoundLongitude/text()").get_one(),
+            "Longitudine Est":
+            bounding_box("gmd:eastBoundLongitude/text()").get_one(),
+            "Latitudine Sud":
+            bounding_box("gmd:southBoundLatitude/text()").get_one(),
+        },
+    }
+
+    distribution = metadata('gmd:distributionInfo/gmd:MD_Distribution')
+    distribution_format = distribution('gmd:distributionFormat/gmd:MD_Format')
+    distributor_contact = distribution(
+        'gmd:distributor/gmd:MD_Distributor/'
+        'gmd:distributorContact/gmd:CI_ResponsibleParty')
+
+    result['Informazioni sulla Distribuzione'] = {
+        "Nome formato": distribution_format(
+            "gmd:name/gco:CharacterString"
+            "/text()").get_one(),
+        "Versione formato": distribution_format(
+            "gmd:version/gco:CharacterString"
+            "/text()").get_one(),
+        "Distributore: Nome dell'Ente": distributor_contact(
+            "gmd:organisationName/gco:CharacterString"
+            "/text()").get_one(),
+        "Distributore: Telefono": distributor_contact(
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:phone/gmd:CI_Telephone/gmd:voice/"
+            "gco:CharacterString"
+            "/text()").get_one(),
+        "Distributore: E-mail": distributor_contact(
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:address/gmd:CI_Address/gmd:electronicMailAddress/"
+            "gco:CharacterString"
+            "/text()").get_one(),
+        "Distributore: Risorsa Online": distributor_contact(
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:onlineResource/gmd:CI_OnlineResource/"
+            "gmd:linkage/gmd:URL"
+            "/text()").get_one(),
+        "Distributore: Ruolo": distributor_contact(
+            "gmd:role/gmd:CI_RoleCode/"
+            "@codeListValue").get_one(),
+        "Opzioni di Trasferimento: Risorsa Online": distributor_contact(
+            "gmd:role/gmd:CI_RoleCode/"
+            "@codeListValue").get_one(),
+    }
+
+    result['Informazioni sul Sistema di Riferimento'] = {
+        'Codice': {
+            metadata(
+                'gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/'
+                'gmd:referenceSystemIdentifier/gmd:RS_Identifier/'
+                'gmd:code/gco:CharacterString/text()').get_one(),
+        }
+    }
+
+    quality_info = metadata('gmd:dataQualityInfo/gmd:DQ_DataQuality')
+    quantitative_result = quality_info(
+        'gmd:report/gmd:DQ_AbsoluteExternalPositionalAccuracy/'
+        'gmd:result/gmd:DQ_QuantitativeResult')
+    conformance_result = quality_info(
+        'gmd:report/gmd:DQ_DomainConsistency/'
+        'gmd:result/gmd:DQ_ConformanceResult')
+
+    result[u'Informazioni sulla Qualità dei Dati'] = {
+        "Livello": quality_info(
+            "gmd:scope/gmd:DQ_Scope/gmd:level/gmd:MD_ScopeCode/"
+            "@codeListValue").get_one(),
+        "Identificatore": quantitative_result(
+            "gmd:valueUnit/gml:BaseUnit/"
+            "@gml:id").get_one(),
+        "Identificatore: Autorita' competente": quantitative_result(
+            "gmd:valueUnit/gml:BaseUnit/gml:identifier/"
+            "@codeSpace ").get_one(),
+        "Identificatore: Identificatore": quantitative_result(
+            "gmd:valueUnit/gml:BaseUnit/gml:identifier/"
+            "@codeSpace").get_one(),
+        "xlink:href": quantitative_result(
+            "gmd:valueUnit/gml:BaseUnit/gml:unitsSystem/"
+            "@xlink:href").get_one(),
+        "Registrazione": quantitative_result(
+            "gmd:value/gco:Record"
+            "/text()").get_one(),
+        "Titolo": conformance_result(
+            "gmd:specification/gmd:CI_Citation/"
+            "gmd:title/gco:CharacterString"
+            "/text()").get_one(),
+        "Data": conformance_result(
+            "gmd:specification/gmd:CI_Citation/"
+            "gmd:date/gmd:CI_Date/gmd:date/gco:Date"
+            "/text()").get_one(),
+        "Tipo data": conformance_result(
+            "gmd:specification/gmd:CI_Citation/"
+            "gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode"
+            "/text()").get_one(),
+        "Spiegazione": conformance_result(
+            "gmd:explanation/gco:CharacterString"
+            "/text()").get_one(),
+        "Conformità": conformance_result(
+            "gmd:pass/gco:Boolean"
+            "/text()").get_one(),
+        "Processo di produzione": quality_info(
+            "gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString"
+            "/text()").get_one(),
+
+    }
+
+    contact = metadata('gmd:contact/gmd:CI_ResponsibleParty')
+
+    result['Metadato'] = {
+        "Identificatore del file dei metadati": metadata(
+            "gmd:fileIdentifier/gco:CharacterString"
+            "/text()").get_one(),
+        "Lingua": metadata(
+            "gmd:language/gco:CharacterString"
+            "/text()").get_one(),
+        "Set dei caratteri dei metadati": metadata(
+            "gmd:characterSet/gmd:MD_CharacterSetCode/"
+            "@codeListValue").get_one(),
+        "Identificatore del file precedente di metadato": metadata(
+            "gmd:parentIdentifier/gco:CharacterString"
+            "/text()").get_one(),
+        "Livello gerarchico": metadata(
+            "gmd:hierarchyLevel/gmd:MD_ScopeCode/"
+            "@codeListValue").get_one(),
+        "Data dei metadati": metadata(
+            "gmd:dateStamp/gco:DateTime"
+            "/text()").get_one(),
+        "Nome dello standard dei metadati": metadata(
+            "gmd:metadataStandardName/gco:CharacterString"
+            "/text()").get_one(),
+        "Versione dello Standard dei metadati": metadata(
+            "gmd:metadataStandardVersion"
+            "/text()").get_one(),
+        "Contatto: Nome dell'Ente": contact(
+            "gmd:organisationName/gco:CharacterString"
+            "/text()").get_one(),
+        "Contatto: Ruolo": contact(
+            "gmd:role/gmd:CI_RoleCode/"
+            "@codeListValue").get_one(),
+        "Contatto: Telefono": contact(
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:phone/gmd:CI_Telephone/gmd:voice/"
+            "gco:CharacterString"
+            "/text()").get_one(),
+        "Contatto: E-mail": contact(
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:address/gmd:CI_Address/gmd:electronicMailAddress/"
+            "gco:CharacterString"
+            "/text()").get_one(),
+        "Contatto: Risorsa Online": contact(
+            "gmd:contactInfo/gmd:CI_Contact/"
+            "gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/"
+            "gmd:URL"
+            "/text()").get_one(),
+    }
+
+    # Add some fixed values
+    result['Titolare'] = 'Provincia Autonoma di Trento'
+    result['Copertura Geografica'] = 'Provincia di Trento'
+    result['Aggiornamento'] = 'Non programmato'
+    result['URL sito'] = identification_info(
+        "gmd:citation/gmd:CI_Citation/"
+        "gmd:citedResponsibleParty/gmd:CI_ResponsibleParty/"
+        "gmd:contactInfo/gmd:CI_Contact/"
+        "gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL"
+        "/text()").get_one()
+
+    # Add some dates
+    dataset_date = identification_info(
+        "gmd:citation/gmd:CI_Citation/"
+        "gmd:date/gmd:CI_Date/gmd:date/gco:Date"
+        "/text()").get_one()
+    year, month, day = [int(i) for i in dataset_date.split('-')]
+    dataset_date = datetime.datetime(year, month, day).isoformat()
+
+    result.update({
+        'Data di pubblicazione': dataset_date,
+        'Data di aggiornamento': dataset_date,
+        'Data di creazione': dataset_date,
+    })
+
+    return result

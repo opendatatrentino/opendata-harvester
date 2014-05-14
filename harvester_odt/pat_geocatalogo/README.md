@@ -117,3 +117,9 @@ records = tree.xpath(
     '/csw:GetRecordsResponse/csw:SearchResults/csw:SummaryRecord',
 	namespaces=tree.nsmap)
 ```
+
+
+## Conversion to Ckan
+
+We need to parse **two** xml files in order to extract the required information.
+

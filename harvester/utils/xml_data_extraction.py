@@ -7,14 +7,12 @@ Some weaponry to help fighting & getting meaningful information from
 a bunch of stupid xml files.
 """
 
-from collections import defaultdict, Sequence, Mapping
-import copy
+from collections import defaultdict, Sequence
+import itertools
 
 import lxml.etree
 
-__all__ = ['xml_extract_text_values',
-           'create_xml_to_json_draft_conf_from_xml',
-           'xml_to_json']
+__all__ = ['xml_extract_text_values', 'XPathHelper']
 
 
 def xml_extract_text_values(s):
@@ -56,185 +54,39 @@ def xml_extract_text_values(s):
     return dict(found_data)
 
 
-def create_xml_to_json_draft_conf_from_xml(xml):
-    """
-    Generate draft configuration for :py:func:`xml_to_json` by trying to
-    figure out paths containing meaningful data.
+class XPathHelper(Sequence):
+    def __init__(self, elements):
+        if not isinstance(elements, (list, tuple)):
+            elements = [elements]
+        self._elements = elements
 
-    .. note:: we might also want to apply this on a **bunch** of xml files..
-    """
-    pass
+    def xpath(self, rule):
+        # todo: we can apply caching here to avoid keeping performing
+        #       the same queries over and over..
+        return XPathHelper(list(itertools.chain(
+            *list(el.xpath(rule, namespaces=el.nsmap)
+                  for el in self._elements)
+        )))
 
+    def __call__(self, *rules):
+        if len(rules) == 0:
+            return self
+        xph = self.xpath(rules[0])
+        if len(rules) > 1:
+            return xph(*rules[1:])  # Keep digging..
+        return xph
 
-def xml_to_json(xml, conf):
-    """
-    Convert an XML to JSON according to the specified configuration.
+    def __getitem__(self, index):
+        return self._elements[index]
 
-    Configuration is a bunch of nested dictionaries like this::
+    def __len__(self):
+        return len(self._elements)
 
-        {
-            "_name": "Block name",
-            <xpath_rule>: { ..other block.. }
-        }
+    def __iter__(self):
+        return iter(self._elements)
 
-    **Example:**
-
-    We take a configuration like this::
-
-        {
-            'userinfo': {
-                '_name': 'User information',
-                'name': {
-                    'first': {'_name': 'First name'},
-                    'last': {'_name': 'Last name'},
-                },
-            },
-            'contactinfo': {
-                'address': {
-                    '_name': 'Address',
-                    'street': {'_name': 'Street'},
-                    'city': {'_name': 'City'},
-                },
-                'email': {'_name': 'Email'},
-            }
-        }
-
-    Which, applied to an xml like this:
-
-    .. code-block:: xml
-
-        <Person>
-            <userinfo>
-                <name>
-                    <first>John</first>
-                    <last>Doe</last>
-                </name>
-            </userinfo>
-            <contactinfo>
-                <email>john.doe@example.com</email>
-                <fax>0123 456 789</fax>
-                <address>
-                    <street>Somestreet</street>
-                    <city>Somecity</city>
-                </address>
-            </contactinfo>
-        </Person>
-
-    Will generate a json like this:
-
-    .. code-block:: json
-
-        {
-            "User information": {
-                "First name": "John",
-                "Last name": "Doe"
-            },
-            "Address": {
-                "Street": "Somestreet",
-                "City": "Somecity"
-            },
-            "Email": "john.doe@example.com"
-        }
-
-    (we don't care about the fax number!)
-    """
-
-    def _split_conf_rules(conf):
-        _conf = {}
-        _rules = {}
-        for key, value in conf.iteritems():
-            if key.startswith('_'):
-                _conf[key] = value
-            else:
-                _rules[key] = value
-        return _conf, _rules
-
-    # It is possible to simply use a string as value, as a shortcut
-    # for specifying the found item should just be used as a field.
-    if isinstance(conf, basestring):
-        # This is just a shortcut
-        if conf.startswith('+'):
-            conf = {'_name': conf[1:], '_type': 'list:str'}
-        else:
-            conf = {'_name': conf, '_type': 'str'}
-
-    # A list of possible configurations meaning we can follow various paths.
-    # Will simply keep going for each possible path, then merge the results.
-    if isinstance(conf, Sequence):
-        # Just keep going with each thing, then merge
-        result = {}
-        for _conf in conf:
-            result.update(xml_to_json(xml, _conf))
-        return result
-
-    if isinstance(conf, Mapping):
-        # Split configuration and rules
-        # Note: if we don't have rules
-
-        conf.setdefault('_type', 'sub')
-        _conf, _rules = _split_conf_rules(conf)
-
-        if not isinstance(xml, Sequence):
-            xml = [xml]
-
-        if conf['_type'].startswith('list:'):
-            # We want to return a list of results get by matching
-            # configuration on each XML element.
-
-            _type = conf['_type'][len('list:'):]
-            new_conf = copy.deepcopy(conf)
-            new_conf['_type'] = _type
-            return [xml_to_json(x, new_conf) for x in xml]
-
-        if conf['_type'] == 'sub':
-            # We want to match sub-rules and keep matching
-            # with sub-configurations, for each element.
-
-            result = {}
-            for rule, ruleconf in _rules.iteritems():
-                for xml_elem in xml:
-                    matching_elems = xml_elem.xpath(rule)
-                    result.update(xml_to_json(matching_elems, ruleconf))
-
-            if _conf.get('_name'):
-                return {_conf['_name']: result}
-
-            return result
-
-        # This is a plain value to be returned as-is.
-        # If we still have a tag, we want to return its text;
-        # otherwise, we return the literal value.
-        if isinstance(xml, Sequence):
-            # Just take only the latest one..
-            if len(xml) < 1:
-                return None
-            xml = xml[-1]
-
-        if isinstance(xml, lxml.etree._Element):
-            value = xml.text
-        else:
-            value = xml
-
-        # todo: perform casting if required!
-        if conf['_type'] == 'str':
-            value = str(value)
-
-        elif conf['_type'] == 'int':
-            value = int(value)
-
-        elif conf['_type'] == 'float':
-            value = float(value)
-
-        elif conf['_type'] == 'bool':
-            if value.lower() in ('0', 'false', 'f'):
-                value = False
-
-            elif value.lower() in ('1', 'true', 't'):
-                value = True
-
-            else:
-                raise ValueError("Invalid boolean value: {0!r}".format(value))
-
-        return {conf['_name']: value}
-
-    raise TypeError("Unsupported configuration type: {0!r}".format(type(conf)))
+    def get_one(self, default=None):
+        try:
+            return self[0]
+        except IndexError:
+            return default

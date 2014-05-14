@@ -1,0 +1,113 @@
+{
+"gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification": {
+    "_name": "Informazioni di Identificazione",
+    "gmd:citation/gmd:CI_Citation": {
+        "gmd:title/gco:CharacterString": "Titolo",
+        "gmd:date/gmd:CI_Date": {
+            "gmd:date/gco:Date": "Data",
+            "gmd:dateType/gmd:CI_DateTypeCode": "Tipo data"
+        },
+        "gmd:identifier/gmd:RS_Identifier/gmd:code/gco:CharacterString": "Codice",
+
+        "gmd:citedResponsibleParty/gmd:CI_ResponsibleParty": {
+            "gmd:organisationName/gco:CharacterString": "Nome dell'Ente",
+            "gmd:contactInfo/gmd:CI_Contact": {
+                "gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString": "Telefono",
+                "gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString": "E-mail",
+                "gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL": "Risorsa Online"
+            },
+            "gmd:role/gmd:CI_RoleCode": "Ruolo"
+        },
+        "gmd:presentationForm/gmd:CI_PresentationFormCode": "Formato di presentazione",
+        "gmd:series/gmd:CI_Series/gmd:issueIdentification/gco:CharacterString": "Identificatore"
+    },
+    "gmd:abstract/gco:CharacterString": "Descrizione",
+    "gmd:pointOfContact/gmd:CI_ResponsibleParty": {
+        "_name": "Punto di Contatto",
+        "gmd:organisationName/gco:CharacterString": "Nome dell'Ente",
+        "gmd:contactInfo/gmd:CI_Contact": {
+            "gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString": "Telefono",
+            "gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString": "E-mail",
+            "gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL": "Risorsa Online"
+        }
+    },
+    "gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString": "Parole chiave",
+    "gmd:resourceConstraints/gmd:MD_LegalConstraints": {
+        "gmd:useLimitation/gco:CharacterString": "Limitazione d'uso",
+        "gmd:accessConstraints/gmd:MD_RestrictionCode": "Vincoli di accesso",
+        "gmd:useConstraints": "Vincoli di fruibilita'",
+        "gmd:otherConstraints/gco:CharacterString": "Altri vincoli"
+    },
+    "gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue": "Tipo di rappresentazione spaziale",
+    "gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer": "Scala Equivalente: Denominatore",
+    "gmd:language/gco:CharacterString": "Lingua",
+    "gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue": "Set dei caratteri dei metadati",
+    "gmd:topicCategory/gmd:MD_TopicCategoryCode": "Tema"
+},
+"gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox": {
+    "_name": "Estensione: Localizzazione Geografica",
+    "gmd:northBoundLatitude": "Latitudine Nord",
+    "gmd:westBoundLongitude": "Longitudine Ovest",
+    "gmd:eastBoundLongitude": "Longitudine Est",
+    "gmd:southBoundLatitude": "Latitudine Sud"
+},
+"gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution": {
+    "_name": "Informazioni sulla Distribuzione",
+    "gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString": "Nome formato",
+    "gmd:distributionFormat/gmd:MD_Format/gmd:version/gco:CharacterString": "Versione formato",
+
+    "gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty": {
+        "_name": "Distributore",
+        "gmd:organisationName/gco:CharacterString": "Nome dell'Ente",
+        "gmd:contactInfo/gmd:CI_Contact": {
+            "gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString": "Telefono",
+            "gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString": "E-mail",
+            "gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL": "Risorsa Online"
+        },
+        "gmd:role/gmd:CI_RoleCode/@codeListValue": "Ruolo"
+    }
+},
+"gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem": {
+    "_name": "Informazioni sul Sistema di Riferimento",
+    "gmd:referenceSystemIdentifier/gmd:RS_Identifier": {
+        "gmd:code/gco:CharacterString": "Codice"
+    }
+},
+"": {
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:scope/gmd:DQ_Scope/gmd:level/gmd:MD_ScopeCode/@codeListValue": "Informazioni sulla Qualita' dei Dati: Livello",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_AbsoluteExternalPositionalAccuracy/gmd:result/gmd:DQ_QuantitativeResult/gmd:valueUnit/gml:BaseUnit/@gml:id": "Informazioni sulla Qualita' dei Dati: Identificatore",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_AbsoluteExternalPositionalAccuracy/gmd:result/gmd:DQ_QuantitativeResult/gmd:valueUnit/gml:BaseUnit/gml:identifier/@codeSpace": "Informazioni sulla Qualita' dei Dati: Identificatore: Autorita' competente",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_AbsoluteExternalPositionalAccuracy/gmd:result/gmd:DQ_QuantitativeResult/gmd:valueUnit/gml:BaseUnit/gml:identifier/@codeSpace": "Informazioni sulla Qualita' dei Dati: Identificatore: Identificatore",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_AbsoluteExternalPositionalAccuracy/gmd:result/gmd:DQ_QuantitativeResult/gmd:valueUnit/gml:BaseUnit/gml:unitsSystem/@xlink:href": "Informazioni sulla Qualita' dei Dati: xlink:href",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_AbsoluteExternalPositionalAccuracy/gmd:result/gmd:DQ_QuantitativeResult/gmd:value/gco:Record": "Informazioni sulla Qualita' dei Dati: Registrazione",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString": "Informazioni sulla Qualita' dei Dati: Titolo",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date": "Informazioni sulla Qualita' dei Dati: Data",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode": "Informazioni sulla Qualita' dei Dati: Tipo data",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:explanation/gco:CharacterString": "Informazioni sulla Qualita' dei Dati: Spiegazione",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_DomainConsistency/gmd:result/gmd:DQ_ConformanceResult/gmd:pass/gco:Boolean": "Informazioni sulla Qualita' dei Dati: Conformita'",
+    "/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString": "Informazioni sulla Qualita' dei Dati: Processo di produzione",
+},
+
+}
+
+
+
+
+
+
+
+
+
+Metadato: Identificatore del file dei metadati|/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString
+Metadato: Lingua|/gmd:MD_Metadata/gmd:language/gco:CharacterString
+Metadato: Set dei caratteri dei metadati|/gmd:MD_Metadata/gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue
+Metadato: Identificatore del file precedente di metadato|/gmd:MD_Metadata/gmd:parentIdentifier/gco:CharacterString
+Metadato: Livello gerarchico|/gmd:MD_Metadata/gmd:hierarchyLevel/gmd:MD_ScopeCode/@codeListValue
+Metadato: Data dei metadati|/gmd:MD_Metadata/gmd:dateStamp/gco:DateTime
+Metadato: Nome dello standard dei metadati|/gmd:MD_Metadata/gmd:metadataStandardName/gco:CharacterString
+Metadato: Versione dello Standard dei metadati|/gmd:MD_Metadata/gmd:metadataStandardVersion
+Metadato: Contatto: Nome dell'Ente|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString
+Metadato: Contatto: Ruolo|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode/@codeListValue
+Metadato: Contatto: Telefono|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString
+Metadato: Contatto: E-mail|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString
+Metadato: Contatto: Risorsa Online|/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL

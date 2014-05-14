@@ -94,8 +94,10 @@ class Geocatalogo(CrawlerPluginBase):
                                          response.headers.get(
                                              'content-type', 'unknown'),
                                          len(data)))
-                    blob_id = '{0}_{1}'.format(dataset_id, fmt)
-                    storage.blobs['resource'][blob_id] = data
+                    # blob_id = '{0}_{1}'.format(dataset_id, fmt)
+                    # storage.blobs['resource'][blob_id] = data
+                    bucket_id = 'resource_{0}'.format(fmt)
+                    storage.blobs[bucket_id][dataset_id] = data
 
                 else:
                     logger.error(u'Failed downloading {0} (code: {1})'
