@@ -3,21 +3,15 @@ import urlparse
 from pymongo import MongoClient
 from gridfs import GridFS
 
+from harvester.utils import lazy_property
 from .base import (BaseStorage, BaseDocumentBucket, BaseBlobBucket,
                    BaseKeyvalBucket, NotFound)
 
 
 class MongodbStorage(BaseStorage):
-    def __init__(self, *a, **kw):
-        """
-        MongoDB storage takes a URL like:
 
-        mongodb://host:port/database.name/collection.name
-        """
-
-        super(MongodbStorage, self).__init__(*a, **kw)
-
-        # Now, extract information from the connection URL
+    @lazy_property
+    def _mongo_config(self):
         parsed_url = urlparse.urlparse(self.url)
         parsed_path = parsed_url.path.strip('/').split('/')
 
@@ -26,11 +20,29 @@ class MongodbStorage(BaseStorage):
 
         # Store a URL suitable for passing to MongoClient
         # i.e. remove the path
-        self._mongo_url = parsed_url._replace(path='').geturl()
+        _mongo_url = parsed_url._replace(path='').geturl()
 
         # Store separately databse name and collection prefix
-        self._mongo_db_name = parsed_path[0]
-        self._mongo_prefix = parsed_path[1] if len(parsed_path) >= 2 else None
+        _mongo_db_name = parsed_path[0]
+        _mongo_prefix = parsed_path[1] if len(parsed_path) >= 2 else None
+
+        return {
+            'url': _mongo_url,
+            'name': _mongo_db_name,
+            'prefix': _mongo_prefix,
+        }
+
+    @property
+    def _mongo_url(self):
+        return self._mongo_config['url']
+
+    @property
+    def _mongo_db_name(self):
+        return self._mongo_config['name']
+
+    @property
+    def _mongo_prefix(self):
+        return self._mongo_config['prefix']
 
     @property
     def _connection(self):

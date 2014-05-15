@@ -36,14 +36,15 @@ class BaseStorage(PluginBase):
     blob_bucket_class = None
     keyval_bucket_class = None
 
-    def __init__(self, url=None, conf=None):
-        """
-        :param url: connection url
-        :param conf: dictionary holding configuration
-        """
+    options = [
+        ('clean_first', 'bool', False,
+         'If set to True, will flush database before proceeding'),
+    ]
 
-        self.url = url
-        self.conf = conf or {}
+    def __init__(self, url=None, conf=None):
+        super(BaseStorage, self).__init__(url=url, conf=conf)
+        if self.conf.get('clean_first', False):
+            self.flush_storage()
 
     @property
     def documents(self):
