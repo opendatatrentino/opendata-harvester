@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import datetime
 import logging
 
 import lxml.etree
 
 from harvester.ext.converters.base import ConverterPluginBase
-from harvester.utils import slugify, normalize_case, XPathHelper
+from harvester.utils import slugify, normalize_case, XPathHelper, flatten_dict
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,48 @@ ORGANIZATIONS = {
     }
 }
 
-GROUPS = {}
+GROUPS = {
+    'gestione-del-territorio': {
+        'name': 'gestione-del-territorio',
+        'title': 'Gestione del territorio',
+        'description': 'Viabilità, idrografia, aree protette, toponomastica, '
+        'orografia, uso del suolo, ecc.',
+    }
+}
+
+
+API_XML_NSMAP = {
+    "csw": "http://www.opengis.net/cat/csw/2.0.2",
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "dct": "http://purl.org/dc/terms/",
+    "geonet": "http://www.fao.org/geonetwork",
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+}
+LINKED_XML_NSMAP = {
+    "csw": "http://www.opengis.net/cat/csw/2.0.2",
+    "gco": "http://www.isotc211.org/2005/gco",
+    "gmd": "http://www.isotc211.org/2005/gmd",
+    "gml": "http://www.opengis.net/gml/3.2",
+    "gmx": "http://www.isotc211.org/2005/gmx",
+    "srv": "http://www.isotc211.org/2005/srv",
+    "xlink": "http://www.w3.org/1999/xlink",
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+}
+
+
+def _multistrptime(dt, formats):
+    for fmt in formats:
+        try:
+            return datetime.datetime.strptime(dt, fmt)
+        except ValueError:
+            pass
+    raise ValueError("No format matched")
+
+
+def _date_to_iso(dt):
+    formats = ['%Y-%m-%d', '%Y-%m', '%Y']
+    the_date = _multistrptime(dt, formats)
+    return the_date.isoformat()
 
 
 class GeoCatalogoToCkan(ConverterPluginBase):
@@ -49,13 +92,16 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             # then we can extract relevant information.
 
             search_result_xml = dataset['raw_xml']
-            blob_id = '{0}_{1}'.format(dataset_id, 'xml')
-            linked_xml = storage_in.blobs['resource'][blob_id]
+            linked_xml = storage_in.blobs['resource_xml'][dataset_id]
 
             converted = extract_metadata_from_api_xml(search_result_xml)
             converted['resources'] = get_resources_from_api_xml(
                 search_result_xml)
-            converted['extras'] = extract_metadata_from_linked_xml(linked_xml)
+
+            extras = extract_metadata_from_linked_xml(linked_xml)
+            converted['extras'] = dict(
+                (': '.join(k), v)
+                for k, v in flatten_dict(extras).iteritems())
 
             # Do the actual conversion
             assert int(converted['id']) == dataset_id
@@ -72,7 +118,7 @@ class GeoCatalogoToCkan(ConverterPluginBase):
 
 def extract_metadata_from_api_xml(xmldata):
     xml = lxml.etree.fromstring(xmldata)
-    xph = XPathHelper(xml)
+    xph = XPathHelper(xml, nsmap=API_XML_NSMAP)
 
     _ds_title = xph('dc:title/text()').get_one('')
     _ds_title = normalize_case(_ds_title)
@@ -92,14 +138,14 @@ def extract_metadata_from_api_xml(xmldata):
         'url': None,
         'license_id': LICENSES_MAP[_ds_license],
         'owner_org': DEFAULT_ORG_ID,
-        'groups': ['dati-geografici'],  # Fixed
+        'groups': ['gestione-del-territorio'],  # Fixed
         'extras': {},
     }
 
 
 def get_resources_from_api_xml(xmldata):
     xml = lxml.etree.fromstring(xmldata)
-    xph = XPathHelper(xml)
+    xph = XPathHelper(xml, nsmap=API_XML_NSMAP)
 
     _description = xph('dct:abstract/text()').get_one('')
     _url_ogd_xml = xph('geonet:info/ogd_xml/text()').get_one()
@@ -142,7 +188,7 @@ def extract_metadata_from_linked_xml(xmldata):
     xml = lxml.etree.fromstring(xmldata)
     result = {}
 
-    xmlxph = XPathHelper(xml)
+    xmlxph = XPathHelper(xml, nsmap=LINKED_XML_NSMAP)
 
     metadata = xmlxph('/gmd:MD_Metadata')
 
@@ -331,12 +377,10 @@ def extract_metadata_from_linked_xml(xmldata):
     }
 
     result['Informazioni sul Sistema di Riferimento'] = {
-        'Codice': {
-            metadata(
-                'gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/'
-                'gmd:referenceSystemIdentifier/gmd:RS_Identifier/'
-                'gmd:code/gco:CharacterString/text()').get_one(),
-        }
+        'Codice': metadata(
+            'gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/'
+            'gmd:referenceSystemIdentifier/gmd:RS_Identifier/'
+            'gmd:code/gco:CharacterString/text()').get_one(),
     }
 
     quality_info = metadata('gmd:dataQualityInfo/gmd:DQ_DataQuality')
@@ -456,13 +500,15 @@ def extract_metadata_from_linked_xml(xmldata):
         "gmd:citation/gmd:CI_Citation/"
         "gmd:date/gmd:CI_Date/gmd:date/gco:Date"
         "/text()").get_one()
-    year, month, day = [int(i) for i in dataset_date.split('-')]
-    dataset_date = datetime.datetime(year, month, day).isoformat()
+    try:
+        iso_date = _date_to_iso(dataset_date)
+    except ValueError:
+        iso_date = ''
 
     result.update({
-        'Data di pubblicazione': dataset_date,
-        'Data di aggiornamento': dataset_date,
-        'Data di creazione': dataset_date,
+        'Data di pubblicazione': iso_date,
+        'Data di aggiornamento': iso_date,
+        'Data di creazione': iso_date,
     })
 
     return result
