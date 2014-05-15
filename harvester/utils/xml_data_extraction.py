@@ -55,18 +55,19 @@ def xml_extract_text_values(s):
 
 
 class XPathHelper(Sequence):
-    def __init__(self, elements):
+    def __init__(self, elements, nsmap=None):
         if not isinstance(elements, (list, tuple)):
             elements = [elements]
         self._elements = elements
+        self._nsmap = nsmap
 
     def xpath(self, rule):
         # todo: we can apply caching here to avoid keeping performing
         #       the same queries over and over..
-        return XPathHelper(list(itertools.chain(
-            *list(el.xpath(rule, namespaces=el.nsmap)
-                  for el in self._elements)
-        )))
+        results = [el.xpath(rule, namespaces=(self._nsmap or el.nsmap))
+                   for el in self._elements]
+        flat_results = list(itertools.chain(*results))
+        return XPathHelper(flat_results, nsmap=self._nsmap)
 
     def __call__(self, *rules):
         if len(rules) == 0:
@@ -77,7 +78,11 @@ class XPathHelper(Sequence):
         return xph
 
     def __getitem__(self, index):
-        return self._elements[index]
+        elem = self._elements[index]
+        if isinstance(elem, basestring):
+            # Cleanup strings from extra space!
+            return ' '.join(elem.split()).strip()
+        return elem
 
     def __len__(self):
         return len(self._elements)
