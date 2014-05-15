@@ -135,7 +135,7 @@ def extract_metadata_from_api_xml(xmldata):
         'author_email': 'N/A',
         'maintainer': _ds_owner,
         'maintainer_email': 'N/A',
-        'url': None,
+        'url': 'http://www.territorio.provincia.tn.it/',
         'license_id': LICENSES_MAP[_ds_license],
         'owner_org': DEFAULT_ORG_ID,
         'groups': ['gestione-del-territorio'],  # Fixed
@@ -154,6 +154,14 @@ def get_resources_from_api_xml(xmldata):
 
     resources = []
 
+    # ************************************************************
+    # NOTE: for some strange reason, format will be converted
+    #       to different case depending on the format itself..
+    #       So "XML"/"RDF" **must** be upper-case and "shp"
+    #       **must** be lower-case, otherwise baby pandas will
+    #       get slaughtered.
+    # ************************************************************
+
     if _url_ogd_xml:
         resources.append({
             'name': 'Metadati in formato XML',
@@ -167,7 +175,7 @@ def get_resources_from_api_xml(xmldata):
         resources.append({
             'name': 'Metadati in formato Shapefile',
             'description': _description,
-            'format': 'SHP',
+            'format': 'shp',
             'mimetype': 'application/zip',
             'url': _url_ogd_zip,
         })
@@ -317,8 +325,9 @@ def extract_metadata_from_linked_xml(xmldata):
             "gmd:topicCategory/gmd:MD_TopicCategoryCode"
             "/text()").get_one(),
     }
-    result['Codifica Caratteri'] = identification_info(
-        "gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue").get_one(),
+    result['Codifica Caratteri'] = metadata(
+        "gmd:characterSet/gmd:MD_CharacterSetCode/"
+        "@codeListValue").get_one()
 
     bounding_box = identification_info(
         'gmd:extent/gmd:EX_Extent/'
