@@ -171,15 +171,6 @@ def get_resources_from_api_xml(xmldata):
             'url': _url_ogd_xml,
         })
 
-    if _url_ogd_zip:
-        resources.append({
-            'name': 'Metadati in formato Shapefile',
-            'description': _description,
-            'format': 'shp',
-            'mimetype': 'application/zip',
-            'url': _url_ogd_zip,
-        })
-
     if _url_ogd_rdf:
         resources.append({
             'name': 'Dati in formato RDF',
@@ -187,6 +178,15 @@ def get_resources_from_api_xml(xmldata):
             'format': 'RDF',
             'mimetype': 'application/rdf+xml',
             'url': _url_ogd_rdf,
+        })
+
+    if _url_ogd_zip:
+        resources.append({
+            'name': 'Dati in formato Shapefile',
+            'description': _description,
+            'format': 'shp',
+            'mimetype': 'application/zip',
+            'url': _url_ogd_zip,
         })
 
     return resources
