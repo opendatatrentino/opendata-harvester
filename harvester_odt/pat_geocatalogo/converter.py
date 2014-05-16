@@ -10,6 +10,8 @@ import lxml.etree
 from harvester.ext.converters.base import ConverterPluginBase
 from harvester.utils import slugify, normalize_case, XPathHelper, flatten_dict
 
+from .tags_map import TAGS_MAP
+
 logger = logging.getLogger(__name__)
 
 
@@ -77,6 +79,32 @@ def _date_to_iso(dt):
     return the_date.isoformat()
 
 
+def _clean_tags(tags, tags_map=TAGS_MAP):
+    """Clean tags according to the map"""
+
+    def _clean_tag(tag):
+        if tag not in tags_map:
+            logger.warn('Found an unknown tag: {0!r}'.format(tag))
+            return []
+
+        tagvalue = tags_map[tag]
+        if (tagvalue is None) or (tagvalue is False):
+            return []
+
+        if tagvalue is True:
+            return [tag.capitalize()]
+
+        if isinstance(tagvalue, basestring):
+            return [tagvalue]
+
+        return tagvalue
+
+    new_tags = set()
+    for tag in tags:
+        new_tags.update(_clean_tag(tag))
+    return sorted(new_tags)
+
+
 class GeoCatalogoToCkan(ConverterPluginBase):
 
     def convert(self, storage_in, storage_out):
@@ -121,7 +149,9 @@ def extract_metadata_from_api_xml(xmldata):
     xph = XPathHelper(xml, nsmap=API_XML_NSMAP)
 
     _ds_title = xph('dc:title/text()').get_one('')
-    _ds_title = normalize_case(_ds_title)
+    _ds_title = _ds_title.capitalize()
+    # _ds_title = normalize_case(_ds_title)
+
     _ds_name = slugify(_ds_title)
     _ds_license = int(xph('geonet:info/licenseType/text()').get_one())
     _ds_owner = xph('geonet:info/ownername/text()').get_one().lower().title()
@@ -140,6 +170,7 @@ def extract_metadata_from_api_xml(xmldata):
         'owner_org': DEFAULT_ORG_ID,
         'groups': ['gestione-del-territorio'],  # Fixed
         'extras': {},
+        'tags': _clean_tags(xph('dc:subject/text()')),
     }
 
 
