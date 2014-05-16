@@ -148,13 +148,16 @@ def extract_metadata_from_api_xml(xmldata):
     xml = lxml.etree.fromstring(xmldata)
     xph = XPathHelper(xml, nsmap=API_XML_NSMAP)
 
+    def _capfirst(s):
+        return s[0].upper() + s[1:]
+
     _ds_title = xph('dc:title/text()').get_one('')
-    _ds_title = _ds_title.capitalize()
+    _ds_title = _capfirst(_ds_title)
     # _ds_title = normalize_case(_ds_title)
 
     _ds_name = slugify(_ds_title)
     _ds_license = int(xph('geonet:info/licenseType/text()').get_one())
-    _ds_owner = xph('geonet:info/ownername/text()').get_one().lower().title()
+    _ds_owner = xph('geonet:info/ownername/text()').get_one().title()
 
     return {
         'id': int(xph('geonet:info/id/text()').get_one()),
