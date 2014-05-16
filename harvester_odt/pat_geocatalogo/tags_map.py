@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# flake8: noqafrom __future__ import unicode_literals
+# flake8: noqa
+
+from __future__ import unicode_literals
 
 TAGS_MAP = {u'1:2000': None,
  u'1:5000': None,

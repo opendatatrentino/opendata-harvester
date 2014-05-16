@@ -30,7 +30,7 @@ for tag in tags:
 
 with open(tm_file, 'w') as fp:
     fp.write('# -*- coding: utf-8 -*-\n\n')
-    fp.write('# flake8: noqa')
+    fp.write('# flake8: noqa\n\n')
     fp.write('from __future__ import unicode_literals\n\n')
     fp.write('TAGS_MAP = ')
     fp.write(pprint.pformat(TAGS_MAP))
