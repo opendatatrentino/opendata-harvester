@@ -65,31 +65,30 @@ def get_plugin_class(plugin_type, name):
 
 
 def get_plugin_options(plugin):
-    for item in plugin.options:
-        # Make sure we have all the four fields -- fill missing
-        # ones with None
-        yield plugin_option(*(item + (None,) * (4 - len(item))))
-
-
-def get_plugin(plugin_type, url, options):
     """
-    Get an instance of the selected plugin, getting its name
-    from the URL and passing "options" as configuration.
+    Get a list of options accepted by a plugin.
 
-    :param plugin_type:
-        The plugin type. Will prepend ``harvester.ext.`` to
-        the passed-in string.
-    :param url: the plugin URL, like ``name://host``, ``name``
-        or ``name+scheme://host``
-    :param options: options passed on the command line
-        (list of strings like ``key=value`` or ``type:key=value``)
+    :return: a list of ``plugin_option`` named tuples.
     """
 
-    name, url = parse_plugin_url(url)
-    plugin_class = get_plugin_class(plugin_type, name)
+    options = {}
 
-    # First, parse options passed from the command line
-    # We store a mapping of "key name" : [(type, value), ..]
+    for subobj in reversed(plugin.mro()):
+        if getattr(subobj, 'options', None) is not None:
+            for item in subobj.options:
+                plgo = plugin_option(*(item + (None,) * (4 - len(item))))
+                if plgo.type is None:
+                    options.pop(plgo.name, None)
+                else:
+                    options[plgo.name] = plgo
+    return options
+
+
+def plugin_options_from_cmdline(options):
+    """
+    Convert a list of options from command-line arguments
+    into a format suitable for passing to plugin constructor.
+    """
 
     conf_options = {}
     if options is not None:
@@ -101,12 +100,19 @@ def get_plugin(plugin_type, url, options):
             else:
                 k_type = None
             conf_options[key] = (k_type, value)
+    return conf_options
 
-    # Now, we start reading actual configuration required
-    # by the plugin
+
+def prepare_plugin_options(plugin_class, options):
+    """
+    Prepare plugin options by extracting / converting supported
+    values from a plugin.
+    """
+
+    plugin_options = get_plugin_options(plugin_class)
 
     conf = {}
-    for opt_def in get_plugin_options(plugin_class):
+    for opt_def in plugin_options.itervalues():
         if opt_def.name in conf_options:
             # Take type, value from the passed-in value
             type_, value = conf_options.pop(opt_def.name)
@@ -131,6 +137,37 @@ def get_plugin(plugin_type, url, options):
             "Unknown configuration option {0!r} passed to plugin {1!r}"
             .format(name, plugin_class),
             UserWarning)
+
+    return conf
+
+
+def get_plugin(plugin_type, url, options):
+    """
+    Get an instance of the selected plugin, getting its name
+    from the URL and passing "options" as configuration.
+
+    :param plugin_type:
+        The plugin type. Will prepend ``harvester.ext.`` to
+        the passed-in string.
+    :param url: the plugin URL, like ``name://host``, ``name``
+        or ``name+scheme://host``
+    :param options: options passed on the command line
+        (list of strings like ``key=value`` or ``type:key=value``)
+    """
+
+    name, url = parse_plugin_url(url)
+    plugin_class = get_plugin_class(plugin_type, name)
+
+    # First, parse options passed from the command line
+    # We store a mapping of "key name" : [(type, value), ..]
+
+    if isinstance(conf_options, (list, tuple)):
+        conf_options = plugin_options_from_cmdline(options)
+
+    # Now, we start reading actual configuration required
+    # by the plugin
+
+    conf = prepare_plugin_options(plugin_class, conf_options)
 
     return plugin_class(url, conf)
 
