@@ -3,7 +3,7 @@ import logging
 import lxml
 import requests
 
-from harvester.ext.crawlers.base import CrawlerPluginBase
+from harvester.ext.crawler.base import CrawlerPluginBase
 from .client import GeoCatalogoClient
 
 logger = logging.getLogger(__name__)

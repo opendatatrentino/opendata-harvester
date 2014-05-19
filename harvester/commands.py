@@ -62,7 +62,7 @@ class PluginInfoBase(Command):
 
 class ListCrawlers(PluginLister):
     """list available crawler plugins"""
-    plugin_namespace = 'harvester.ext.crawlers'
+    plugin_namespace = 'harvester.ext.crawler'
 
 
 class ListStorages(PluginLister):
@@ -82,7 +82,7 @@ class ListImporters(PluginLister):
 
 class ShowCrawler(PluginInfoBase):
     """show information about a crawler plugin"""
-    plugin_type = 'crawlers'
+    plugin_type = 'crawler'
 
 
 class ShowStorage(PluginInfoBase):
@@ -115,7 +115,7 @@ class Crawl(Command):
 
     def take_action(self, parsed_args):
         crawler = get_plugin(
-            'crawlers', parsed_args.crawler,
+            'crawler', parsed_args.crawler,
             parsed_args.crawler_option)
         storage = get_plugin(
             'storage', parsed_args.storage,

@@ -15,8 +15,8 @@ install_requires = [
 ]
 
 entry_points = {
-    'harvester.ext.crawlers': [
-        'ckan = harvester.ext.crawlers.ckan:CkanCrawler',
+    'harvester.ext.crawler': [
+        'ckan = harvester.ext.crawler.ckan:CkanCrawler',
     ],
 
     'harvester.ext.storage': [
@@ -54,7 +54,7 @@ entry_points = {
 }
 
 entry_points_odt = {
-    'harvester.ext.crawlers': [
+    'harvester.ext.crawler': [
         'pat_statistica = harvester_odt.pat_statistica.crawler:Statistica',
         'pat_statistica_subpro = harvester_odt.pat_statistica.crawler:StatisticaSubPro',  # noqa
         'pat_geocatalogo = harvester_odt.pat_geocatalogo.crawler:Geocatalogo',

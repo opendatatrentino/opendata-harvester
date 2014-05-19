@@ -1,6 +1,6 @@
 import logging
 
-from harvester.ext.crawlers.base import CrawlerPluginBase
+from harvester.ext.crawler.base import CrawlerPluginBase
 
 from .client import (StatisticaClient, StatisticaSubproClient)
 

@@ -1,6 +1,6 @@
 import logging
 
-from harvester.ext.crawlers.base import CrawlerPluginBase
+from harvester.ext.crawler.base import CrawlerPluginBase
 
 from ckan_api_client.high_level import CkanHighlevelClient
 
