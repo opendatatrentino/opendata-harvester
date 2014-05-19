@@ -1,6 +1,6 @@
 import logging
 
-from harvester.ext.converters.base import ConverterPluginBase
+from harvester.ext.converter.base import ConverterPluginBase
 
 from .client import (dataset_statistica_to_ckan,
                      dataset_statistica_subpro_to_ckan,

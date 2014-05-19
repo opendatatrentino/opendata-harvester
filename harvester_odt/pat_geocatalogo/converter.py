@@ -7,7 +7,7 @@ import logging
 
 import lxml.etree
 
-from harvester.ext.converters.base import ConverterPluginBase
+from harvester.ext.converter.base import ConverterPluginBase
 from harvester.utils import slugify, normalize_case, XPathHelper, flatten_dict
 
 from .tags_map import TAGS_MAP

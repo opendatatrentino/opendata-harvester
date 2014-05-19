@@ -26,7 +26,7 @@ entry_points = {
         "sqlite = harvester.ext.storage.sqlite:SQLiteStorage",
     ],
 
-    'harvester.ext.converters': [
+    'harvester.ext.converter': [
     ],
 
     'harvester.ext.importers': [
@@ -60,7 +60,7 @@ entry_points_odt = {
         'pat_geocatalogo = harvester_odt.pat_geocatalogo.crawler:Geocatalogo',
     ],
 
-    'harvester.ext.converters': [
+    'harvester.ext.converter': [
         'pat_statistica_to_ckan = harvester_odt.pat_statistica.'
         'converter:StatisticaToCkan',
         'pat_statistica_subpro_to_ckan = harvester_odt.pat_statistica.'

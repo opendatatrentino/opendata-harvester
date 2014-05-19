@@ -72,7 +72,7 @@ class ListStorages(PluginLister):
 
 class ListConverters(PluginLister):
     """list available converter plugins"""
-    plugin_namespace = 'harvester.ext.converters'
+    plugin_namespace = 'harvester.ext.converter'
 
 
 class ListImporters(PluginLister):
@@ -92,7 +92,7 @@ class ShowStorage(PluginInfoBase):
 
 class ShowConverter(PluginInfoBase):
     """show information about a converter plugin"""
-    plugin_type = 'converters'
+    plugin_type = 'converter'
 
 
 class ShowImporter(PluginInfoBase):
@@ -142,7 +142,7 @@ class Convert(Command):
     def take_action(self, parsed_args):
         # We need a converter plugin, an input and an output
         converter = get_plugin(
-            'converters', parsed_args.converter,
+            'converter', parsed_args.converter,
             parsed_args.converter_option)
         storage_in = get_plugin(
             'storage', parsed_args.input,
