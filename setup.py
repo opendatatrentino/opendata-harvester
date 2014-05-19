@@ -50,6 +50,7 @@ entry_points = {
 
     'console_scripts': [
         'harvester = harvester.cli:main',
+        'harvester_director = harvester.director.cli:main',
     ]
 }
 
