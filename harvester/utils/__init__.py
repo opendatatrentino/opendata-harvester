@@ -53,6 +53,24 @@ def convert_string(type_, string):
     raise ValueError("Invalid type: {0!r}".format(type_))
 
 
+def get_plugin_class(plugin_type, name):
+    extmgr = ExtensionManager('harvester.ext.{0}'.format(plugin_type))
+
+    try:
+        ep = extmgr[name]
+    except KeyError:
+        raise ValueError("Invalid plugin name: {0}".format(name))
+
+    return ep.plugin
+
+
+def get_plugin_options(plugin):
+    for item in plugin.options:
+        # Make sure we have all the four fields -- fill missing
+        # ones with None
+        yield plugin_option(*(item + (None,) * (4 - len(item))))
+
+
 def get_plugin(plugin_type, url, options):
     """
     Get an instance of the selected plugin, getting its name
@@ -67,14 +85,8 @@ def get_plugin(plugin_type, url, options):
         (list of strings like ``key=value`` or ``type:key=value``)
     """
 
-    crawler_mgr = ExtensionManager('harvester.ext.{0}'.format(plugin_type))
-
     name, url = parse_plugin_url(url)
-
-    try:
-        ep = crawler_mgr[name]
-    except KeyError:
-        raise ValueError("Invalid plugin name: {0}" .format(name))
+    plugin_class = get_plugin_class(plugin_type, name)
 
     # First, parse options passed from the command line
     # We store a mapping of "key name" : [(type, value), ..]
@@ -93,14 +105,8 @@ def get_plugin(plugin_type, url, options):
     # Now, we start reading actual configuration required
     # by the plugin
 
-    def _get_options(opts):
-        for item in opts:
-            # Make sure we have all the four fields -- fill missing
-            # ones with None
-            yield plugin_option(*(item + (None,) * (4 - len(item))))
-
     conf = {}
-    for opt_def in _get_options(ep.plugin.options):
+    for opt_def in get_plugin_options(plugin_class):
         if opt_def.name in conf_options:
             # Take type, value from the passed-in value
             type_, value = conf_options.pop(opt_def.name)
@@ -123,10 +129,10 @@ def get_plugin(plugin_type, url, options):
     for name in conf_options:
         warnings.warn(
             "Unknown configuration option {0!r} passed to plugin {1!r}"
-            .format(name, ep.plugin),
+            .format(name, plugin_class),
             UserWarning)
 
-    return ep.plugin(url, conf)
+    return plugin_class(url, conf)
 
 
 def parse_plugin_url(url):

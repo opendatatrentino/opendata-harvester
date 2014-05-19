@@ -5,11 +5,11 @@ from cliff.lister import Lister
 from stevedore.extension import ExtensionManager
 import termcolor
 
-from .utils import get_plugin
+from .utils import get_plugin, get_plugin_class, get_plugin_options
 
 
 class PluginLister(Lister):
-    plugin_namespace = 'harvester.ext.crawlers'
+    plugin_namespace = None
     logger = logging.getLogger(__name__)
 
     def _get_repr(self, obj):
@@ -19,6 +19,45 @@ class PluginLister(Lister):
         mgr = ExtensionManager(self.plugin_namespace)
         rows = sorted([(ext.name, self._get_repr(ext.plugin)) for ext in mgr])
         return (('Name', 'Class'), rows)
+
+
+class PluginInfoBase(Command):
+    plugin_type = None
+    logger = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(PluginInfoBase, self).get_parser(prog_name)
+        parser.add_argument(
+            'plugin_name',
+            help='Name of the plugin to show information about')
+        return parser
+
+    def _get_repr(self, obj):
+        return '.'.join((obj.__module__, obj.__name__))
+
+    def take_action(self, parsed_args):
+        # Print information about the plugin, its options etc.
+        from prettytable import PrettyTable
+
+        plugin = get_plugin_class(
+            self.plugin_type, parsed_args.plugin_name)
+
+        self.app.stdout.write('Plugin name: {0}\n'
+                              .format(parsed_args.plugin_name))
+        self.app.stdout.write('Plugin type: {0}\n'
+                              .format(self.plugin_type))
+        self.app.stdout.write('Plugin class: {0}\n'
+                              .format(self._get_repr(plugin)))
+
+        self.app.stdout.write('\nPLUGIN OPTIONS\n')
+        hdr = ['Name', 'Type', 'Default', 'Documentation']
+        pt = PrettyTable(hdr)
+        for h in hdr:
+            pt.align[h] = 'l'
+        for opt in sorted(get_plugin_options(plugin)):
+            pt.add_row([opt.name, opt.type, repr(opt.default), opt.doc])
+
+        self.app.stdout.write(str(pt) + '\n')
 
 
 class ListCrawlers(PluginLister):
@@ -39,6 +78,26 @@ class ListConverters(PluginLister):
 class ListImporters(PluginLister):
     """list available importer plugins"""
     plugin_namespace = 'harvester.ext.importers'
+
+
+class ShowCrawler(PluginInfoBase):
+    """show information about a crawler plugin"""
+    plugin_type = 'crawlers'
+
+
+class ShowStorage(PluginInfoBase):
+    """show information about a storage plugin"""
+    plugin_type = 'storage'
+
+
+class ShowConverter(PluginInfoBase):
+    """show information about a converter plugin"""
+    plugin_type = 'converters'
+
+
+class ShowImporter(PluginInfoBase):
+    """show information about a importer plugin"""
+    plugin_type = 'importers'
 
 
 class Crawl(Command):
