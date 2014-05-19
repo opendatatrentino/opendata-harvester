@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.1a'
+version = '0.2a'
 
 install_requires = [
     'cliff',  # for the CLI
