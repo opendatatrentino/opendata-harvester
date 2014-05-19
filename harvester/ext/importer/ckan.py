@@ -2,7 +2,7 @@ import logging
 
 from ckan_api_client.syncing import SynchronizationClient
 
-from harvester.ext.importers.base import ImporterPluginBase
+from harvester.ext.importer.base import ImporterPluginBase
 
 
 class CkanImporter(ImporterPluginBase):

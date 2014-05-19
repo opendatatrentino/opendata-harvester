@@ -77,7 +77,7 @@ class ListConverters(PluginLister):
 
 class ListImporters(PluginLister):
     """list available importer plugins"""
-    plugin_namespace = 'harvester.ext.importers'
+    plugin_namespace = 'harvester.ext.importer'
 
 
 class ShowCrawler(PluginInfoBase):
@@ -97,7 +97,7 @@ class ShowConverter(PluginInfoBase):
 
 class ShowImporter(PluginInfoBase):
     """show information about a importer plugin"""
-    plugin_type = 'importers'
+    plugin_type = 'importer'
 
 
 class Crawl(Command):
@@ -172,7 +172,7 @@ class Import(Command):
             'storage', parsed_args.storage,
             parsed_args.storage_option)
         importer = get_plugin(
-            'importers', parsed_args.importer,
+            'importer', parsed_args.importer,
             parsed_args.importer_option)
 
         importer.sync_data(storage)

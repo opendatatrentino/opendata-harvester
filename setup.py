@@ -29,8 +29,8 @@ entry_points = {
     'harvester.ext.converter': [
     ],
 
-    'harvester.ext.importers': [
-        "ckan = harvester.ext.importers.ckan:CkanImporter",
+    'harvester.ext.importer': [
+        "ckan = harvester.ext.importer.ckan:CkanImporter",
     ],
 
     'harvester.commands': [
