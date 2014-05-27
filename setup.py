@@ -4,14 +4,18 @@ version = '0.2a'
 
 install_requires = [
     'cliff',  # for the CLI
+    'lxml',  # for geocatalogo CSW
+    'owslib',  # for geocatalogo CSW
+    'prettytable',  # for nicely formatted ASCII tables
     'pymongo',  # for the mongodb-based storage
     'requests',  # for crawlers
     'stevedore',  # to load plugins
-    'owslib',  # for geocatalogo CSW
-    'lxml',  # for geocatalogo CSW
-    'unidecode',  # to transliterate characters
     'termcolor',  # for colored logs
-    'prettytable',  # for nicely formatted ASCII tables
+    'unidecode',  # to transliterate characters
+
+    # For the director (todo: use extras?)
+    'flask',
+    'flask-restful',
 ]
 
 entry_points = {
@@ -20,17 +24,17 @@ entry_points = {
     ],
 
     'harvester.ext.storage': [
-        "jsondir = harvester.ext.storage.jsondir:JsonDirStorage",
-        "memory = harvester.ext.storage.memory:MemoryStorage",
-        "mongodb = harvester.ext.storage.mongodb:MongodbStorage",
-        "sqlite = harvester.ext.storage.sqlite:SQLiteStorage",
+        'jsondir = harvester.ext.storage.jsondir:JsonDirStorage',
+        'memory = harvester.ext.storage.memory:MemoryStorage',
+        'mongodb = harvester.ext.storage.mongodb:MongodbStorage',
+        'sqlite = harvester.ext.storage.sqlite:SQLiteStorage',
     ],
 
     'harvester.ext.converter': [
     ],
 
     'harvester.ext.importer': [
-        "ckan = harvester.ext.importer.ckan:CkanImporter",
+        'ckan = harvester.ext.importer.ckan:CkanImporter',
     ],
 
     'harvester.commands': [
@@ -46,6 +50,10 @@ entry_points = {
         'convert = harvester.commands:Convert',
         'import = harvester.commands:Import',
         'storage_inspect = harvester.commands:StorageInspect',
+    ],
+
+    'harvester.director.commands': [
+        'run = harvester.director.commands:RunServer',
     ],
 
     'console_scripts': [
@@ -91,10 +99,18 @@ setup(
     # tests_require=tests_require,
     test_suite='harvester.tests',
     classifiers=[
-        "License :: OSI Approved :: BSD License",
-        "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
+        'License :: OSI Approved :: BSD License',
+
+        # 'Development Status :: 1 - Planning',
+        # 'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
+        # 'Development Status :: 4 - Beta',
+        # 'Development Status :: 5 - Production/Stable',
+        # 'Development Status :: 6 - Mature',
+        # 'Development Status :: 7 - Inactive',
+
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
     ],
     package_data={'': ['README.md', 'LICENSE']},
     include_package_data=True,

@@ -1,8 +1,27 @@
 import logging
 
 from cliff.command import Command
-from cliff.lister import Lister
-from stevedore.extension import ExtensionManager
-import termcolor
 
-from .utils import get_plugin, get_plugin_class, get_plugin_options
+
+class RunServer(Command):
+    logger = logging.getLogger(__name__)
+
+    def get_parser(self, prog_name):
+        parser = super(RunServer, self).get_parser(prog_name)
+        parser.add_argument('--host', help='Override listen host')
+        parser.add_argument('--port', help='Override listen port')
+        parser.add_argument(
+            '--debug-mode', action='store_true', default=False,
+            help='Enable debugging (reload + web-based debugger)')
+        return parser
+
+    def take_action(self, parsed_args):
+        self.logger.debug('Starting server')
+        from harvester.director.web import app
+
+        # Note that host/port will default to values from settings
+        # in case they are not set from command line..
+        app.run(
+            host=parsed_args.host,
+            port=int(parsed_args.port) if parsed_args.port else None,
+            debug=parsed_args.debug_mode or None)
