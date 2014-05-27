@@ -77,13 +77,13 @@ Download data to MongoDB:
 ```
 harvester -vvv --debug crawl \
     --crawler pat_statistica \
-	--storage mongodb+mongodb://database.local/harvester_data/statistica
+	--storage mongodb://database.local/harvester_data/statistica
 ```
 
 ```
 harvester -vvv --debug crawl \
     --crawler pat_statistica_subpro \
-	--storage mongodb+mongodb://database.local/harvester_data/statistica_subpro
+	--storage mongodb://database.local/harvester_data/statistica_subpro
 ```
 
 Prepare data for insertion into ckan:
@@ -91,22 +91,22 @@ Prepare data for insertion into ckan:
 ```
 harvester -vvv --debug convert \
     --converter pat_statistica_to_ckan \
-	--input mongodb+mongodb://database.local/harvester_data/statistica \
-	--output mongodb+mongodb://database.local/harvester_data/statistica_clean
+	--input mongodb://database.local/harvester_data/statistica \
+	--output mongodb://database.local/harvester_data/statistica_clean
 ```
 
 ```
 harvester -vvv --debug convert \
     --converter pat_statistica_subpro_to_ckan \
-	--input mongodb+mongodb://database.local/harvester_data/statistica_subpro \
-	--output mongodb+mongodb://database.local/harvester_data/statistica_subpro_clean
+	--input mongodb://database.local/harvester_data/statistica_subpro \
+	--output mongodb://database.local/harvester_data/statistica_subpro_clean
 ```
 
 Actually load data to Ckan:
 
 ```
 harvester -vvv --debug import \
-	--storage mongodb+mongodb://database.local/harvester_data/statistica_clean \
+	--storage mongodb://database.local/harvester_data/statistica_clean \
 	--importer ckan+http://127.0.0.1:5000 \
 	--importer-option api_key=00112233-4455-6677-8899-aabbccddeeff \
 	--importer-option source_name=statistica
@@ -114,7 +114,7 @@ harvester -vvv --debug import \
 
 ```
 harvester -vvv --debug import \
-	--storage mongodb+mongodb://database.local/harvester_data/statistica_subpro_clean \
+	--storage mongodb://database.local/harvester_data/statistica_subpro_clean \
 	--importer ckan+http://127.0.0.1:5000 \
 	--importer-option api_key=00112233-4455-6677-8899-aabbccddeeff \
 	--importer-option source_name=statistica_subpro
