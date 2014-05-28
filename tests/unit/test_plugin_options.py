@@ -28,7 +28,7 @@ def test_plugin_options_list():
         'option2': plugin_option('option2', 'str', 'Foo2',
                                  'Option number two'),
     }
-    assert get_plugin_options(PluginA1) == {
+    assert get_plugin_options(PluginA2) == {
         'option2': plugin_option('option2', 'str', 'Foo2',
                                  'Option number two (2)'),
     }
