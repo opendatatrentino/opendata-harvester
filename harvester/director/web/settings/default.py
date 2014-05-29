@@ -130,10 +130,22 @@
 # object (controlled by the X-Requested-With header)
 # JSONIFY_PRETTYPRINT_REGULAR = None
 
+# ----------------------------------------------------------------------
+# Celery settings
+# ----------------------------------------------------------------------
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
+# Pickle is dangerous, but let's accept other formats.
+CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
+
+# Use json by default to serialize messages, instead of pickle.
+CELERY_TASK_SERIALIZER = 'json'
 
 # ----------------------------------------------------------------------
 # Harvester director settings
 # ----------------------------------------------------------------------
+
 HARVESTER_MONGODB = {
     'host': 'mongodb://localhost:27017',
     'name': 'harvester',

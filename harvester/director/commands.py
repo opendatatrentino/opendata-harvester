@@ -16,7 +16,7 @@ class RunServer(Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.logger.debug('Starting server')
+        self.logger.info('Starting server')
         from harvester.director.web import app
 
         # Note that host/port will default to values from settings
@@ -25,3 +25,12 @@ class RunServer(Command):
             host=parsed_args.host,
             port=int(parsed_args.port) if parsed_args.port else None,
             debug=parsed_args.debug_mode or None)
+
+
+class CeleryWorker(Command):
+    logger = logging.getLogger(__name__)
+
+    def take_action(self, parsed_args):
+        self.logger.info('Starting celery worker')
+        from harvester.director.tasks import worker
+        worker.worker_main(['celery-worker'])  # todo: pass in extra arguments

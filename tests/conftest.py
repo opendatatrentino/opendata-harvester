@@ -35,3 +35,28 @@ def storage(request, tmpdir):
             pytest.skip('MONGO_URL not configured')
 
     raise AssertionError('Invalid parameter')
+
+
+@pytest.fixture(scope='module')
+def director_client(request):
+    """Fixture returning a client attached to the flask app"""
+
+    from harvester.director.web import app
+    tc = app.test_client()
+    return tc
+
+
+@pytest.fixture(scope='module')
+def director_worker(request):
+    """Fixture starting a celery worker in background"""
+
+    from multiprocessing import Process
+    from harvester.director.tasks import worker
+    p = Process(target=lambda: worker.worker_main(['test-celery-worker']))
+
+    def cleanup():
+        p.terminate()
+
+    request.addfinalizer(cleanup)
+    p.start()
+    return p

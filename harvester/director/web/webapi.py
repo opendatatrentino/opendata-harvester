@@ -146,6 +146,9 @@ class TaskListResource(restful.Resource):
     def post(self):
         rqobj = _get_request_object()
 
+        # We want to create the job record
+        # And then launch it via celery
+
         if rqobj['type'] == 'crawl':
             return self._run_task_crawl(rqobj)
 

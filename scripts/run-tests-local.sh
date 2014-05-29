@@ -1,5 +1,9 @@
 #!/bin/bash
 
+for ENVID in "$@"; do
+
+echo "Runnign tests for $ENVID"
+
 MONGO_HOST=database.local
 
 TEST_DB_PREFIX="$( date '+%s' )"
@@ -25,10 +29,13 @@ EOF
 
 # Run tests
 # ----------------------------------------
-tox
+tox -e "$ENVID"
 
 # Cleanup
 # ----------------------------------------
+echo "Cleanup.."
 rm "$HARVESTER_SETTINGS"
-echo -e 'use ${TEST_DB_HARVESTER}\ndb.dropDatabase()' | mongo "$MONGO_HOST"
-echo -e 'use ${TEST_DB_DIRECTOR}\ndb.dropDatabase()' | mongo "$MONGO_HOST"
+echo -e 'use ${TEST_DB_HARVESTER}\ndb.dropDatabase()' | mongo "$MONGO_HOST" &>/dev/null
+echo -e 'use ${TEST_DB_DIRECTOR}\ndb.dropDatabase()' | mongo "$MONGO_HOST" &>/dev/null
+
+done
