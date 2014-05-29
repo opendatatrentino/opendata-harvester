@@ -55,6 +55,7 @@ entry_points = {
 
     'harvester.director.commands': [
         'run = harvester.director.commands:RunServer',
+        'celery_worker = harvester.director.commands:CeleryWorker',
     ],
 
     'console_scripts': [
