@@ -135,12 +135,14 @@
 # ----------------------------------------------------------------------
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 
 # Pickle is dangerous, but let's accept other formats.
 CELERY_ACCEPT_CONTENT = ['json', 'msgpack', 'yaml']
 
 # Use json by default to serialize messages, instead of pickle.
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 # ----------------------------------------------------------------------
 # Harvester director settings

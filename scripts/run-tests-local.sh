@@ -25,6 +25,7 @@ HARVESTER_MONGODB = {
     'name': '${TEST_DB_DIRECTOR}',
 }
 CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 EOF
 
 # Run tests

@@ -149,6 +149,7 @@ class TaskListResource(restful.Resource):
         # We want to create the job record
         # And then launch it via celery
 
+    def _prepare_task(self, rqobj):
         if rqobj['type'] == 'crawl':
             return self._run_task_crawl(rqobj)
 
@@ -160,6 +161,8 @@ class TaskListResource(restful.Resource):
 
         if rqobj['type'] == 'preview':
             return self._run_task_preview(rqobj)
+
+        raise ValueError("Invalid task type: {0}".format(rqobj['type']))
 
     def _run_task_crawl(self, rqobj):
         # todo: create job record
