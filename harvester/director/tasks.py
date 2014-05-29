@@ -2,7 +2,6 @@
 Celery tasks for harvester director
 """
 
-import sys
 import logging
 
 from celery import Celery
