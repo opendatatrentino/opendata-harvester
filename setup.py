@@ -14,6 +14,7 @@ install_requires = [
     'unidecode',  # to transliterate characters
 
     # For the director (todo: use extras?)
+    'celery[redis]',  # for running async tasks
     'flask',
     'flask-restful',
 ]
