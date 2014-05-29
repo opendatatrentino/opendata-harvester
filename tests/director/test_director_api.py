@@ -1,5 +1,4 @@
 import json
-import time  # We need time to sleep ;)
 
 import pytest
 
@@ -59,7 +58,6 @@ def test_simple_task_run(director_client, director_worker):
     # Then, we run the task via celery
     result = testing_task.delay('job-00')
     result.wait()
-    # time.sleep(2)
 
     # Check..
     assert storage.documents['jobs']['job-00'] == {
