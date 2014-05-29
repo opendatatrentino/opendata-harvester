@@ -50,7 +50,7 @@ def run_job(jobid):
     hd.set_job_conf(jobid, job_conf)
 
     # Do work here..
-    time.sleep(5)
+    time.sleep(2)
 
     # Mark job as completed
     job_conf['end_time'] = time.time()

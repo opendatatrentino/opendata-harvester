@@ -244,23 +244,18 @@ class TaskListResource(restful.Resource):
         raise ValueError("An input storage name is required")
 
     def _get_output_storage_conf(self, rqobj):
+        hd = HarvesterDirector()
+
         if 'output_storage' in rqobj:
             if not rqobj['output_storage']:
                 raise ValueError("Storage name cannot be empty")
             storage_name = rqobj['output_storage']
             if not storage_name.startswith('job.'):
                 storage_name = 'job.' + storage_name
+            url, opts = hd.get_storage_url_options(storage_name)
+            return {'url': url, 'options': opts}
 
-        else:
-            # Generate a new storage name
-            storage_name = 'job.{0}'.format(str(uuid.uuid4()))
-
-        hd = HarvesterDirector()
-        url, opts = hd.get_storage_url_options(storage_name)
-        return {'url': url, 'options': opts}
-
-    def _generate_storage_name(self):
-        return 'job.{0}'.format(str(uuid.uuid4()))
+        return hd.get_new_job_storage()
 
 
 class TaskResource(restful.Resource):
@@ -281,5 +276,6 @@ api.add_resource(ImporterConfList, '/conf/importer/')
 api.add_resource(ImporterConf, '/conf/importer/<objid>/')
 api.add_resource(TaskListResource, '/task/')
 api.add_resource(TaskResource, '/task/<objid>/')
+
 
 # todo: we want to return a 404 w/ json payload on all missing endpoints

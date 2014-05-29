@@ -2,6 +2,8 @@ import json
 
 import pytest
 
+from harvester.director import HarvesterDirector
+
 
 @pytest.mark.parametrize('conf_type', ['crawler', 'converter', 'importer'])
 def test_director_api_conf(director_client, conf_type):
@@ -43,7 +45,6 @@ def test_simple_task_run(director_client, director_worker):
     # We want to create a dummy job and execute it via celery,
     # mostly to check that everything is working fine.
 
-    from harvester.director import HarvesterDirector
     from harvester.director.tasks import testing_task
 
     hd = HarvesterDirector()
@@ -64,3 +65,112 @@ def test_simple_task_run(director_client, director_worker):
         'label': 'First job',
         'status': 'done',
     }
+
+
+def test_dummy_task_run(director_client, director_worker):
+    hd = HarvesterDirector()
+
+    # First run: crawl a dummy source
+    # ------------------------------------------------------------
+
+    storage1 = hd.get_new_job_storage()
+    task = hd.run_job({
+        'id': 'job-crawl-01',
+        'type': 'crawl',
+        'crawler': {
+            'url': 'dummy+http://example.com',
+            'options': {},
+        },
+        'output_storage': storage1,
+    })
+
+    job_conf = hd.get_job_conf('job-crawl-01')
+    assert job_conf['started'] is False
+    assert job_conf['finished'] is False
+    assert job_conf['result'] is None
+
+    task.wait()
+
+    job_conf = hd.get_job_conf('job-crawl-01')
+    assert job_conf['started'] is True
+    assert job_conf['finished'] is True
+    assert job_conf['result'] is True
+
+    # Convert from the dummy source to another format
+    # ------------------------------------------------------------
+
+    storage2 = hd.get_new_job_storage()
+    task = hd.run_job({
+        'id': 'job-convert-01',
+        'type': 'convert',
+        'converter': {
+            'url': 'dummy1_to_dummy2',
+            'options': {},
+        },
+        'input_storage': storage1,
+        'output_storage': storage2,
+    })
+
+    job_conf = hd.get_job_conf('job-convert-01')
+    assert job_conf['started'] is False
+    assert job_conf['finished'] is False
+    assert job_conf['result'] is None
+
+    task.wait()
+
+    job_conf = hd.get_job_conf('job-convert-01')
+    assert job_conf['started'] is True
+    assert job_conf['finished'] is True
+    assert job_conf['result'] is True
+
+    # Preview importing to a dummy destination
+    # ------------------------------------------------------------
+
+    storage3 = hd.get_new_job_storage()
+    task = hd.run_job({
+        'id': 'job-preview-01',
+        'type': 'preview',
+        'previewer': {
+            'url': 'dummy2+http://example2.com',
+            'options': {},
+        },
+        'input_storage': storage2,
+        'output_storage': storage3,
+    })
+
+    job_conf = hd.get_job_conf('job-preview-01')
+    assert job_conf['started'] is False
+    assert job_conf['finished'] is False
+    assert job_conf['result'] is None
+
+    task.wait()
+
+    job_conf = hd.get_job_conf('job-preview-01')
+    assert job_conf['started'] is True
+    assert job_conf['finished'] is True
+    assert job_conf['result'] is True
+
+    # Actually import to dummy destination (use a storage?)
+    # ------------------------------------------------------------
+
+    task = hd.run_job({
+        'id': 'job-import-01',
+        'type': 'import',
+        'importer': {
+            'url': 'dummy2+http://example2.com',
+            'options': {},
+        },
+        'input_storage': storage2,
+    })
+
+    job_conf = hd.get_job_conf('job-import-01')
+    assert job_conf['started'] is False
+    assert job_conf['finished'] is False
+    assert job_conf['result'] is None
+
+    task.wait()
+
+    job_conf = hd.get_job_conf('job-import-01')
+    assert job_conf['started'] is True
+    assert job_conf['finished'] is True
+    assert job_conf['result'] is True

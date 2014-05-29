@@ -4,6 +4,9 @@ Harvester director.
 Service to keep track / schedule jobs easily.
 """
 
+import time
+import uuid
+
 from flask import current_app
 
 from harvester.ext.storage.mongodb import MongodbStorage
@@ -69,11 +72,27 @@ class HarvesterDirector(object):
     def set_job_conf(self, jobid, job):
         """ Update configuration about a job """
 
+        job_conf = {
+            'id': jobid,
+            'type': None,
+            'start_time': time.time(),
+            'end_time': None,
+            'started': False,
+            'finished': False,
+            'result': None,  # True | False
+        }
+        job_conf.update(job)
+
         storage = self.get_storage('control')
-        storage.documents['jobs'][jobid] = job
+        storage.documents['jobs'][jobid] = job_conf
 
     def del_job_conf(self, jobid, job):
         """ Delete configuration about a job """
 
         storage = self.get_storage('control')
         del storage.documents['jobs'][jobid]
+
+    def get_new_job_storage(self):
+        storage_name = 'job.{0}'.format(str(uuid.uuid4()))
+        url, opts = self.get_storage_url_options(storage_name)
+        return {'url': url, 'options': opts}
