@@ -129,6 +129,15 @@ class BaseMongoBucket(object):
     def list_buckets(cls, storage):
         return storage._list_buckets(cls.bucket_type)
 
+    @property
+    def collection(self):
+        """
+        The inner collection is made available "publicly" too,
+        as it is used by the director to perform more advanced
+        queries etc.
+        """
+        return self._get_collection()
+
     def _get_collection(self):
         return self.storage._get_collection([self.bucket_type, self.name])
 
@@ -174,6 +183,15 @@ class MongoBlobBucket(BaseMongoBucket, BaseBlobBucket):
     """MongoDB "blob" bucket uses GridFS to store binary data"""
 
     bucket_type = 'blob'
+
+    @property
+    def gridfs(self):
+        """
+        The inner gridfs is made available "publicly" too,
+        as it is used by the director to perform more advanced
+        queries etc.
+        """
+        return self._get_gridfs()
 
     def _get_gridfs(self):
         coll_name = self.storage._get_collection_name(

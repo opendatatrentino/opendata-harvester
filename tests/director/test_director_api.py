@@ -74,7 +74,7 @@ def test_dummy_task_run(director_client, director_worker):
     # ------------------------------------------------------------
 
     storage1 = hd.get_new_job_storage()
-    task = hd.run_job({
+    job_id = hd.create_job({
         'id': 'job-crawl-01',
         'type': 'crawl',
         'crawler': {
@@ -83,6 +83,7 @@ def test_dummy_task_run(director_client, director_worker):
         },
         'output_storage': storage1,
     })
+    task = hd.schedule_job(job_id)
 
     job_conf = hd.get_job_conf('job-crawl-01')
     assert job_conf['started'] is False
@@ -100,7 +101,7 @@ def test_dummy_task_run(director_client, director_worker):
     # ------------------------------------------------------------
 
     storage2 = hd.get_new_job_storage()
-    task = hd.run_job({
+    job_id = hd.create_job({
         'id': 'job-convert-01',
         'type': 'convert',
         'converter': {
@@ -110,6 +111,7 @@ def test_dummy_task_run(director_client, director_worker):
         'input_storage': storage1,
         'output_storage': storage2,
     })
+    task = hd.schedule_job(job_id)
 
     job_conf = hd.get_job_conf('job-convert-01')
     assert job_conf['started'] is False
@@ -127,7 +129,7 @@ def test_dummy_task_run(director_client, director_worker):
     # ------------------------------------------------------------
 
     storage3 = hd.get_new_job_storage()
-    task = hd.run_job({
+    job_id = hd.create_job({
         'id': 'job-preview-01',
         'type': 'preview',
         'previewer': {
@@ -137,6 +139,7 @@ def test_dummy_task_run(director_client, director_worker):
         'input_storage': storage2,
         'output_storage': storage3,
     })
+    task = hd.schedule_job(job_id)
 
     job_conf = hd.get_job_conf('job-preview-01')
     assert job_conf['started'] is False
@@ -153,7 +156,7 @@ def test_dummy_task_run(director_client, director_worker):
     # Actually import to dummy destination (use a storage?)
     # ------------------------------------------------------------
 
-    task = hd.run_job({
+    job_id = hd.create_job({
         'id': 'job-import-01',
         'type': 'import',
         'importer': {
@@ -162,6 +165,7 @@ def test_dummy_task_run(director_client, director_worker):
         },
         'input_storage': storage2,
     })
+    task = hd.schedule_job(job_id)
 
     job_conf = hd.get_job_conf('job-import-01')
     assert job_conf['started'] is False

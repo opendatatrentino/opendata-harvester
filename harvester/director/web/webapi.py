@@ -146,7 +146,8 @@ class TaskListResource(restful.Resource):
         hd = HarvesterDirector()
         rqobj = _get_request_object()
         task = self._prepare_task(rqobj)
-        hd.run_job(task)
+        hd.create_job(task)
+        hd.schedule_job(task['id'])
 
     def _prepare_task(self, rqobj):
         if rqobj['type'] == 'crawl':
@@ -168,10 +169,10 @@ class TaskListResource(restful.Resource):
             'id': 'job-{0}-{1}'.format(rqobj['type'], str(uuid.uuid4())),
             'type': rqobj['type'],
             'start_time': time.time(),
-            'end_time': None,
-            'started': False,
-            'finished': False,
-            'result': None,  # True | False
+            # 'end_time': None,
+            # 'started': False,
+            # 'finished': False,
+            # 'result': None,  # True | False
         })
         return task
 
