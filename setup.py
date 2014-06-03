@@ -69,6 +69,7 @@ entry_points_odt = {
         'pat_statistica = harvester_odt.pat_statistica.crawler:Statistica',
         'pat_statistica_subpro = harvester_odt.pat_statistica.crawler:StatisticaSubPro',  # noqa
         'pat_geocatalogo = harvester_odt.pat_geocatalogo.crawler:Geocatalogo',
+        'comunweb = harvester_odt.comunweb.crawler:ComunWebCrawler',
     ],
 
     'harvester.ext.converter': [
