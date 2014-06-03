@@ -111,11 +111,14 @@ def prepare_plugin_options(plugin_class, options):
 
     plugin_options = get_plugin_options(plugin_class)
 
+    if options is None:
+        options = {}
+
     conf = {}
     for opt_def in plugin_options.itervalues():
-        if opt_def.name in conf_options:
+        if opt_def.name in options:
             # Take type, value from the passed-in value
-            type_, value = conf_options.pop(opt_def.name)
+            type_, value = options.pop(opt_def.name)
 
             # If type is not specified on the command line,
             # use the default type for this option.
@@ -132,7 +135,7 @@ def prepare_plugin_options(plugin_class, options):
 
     # Now trigger warnings for any option left around..
 
-    for name in conf_options:
+    for name in options:
         warnings.warn(
             "Unknown configuration option {0!r} passed to plugin {1!r}"
             .format(name, plugin_class),
@@ -161,13 +164,13 @@ def get_plugin(plugin_type, url, options):
     # First, parse options passed from the command line
     # We store a mapping of "key name" : [(type, value), ..]
 
-    if isinstance(conf_options, (list, tuple)):
-        conf_options = plugin_options_from_cmdline(options)
+    if isinstance(options, (list, tuple)):
+        options = plugin_options_from_cmdline(options)
 
     # Now, we start reading actual configuration required
     # by the plugin
 
-    conf = prepare_plugin_options(plugin_class, conf_options)
+    conf = prepare_plugin_options(plugin_class, options)
 
     return plugin_class(url, conf)
 
