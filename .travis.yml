@@ -27,6 +27,6 @@ env:
     - HARVESTER_SETTINGS=./scripts/travis/testing_settings.py
 
   matrix:
-    - TOXENV=py26
+    # - TOXENV=py26
     - TOXENV=py27
     - TOXENV=pep8
