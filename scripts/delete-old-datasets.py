@@ -28,7 +28,20 @@ def abort():
     sys.exit(1)
 
 
+def print_kv(key, value):
+    print("\033[1m{0}:\033[0m {1}".format(key, value))
+
+
+print("Preparing to delete datasets")
+print_kv("Site url", CKAN_URL)
+
 client = CkanHighlevelClient(CKAN_URL, api_key=CKAN_API_KEY)
+siteinfo = client._client.request('GET', 'api/3/action/status_show').json()
+
+print_kv("Ckan version", siteinfo['result']['ckan_version'])
+print_kv("Site title", siteinfo['result']['site_title'])
+print_kv("Site description", siteinfo['result']['site_description'])
+print()
 
 # First, get the organization id
 # Then, create list of datasets to be delted
@@ -39,9 +52,9 @@ organizations = set()
 for org_name in ORGANIZATION_NAMES:
     organization = client.get_organization_by_name(org_name)
     print("Found organization")
-    print("Id: {0}".format(organization.id))
-    print("Name: {0}".format(organization.name))
-    print("Title: {0}".format(organization.title))
+    print_kv("Id", organization.id)
+    print_kv("Name", organization.name)
+    print_kv("Title", organization.title)
     print("")
     organizations.add(organization.id)
 
