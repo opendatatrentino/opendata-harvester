@@ -4,13 +4,58 @@ import urlparse
 import requests
 
 from harvester.ext.crawler.base import CrawlerPluginBase
+from harvester.utils import to_ordinal
+from . import DEFAULT_CLASSES
 
 logger = logging.getLogger(__name__)
+
+
+def safe_iter(iterable):
+    while True:
+        try:
+            yield iterable.next()
+        except StopIteration:
+            return
+        except:
+            logger.exception()
 
 
 class ComunWebCrawler(CrawlerPluginBase):
     """
     Crawler for "ComunWeb"-powered websites.
+
+    Will download data from a selection of object "classes",
+    download data contained in the page returned by requesting the
+    url in the "link" field and store them in the database,
+    as a document of "classIdentifier" type, keeping the original id
+    from the "objectId" field.
+
+    Objects stored in the storage have the following keys:
+
+    - classIdentifier:
+        the class type id, eg. ``"open_data"``
+    - dateModified:
+        Unix timestamp, as integer
+    - datePublished:
+        Unix timestamp, as integer
+    - fullUrl:
+        Link to HTTP page
+    - link:
+        Link to API/JSON metadata
+    - nodeId:
+        Numeric id of the node, eg. ``831248``
+    - nodeRemoteId:
+        16-byte hex string (32 char long) (md5 of something?)
+    - objectId:
+        Numeric id of the object, eg. ``849404``
+    - objectName:
+        title of the object, eg. ``"Rendiconto del 2013 (Open Data)"``
+    - objectRemoteId:
+        16-byte hex string (32 char long) (md5 of something?)
+    - full_metadata:
+        Metadata object, as returned by the ``link`` url.
+        Varies depending on the type of object (see json files in the
+        comunweb harvester ``docs`` folder).
     """
 
     options = []
@@ -18,53 +63,117 @@ class ComunWebCrawler(CrawlerPluginBase):
     def fetch_data(self, storage):
         logger.info("Fetching data from comunweb")
 
-        classes = self._list_object_classes()
+        classes = (c for c in self._list_object_classes()
+                   if c['identifier'] in DEFAULT_CLASSES)
+
         for clsinfo in classes:
-            logger.info(u"Found class {0} ({1}): {2}"
+            # Each clsinfo has "identifier", "link", "name"
+
+            logger.info(u"Found class: {0} ({1}): {2}"
                         .format(clsinfo['identifier'],
                                 clsinfo['name'],
                                 clsinfo['link']))
 
             obj_type = clsinfo['identifier']
-            for i, obj in enumerate(self._scan_pages(clsinfo['link'])):
+
+            # Now iterate all the objects in this class
+            objects = self._scan_pages(clsinfo['link'])
+            for i, obj in enumerate(safe_iter(objects)):
+
+                # Make sure objects are coherent
+                assert obj['classIdentifier'] == obj_type
+
+                node_id = obj['nodeId']
                 obj_id = obj['objectId']
+                object_name = obj['objectName']
+                link = obj['link']
+
+                # ===== NOTE =============================================
+                # Objects have two candidate keys: ``objectId`` and
+                # ``nodeId``; the latter is used in "link" urls so we
+                # now use it as primary object key; the former one can
+                # still be used to get metadata by requesting a URL
+                # like: /api/opendata/v1/content/object/<objectId> but
+                # apparently that contains slightly less information
+                # (node info and full url are missing)
+                # ========================================================
+
                 logger.debug(
-                    u'Storing "{type}" object #{seq} (id={id!r}): "{title}"'
+                    u'Storing {seq} object of type "{obj_type}" '
+                    u'nodeId={node_id}, objectId={obj_id}, title="{title}"'
                     .format(
-                        seq=i+1,
-                        type=obj_type,
-                        id=obj_id,
-                        title=obj['objectName']))
+                        seq=to_ordinal(i + 1),
+                        obj_type=obj_type,
+                        node_id=node_id,
+                        obj_id=obj_id,
+                        title=object_name))
 
-                metadata_url = obj['link']
-                metadata = requests.get(metadata_url).json()
-                obj['full_metadata'] = metadata
+                try:
+                    metadata = requests.get(link).json()
+                except:
+                    logger.exception('Error getting metadata')
+                    obj['full_metadata'] = None
+                else:
+                    obj['full_metadata'] = metadata
 
-                # Store it
-                storage.documents[obj_type][obj_id] = obj
+                # Store it by nodeId
+                storage.documents[obj_type][node_id] = obj
 
     def _list_object_classes(self):
+        """
+        Return a list of available "object classes" for the crawled site.
+
+        Each item in the list is a dict like this::
+
+            {
+            "identifier": "open_data",
+            "link": "http://.../api/opendata/v1/content/class/open_data",
+            "name": "Open Data"
+            },
+        """
+
         response = requests.get(urlparse.urljoin(
             self.url, '/api/opendata/v1/content/classList'))
         assert response.ok
         return response.json()['classes']
 
-    def _scan_datasets(self):
-        start_url = urlparse.urljoin(
-            self.url, '/api/opendata/v1/content/class/open_data')
-        return self._scan_pages(start_url)
-
     def _scan_pages(self, start_url):
+        """
+        Keep downloading pages from a paged API request and yield
+        objects found in each page, until the end is reached.
+
+        Each yielded item is a dict like this::
+
+            {
+            "classIdentifier": "open_data",
+            "dateModified": 1399274108,
+            "datePublished": 1399240800,
+            "fullUrl": "http://www.comune.trento.it/Comune/Documenti/Bilanci/"
+                       "Bilanci-di-rendicontazione/Rendiconti-di-gestione/"
+                       "Rendiconto-del-2013/Rendiconto-del-2013-Open-Data",
+            "link": "http://www.comune.trento.it"
+                    "/api/opendata/v1/content/node/831248",
+            "nodeId": 831248,
+            "nodeRemoteId": "dc04403fe707a2b5f36efba071bd119e",
+            "objectId": 849404,
+            "objectName": "Rendiconto del 2013 (Open Data)",
+            "objectRemoteId": "260e6a5ebdc2e6319f3353a0d9b2f5bd"
+            },
+
+        """
+
         offset, limit = 0, 50
 
         while True:
             page_url = '{0}/offset/{1}/limit/{2}'.format(
-                start_url, offset, limit)
+                start_url.rstrip('/'), offset, limit)
             response = requests.get(page_url)
             nodes = response.json()['nodes']
+
             if len(nodes) < 1:
-                # Was the last page
+                # This was the last page
                 return
-            for ds in nodes:
-                yield ds
-                offset += 1
+
+            for item in nodes:
+                yield item
+                offset += 1  # for next page

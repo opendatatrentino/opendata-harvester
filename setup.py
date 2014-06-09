@@ -79,6 +79,8 @@ entry_points_odt = {
         'converter:StatisticaSubProToCkan',
         'pat_geocatalogo_to_ckan = harvester_odt.pat_geocatalogo.'
         'converter:GeoCatalogoToCkan',
+        'comunweb_to_ckan = harvester_odt.comunweb.'
+        'converter:ComunWebToCkan',
     ],
 }
 

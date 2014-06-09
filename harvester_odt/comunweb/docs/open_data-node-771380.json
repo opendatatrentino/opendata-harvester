@@ -1,0 +1,338 @@
+{
+  "fields": {
+    "abstract": {
+      "classattribute_id": 2643,
+      "description": "",
+      "id": 7657698,
+      "identifier": "abstract",
+      "name": "Abstract (descrizione breve)",
+      "string_value": "Personale in servizio al 31/12/13.Art.27-ter comma 1 lettera c) del Testo Unico delle leggi regionali sull'ordinamento del personale dei Comuni della Regione Autonoma Trentino Alto-Adige (art.9 LR 25 maggio 2012 n. 2).",
+      "type": "ezxmltext",
+      "value": "<p>Personale in servizio al 31/12/13.</p><p>Art.27-ter comma 1 lettera c) del Testo Unico delle leggi regionali sull'ordinamento del personale dei Comuni della Regione Autonoma Trentino Alto-Adige (art.9 LR 25 maggio 2012 n. 2).</p>"
+    },
+    "codifica_caratteri": {
+      "classattribute_id": 2718,
+      "description": "",
+      "id": 7657719,
+      "identifier": "codifica_caratteri",
+      "name": "Codifica caratteri",
+      "string_value": "LATIN-1",
+      "type": "ezstring",
+      "value": "LATIN-1"
+    },
+    "data_fine_validita": {
+      "classattribute_id": 2717,
+      "description": "",
+      "id": 7657716,
+      "identifier": "data_fine_validita",
+      "name": "Data fine validità",
+      "string_value": "0",
+      "type": "ezdate",
+      "value": "0"
+    },
+    "data_iniziovalidita": {
+      "classattribute_id": 2651,
+      "description": "",
+      "id": 7657715,
+      "identifier": "data_iniziovalidita",
+      "name": "Data inizio validità",
+      "string_value": "0",
+      "type": "ezdate",
+      "value": "0"
+    },
+    "descrizione": {
+      "classattribute_id": 2644,
+      "description": "Descrizione dettagliata del dato e, ove necessario, dei sui attributi",
+      "id": 7657699,
+      "identifier": "descrizione",
+      "name": "Descrizione",
+      "string_value": "",
+      "type": "ezxmltext",
+      "value": ""
+    },
+    "descrizione_campi": {
+      "classattribute_id": 2716,
+      "description": "",
+      "id": 7657711,
+      "identifier": "descrizione_campi",
+      "name": "Descrizione campi",
+      "string_value": "",
+      "type": "ezxmltext",
+      "value": ""
+    },
+    "file1": {
+      "classattribute_id": 2726,
+      "description": "",
+      "id": 7657700,
+      "identifier": "file1",
+      "name": "File da scaricare",
+      "string_value": "var/comunetn/storage/original/text/f579aedefc4e39e2280347d8d1245c08.csv|tabella genere per categoria.csv",
+      "type": "ezbinaryfile",
+      "value": "http://www.comune.trento.it/content/download/792760/7657700/tabella genere per categoria.csv"
+    },
+    "file2": {
+      "classattribute_id": 2727,
+      "description": "",
+      "id": 7657701,
+      "identifier": "file2",
+      "name": "File da scaricare (2)",
+      "string_value": null,
+      "type": "ezbinaryfile",
+      "value": null
+    },
+    "file3": {
+      "classattribute_id": 2728,
+      "description": "",
+      "id": 7657702,
+      "identifier": "file3",
+      "name": "File da scaricare (3)",
+      "string_value": null,
+      "type": "ezbinaryfile",
+      "value": null
+    },
+    "file4": {
+      "classattribute_id": 2729,
+      "description": "",
+      "id": 7657703,
+      "identifier": "file4",
+      "name": "File da scaricare (4)",
+      "string_value": null,
+      "type": "ezbinaryfile",
+      "value": null
+    },
+    "file5": {
+      "classattribute_id": 2730,
+      "description": "",
+      "id": 7657704,
+      "identifier": "file5",
+      "name": "File da scaricare (5)",
+      "string_value": null,
+      "type": "ezbinaryfile",
+      "value": null
+    },
+    "formato": {
+      "classattribute_id": 2725,
+      "description": "",
+      "id": 7657721,
+      "identifier": "formato",
+      "name": "Formato",
+      "string_value": "715852",
+      "type": "ezobjectrelationlist",
+      "value": {
+        "classIdentifier": "tipo_formato",
+        "dateModified": 1362067615,
+        "datePublished": 1354868182,
+        "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715852",
+        "objectId": 715852,
+        "objectName": "CSV (comma-separated values)",
+        "objectRemoteId": "356f4d6e6a1dd8d72ecfa2d12b061fcb"
+      }
+    },
+    "frequenza_aggiornamento": {
+      "classattribute_id": 2653,
+      "description": "",
+      "id": 7657718,
+      "identifier": "frequenza_aggiornamento",
+      "name": "Frequenza di aggiornamento",
+      "string_value": "715876",
+      "type": "ezobjectrelationlist",
+      "value": {
+        "classIdentifier": "frequenza_aggiornamento",
+        "dateModified": 1354871788,
+        "datePublished": 1354871788,
+        "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715876",
+        "objectId": 715876,
+        "objectName": "Annuale",
+        "objectRemoteId": "9f7be2996c34e49271c7080977fd9d15"
+      }
+    },
+    "image": {
+      "classattribute_id": 2736,
+      "description": "",
+      "id": 7657712,
+      "identifier": "image",
+      "name": "Immagine",
+      "string_value": false,
+      "type": "ezimage",
+      "value": false
+    },
+    "licenza": {
+      "classattribute_id": 2650,
+      "description": "",
+      "id": 7657717,
+      "identifier": "licenza",
+      "name": "Licenza",
+      "string_value": "715864",
+      "type": "ezobjectrelationlist",
+      "value": {
+        "classIdentifier": "tipo_licenza",
+        "dateModified": 1361958924,
+        "datePublished": 1354868864,
+        "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715864",
+        "objectId": 715864,
+        "objectName": "CC-BY",
+        "objectRemoteId": "207e16bdae84b7410ddae2251ac2141e"
+      }
+    },
+    "name": {
+      "classattribute_id": 2640,
+      "description": "Nome del dato pubblico",
+      "id": 7657697,
+      "identifier": "name",
+      "name": "Titolo",
+      "string_value": "Dati di genere per categoria",
+      "type": "ezstring",
+      "value": "Dati di genere per categoria"
+    },
+    "parola_chiave": {
+      "classattribute_id": 2654,
+      "description": "",
+      "id": 7657714,
+      "identifier": "parola_chiave",
+      "name": "Tags",
+      "string_value": "",
+      "type": "ezkeyword",
+      "value": ""
+    },
+    "servizio": {
+      "classattribute_id": 2655,
+      "description": "",
+      "id": 7657720,
+      "identifier": "servizio",
+      "name": "Servizio responsabile",
+      "string_value": "",
+      "type": "ezobjectrelationlist",
+      "value": false
+    },
+    "tipologia": {
+      "classattribute_id": 2646,
+      "description": "(alfanumerico, cartografico)",
+      "id": 7657713,
+      "identifier": "tipologia",
+      "name": "Categoria",
+      "string_value": "715616",
+      "type": "ezobjectrelationlist",
+      "value": {
+        "classIdentifier": "tipo_dato",
+        "dateModified": 1354808917,
+        "datePublished": 1354808917,
+        "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715616",
+        "objectId": 715616,
+        "objectName": "Alfanumerico",
+        "objectRemoteId": "727fe834dcf1cb453b84f6be33f0c908"
+      }
+    },
+    "url": {
+      "classattribute_id": 2777,
+      "description": "",
+      "id": 7657710,
+      "identifier": "url",
+      "name": "Link accessorio",
+      "string_value": false,
+      "type": "ezurl",
+      "value": false
+    },
+    "url1": {
+      "classattribute_id": 2731,
+      "description": "",
+      "id": 7657705,
+      "identifier": "url1",
+      "name": "Link al file da scaricare",
+      "string_value": false,
+      "type": "ezurl",
+      "value": false
+    },
+    "url2": {
+      "classattribute_id": 2732,
+      "description": "",
+      "id": 7657706,
+      "identifier": "url2",
+      "name": "Link al file da scaricare (2)",
+      "string_value": false,
+      "type": "ezurl",
+      "value": false
+    },
+    "url3": {
+      "classattribute_id": 2733,
+      "description": "",
+      "id": 7657707,
+      "identifier": "url3",
+      "name": "Link al file da scaricare (3)",
+      "string_value": false,
+      "type": "ezurl",
+      "value": false
+    },
+    "url4": {
+      "classattribute_id": 2734,
+      "description": "",
+      "id": 7657708,
+      "identifier": "url4",
+      "name": "Link al file da scaricare (4)",
+      "string_value": false,
+      "type": "ezurl",
+      "value": false
+    },
+    "url5": {
+      "classattribute_id": 2735,
+      "description": "",
+      "id": 7657709,
+      "identifier": "url5",
+      "name": "Link al file da scaricare (5)",
+      "string_value": false,
+      "type": "ezurl",
+      "value": false
+    }
+  },
+  "links": {
+    "*": "http://www.comune.trento.it/api/opendata/content/node/771380/fields",
+    "abstract": "http://www.comune.trento.it/api/opendata/content/node/771380/field/abstract",
+    "codifica_caratteri": "http://www.comune.trento.it/api/opendata/content/node/771380/field/codifica_caratteri",
+    "data_fine_validita": "http://www.comune.trento.it/api/opendata/content/node/771380/field/data_fine_validita",
+    "data_iniziovalidita": "http://www.comune.trento.it/api/opendata/content/node/771380/field/data_iniziovalidita",
+    "descrizione": "http://www.comune.trento.it/api/opendata/content/node/771380/field/descrizione",
+    "descrizione_campi": "http://www.comune.trento.it/api/opendata/content/node/771380/field/descrizione_campi",
+    "file1": "http://www.comune.trento.it/api/opendata/content/node/771380/field/file1",
+    "file2": "http://www.comune.trento.it/api/opendata/content/node/771380/field/file2",
+    "file3": "http://www.comune.trento.it/api/opendata/content/node/771380/field/file3",
+    "file4": "http://www.comune.trento.it/api/opendata/content/node/771380/field/file4",
+    "file5": "http://www.comune.trento.it/api/opendata/content/node/771380/field/file5",
+    "formato": "http://www.comune.trento.it/api/opendata/content/node/771380/field/formato",
+    "frequenza_aggiornamento": "http://www.comune.trento.it/api/opendata/content/node/771380/field/frequenza_aggiornamento",
+    "image": "http://www.comune.trento.it/api/opendata/content/node/771380/field/image",
+    "licenza": "http://www.comune.trento.it/api/opendata/content/node/771380/field/licenza",
+    "name": "http://www.comune.trento.it/api/opendata/content/node/771380/field/name",
+    "parola_chiave": "http://www.comune.trento.it/api/opendata/content/node/771380/field/parola_chiave",
+    "servizio": "http://www.comune.trento.it/api/opendata/content/node/771380/field/servizio",
+    "tipologia": "http://www.comune.trento.it/api/opendata/content/node/771380/field/tipologia",
+    "url": "http://www.comune.trento.it/api/opendata/content/node/771380/field/url",
+    "url1": "http://www.comune.trento.it/api/opendata/content/node/771380/field/url1",
+    "url2": "http://www.comune.trento.it/api/opendata/content/node/771380/field/url2",
+    "url3": "http://www.comune.trento.it/api/opendata/content/node/771380/field/url3",
+    "url4": "http://www.comune.trento.it/api/opendata/content/node/771380/field/url4",
+    "url5": "http://www.comune.trento.it/api/opendata/content/node/771380/field/url5"
+  },
+  "locations": [
+    {
+      "fullUrl": "http://www.comune.trento.it/Comune/Organizzazione-comunale/Amministrazione-trasparente/Personale/Dati-di-genere/Dati-di-genere-per-categoria/Dati-di-genere-per-categoria",
+      "isMain": true,
+      "nodeId": 771380,
+      "nodeRemoteId": "75a27d1cfd05da34cc23dd436352d87f"
+    }
+  ],
+  "metadata": {
+    "classIdentifier": "open_data",
+    "dateModified": 1391770384,
+    "datePublished": 1381914742,
+    "fullUrl": "http://www.comune.trento.it/Comune/Organizzazione-comunale/Amministrazione-trasparente/Personale/Dati-di-genere/Dati-di-genere-per-categoria/Dati-di-genere-per-categoria",
+    "nodeId": 771380,
+    "nodeRemoteId": "75a27d1cfd05da34cc23dd436352d87f",
+    "objectId": 792760,
+    "objectName": "Dati di genere per categoria",
+    "objectRemoteId": "0f6c7d2315c240f0a72a5bd4fb97bd92"
+  },
+  "requestedResponseGroups": [
+    "Metadata",
+    "Fields",
+    "Locations"
+  ]
+}

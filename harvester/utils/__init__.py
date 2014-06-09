@@ -298,6 +298,19 @@ def slugify(text):
     return re.sub(r'[^a-z0-9]+', '-', text).strip('-')
 
 
+def to_ordinal(number):
+    assert isinstance(number, int)
+    sr = str(number)  # string representation
+    ld = sr[-1]  # last digit
+    if ld == '1':
+        return sr + 'st'
+    if ld == '2':
+        return sr + 'nd'
+    if ld == '3':
+        return sr + 'rd'
+    return sr + 'th'
+
+
 def decode_faulty_json(text):
     """
     Attempt to decode json containing newlines inside strings,
