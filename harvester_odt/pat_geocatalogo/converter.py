@@ -15,15 +15,16 @@ from .tags_map import TAGS_MAP
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_ORG_ID = 'pat-sistema-informativo-ambiente-e-territorio'
+ORG_SIAT = 'pat-sistema-informativo-ambiente-e-territorio'
+ORG_CATASTO = ''
 LICENSES_MAP = {
     1: 'cc-zero',
     2: 'cc-by',
 }
 
 ORGANIZATIONS = {
-    DEFAULT_ORG_ID: {
-        'name': DEFAULT_ORG_ID,
+    ORG_SIAT: {
+        'name': ORG_SIAT,
         'title': 'PAT Sistema Informativo Ambiente e Territorio',
         'description': 'SIAT. Entità territoriali geo-referenziate,'
         ' con associate informazioni sulle relative proprietà.',
@@ -32,7 +33,30 @@ ORGANIZATIONS = {
         'is_organization': True,
         'state': 'active',
         'tags': [],
-    }
+    },
+    ORG_CATASTO: {
+        'name': ORG_CATASTO,
+        'title': 'PAT S. Catasto',
+
+        'description':
+        "Il Servizio Catasto della Provincia autonoma di Trento cura le"
+        "seguenti attività: - sovrintende alle operazioni di"
+        "conservazione del catasto fondiario e fabbricati; - svolge le"
+        "funzioni di controllo, di verifica e di ispezione delle attività"
+        "connesse alla tenuta del catasto; - cura, in accordo con la"
+        "struttura competente in materia di Sistema informativo"
+        "elettronico provinciale, la definizione dei programmi di"
+        "informatizzazione dei servizi del catasto nel contesto di una"
+        "coordinata realizzazione del sistema informatico/informativo. -"
+        "cura le revisioni periodiche degli estimi catastali e l’attività"
+        "di raffittimento della rete geodetica del territorio provinciale",
+
+        'image_url': 'http://dati.trentino.it/images/logo.png',
+        'type': 'organization',
+        'is_organization': True,
+        'state': 'active',
+        'tags': [],
+    },
 }
 
 GROUPS = {
@@ -131,6 +155,11 @@ class GeoCatalogoToCkan(ConverterPluginBase):
                 (': '.join(k), v)
                 for k, v in flatten_dict(extras).iteritems())
 
+            # If the website is the one from "catasto", we want to put
+            # the dataset in **that** organization
+            if extras.get('URL sito') == 'http://www.catasto.provincia.tn.it':
+                converted['owner_org'] = ORG_CATASTO
+
             # Do the actual conversion
             assert int(converted['id']) == dataset_id
             storage_out.documents['dataset'][str(converted['id'])] = converted
@@ -170,7 +199,7 @@ def extract_metadata_from_api_xml(xmldata):
         'maintainer_email': 'N/A',
         'url': 'http://www.territorio.provincia.tn.it/',
         'license_id': LICENSES_MAP[_ds_license],
-        'owner_org': DEFAULT_ORG_ID,
+        'owner_org': ORG_SIAT,
         'groups': ['gestione-del-territorio'],  # Fixed
         'extras': {},
         'tags': _clean_tags(xph('dc:subject/text()')),
