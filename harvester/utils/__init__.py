@@ -54,34 +54,33 @@ def convert_string(type_, string):
 
 
 def get_plugin_class(plugin_type, name):
-    extmgr = ExtensionManager('harvester.ext.{0}'.format(plugin_type))
+    """
+    Get a plugin class, based on plugin type and name.
+    This is mostly a wrapper around stevedore's ExtensionManager.
 
+    :param plugin_type:
+        The plugin type, without the ``harvester.ext.`` prefix
+
+    :param name:
+        The plugin name, as configured in the setuptools' entry_points
+
+    :return:
+        The plugin class
+    """
+
+    extmgr = ExtensionManager('harvester.ext.{0}'.format(plugin_type))
     try:
         ep = extmgr[name]
     except KeyError:
         raise ValueError("Invalid plugin name: {0}".format(name))
-
     return ep.plugin
 
 
 def get_plugin_options(plugin):
-    """
-    Get a list of options accepted by a plugin.
-
-    :return: a list of ``plugin_option`` named tuples.
-    """
-
-    options = {}
-
-    for subobj in reversed(plugin.mro()):
-        if getattr(subobj, 'options', None) is not None:
-            for item in subobj.options:
-                plgo = plugin_option(*(item + (None,) * (4 - len(item))))
-                if plgo.type is None:
-                    options.pop(plgo.name, None)
-                else:
-                    options[plgo.name] = plgo
-    return options
+    warnings.warn('get_plugin_options() is deprecated: '
+                  'use plugin.get_options() instead',
+                  DeprecationWarning)
+    return plugin.get_options()
 
 
 def plugin_options_from_cmdline(options):
@@ -299,15 +298,27 @@ def slugify(text):
 
 
 def to_ordinal(number):
+    """Return the "ordinal" representation of a number"""
+
     assert isinstance(number, int)
+
     sr = str(number)  # string representation
     ld = sr[-1]  # last digit
-    if ld == '1':
-        return sr + 'st'
-    if ld == '2':
-        return sr + 'nd'
-    if ld == '3':
-        return sr + 'rd'
+
+    try:
+        # Second to last digit
+        stld = sr[-2]
+    except IndexError:
+        stld = None
+
+    if stld != '1':
+        if ld == '1':
+            return sr + 'st'
+        if ld == '2':
+            return sr + 'nd'
+        if ld == '3':
+            return sr + 'rd'
+
     return sr + 'th'
 
 
