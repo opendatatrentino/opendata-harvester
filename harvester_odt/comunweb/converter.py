@@ -16,6 +16,19 @@ DATE_FORMAT = '%F %T'
 
 
 class ComunWebToCkan(ConverterPluginBase):
+    """
+    Convert from comunweb opendata datasets to Ckan.
+
+    - Each ``open_data`` object is a dataset
+    - Each website has an extra dataset pointing to the API root
+    - The organization to be associated with the dataset can be chosen
+      via options from the command line, as it depends on the comune
+      being crawled.
+
+    """
+    # todo: we need to store some stuff in the ``info`` keyvalue store
+    #       in order to prevent mistakes.
+
     options = [
         ('org_name', 'str', None, 'Organization name'),
         ('org_title', 'str', None, 'Organization title'),
