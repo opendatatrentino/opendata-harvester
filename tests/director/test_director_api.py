@@ -5,6 +5,9 @@ import pytest
 from harvester.director import HarvesterDirector
 from harvester.utils import check_tcp_port
 
+
+# todo: what if we want to connect to redis on a different host / port?
+# we should read this from some configuration value / env var..
 need_redis = pytest.mark.skipif(
     not check_tcp_port('127.0.0.1', 6379),
     reason='Redis unavailable')
