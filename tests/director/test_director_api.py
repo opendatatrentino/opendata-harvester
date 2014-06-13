@@ -3,6 +3,11 @@ import json
 import pytest
 
 from harvester.director import HarvesterDirector
+from harvester.utils import check_tcp_port
+
+need_redis = pytest.mark.skipif(
+    not check_tcp_port('127.0.0.1', 6379),
+    reason='Redis unavailable')
 
 
 @pytest.mark.parametrize('conf_type', ['crawler', 'converter', 'importer'])
@@ -41,6 +46,7 @@ def test_director_api_conf(director_client, conf_type):
     assert json.loads(rv.data) == []
 
 
+@need_redis
 def test_simple_task_run(director_client, director_worker):
     # We want to create a dummy job and execute it via celery,
     # mostly to check that everything is working fine.
@@ -67,6 +73,7 @@ def test_simple_task_run(director_client, director_worker):
     }
 
 
+@need_redis
 def test_dummy_task_run(director_client, director_worker):
     hd = HarvesterDirector()
 

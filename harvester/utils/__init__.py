@@ -7,6 +7,7 @@ import hashlib
 import json
 import logging
 import re
+import socket
 import sys
 import warnings
 
@@ -367,3 +368,24 @@ def lazy_property(fn):
         delattr(self, attr_name)
 
     return property(fget=getter, fset=setter, fdel=deleter, doc=fn.__doc__)
+
+
+def check_tcp_port(host, port, timeout=3):
+    """
+    Try connecting to a given TCP port.
+
+    :param host: Host to connect to
+    :param port: TCP port to connect to
+    :param timeout: Connection timeout, in seconds
+    :return: True if the port is open, False otherwise.
+    """
+
+    s = socket.socket()
+    try:
+        s.settimeout(timeout)
+        s.connect((host, port))
+    except socket.error:
+        return False
+    else:
+        s.close()
+        return True
