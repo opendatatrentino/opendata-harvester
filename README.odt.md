@@ -27,13 +27,16 @@ $HARVESTER crawl --crawler pat_geocatalogo --storage "${MONGODB}"/pat_geocatalog
 ## Run converters
 
 $HARVESTER convert --converter pat_statistica_to_ckan \
-    --input "${MONGODB}"/pat_statistica --output "${MONGODB}"/pat_statistica_clean
+    --input "${MONGODB}"/pat_statistica --output "${MONGODB}"/pat_statistica_clean \
+    --output-option clean_first=true
 
 $HARVESTER convert --converter pat_statistica_subpro_to_ckan \
-    --input "${MONGODB}"/pat_statistica_subpro --output "${MONGODB}"/pat_statistica_subpro_clean
+    --input "${MONGODB}"/pat_statistica_subpro --output "${MONGODB}"/pat_statistica_subpro_clean \
+    --output-option clean_first=true
 
 $HARVESTER convert --converter pat_geocatalogo_to_ckan \
-    --input "${MONGODB}"/pat_geocatalogo --output "${MONGODB}"/pat_geocatalogo_clean
+    --input "${MONGODB}"/pat_geocatalogo --output "${MONGODB}"/pat_geocatalogo_clean \
+    --output-option clean_first=true
 
 ## Run the importer
 
