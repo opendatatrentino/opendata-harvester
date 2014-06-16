@@ -606,14 +606,14 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
             'description': dataset_title,
             'format': 'JSON',
             'mimetype': 'application/json',
-            'url': orig_dataset['URLIndicatoreD'],
+            'url': orig_dataset['URLIndicatore'],
         },
         {
             'name': dataset_name,
             'description': dataset_title,
             'format': 'CSV',
             'mimetype': 'text/csv',
-            'url': (orig_dataset['URLIndicatoreD']
+            'url': (orig_dataset['URLIndicatore']
                     .replace('fmt=json', 'fmt=csv')),  # F** this
         },
     ]
