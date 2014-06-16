@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 ORG_SIAT = 'pat-sistema-informativo-ambiente-e-territorio'
-ORG_CATASTO = ''
+ORG_CATASTO = 'pat-s-catasto'
 LICENSES_MAP = {
     1: 'cc-zero',
     2: 'cc-by',
