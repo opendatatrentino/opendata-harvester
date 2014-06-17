@@ -45,6 +45,21 @@ class ComunWebToCkan(ConverterPluginBase):
             ckan_dataset = self._comunweb_dataset_to_ckan(dataset)
             storage_out.documents['dataset'][dataset_id] = ckan_dataset
 
+        # We need to create the only organization we have
+        logger.info('Creating organization: {0} ({1})'
+                    .format(self.conf['org_name'], self.conf['org_title']))
+        storage_out.documents['organization'][self.conf['org_name']] = {
+            'name': self.conf['org_name'],
+            'title': self.conf['org_title'],
+            'description': self.conf['org_description'],
+            'image_url': self.conf['org_image_url']
+            or 'http://dati.trentino.it/images/logo.png',
+            'type': 'organization',
+            'is_organization': True,
+            'state': 'active',
+            'tags': [],
+        }
+
     def _get_cached_license(self, license_url):
         cache = getattr(self, '_cached_licenses', None)
 
