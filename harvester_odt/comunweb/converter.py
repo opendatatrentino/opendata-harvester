@@ -43,6 +43,7 @@ class ComunWebToCkan(ConverterPluginBase):
         objects = storage_in.documents['open_data'].iteritems()
         for dataset_id, dataset in objects:
             ckan_dataset = self._comunweb_dataset_to_ckan(dataset)
+            dataset_id = str(dataset_id)  # We want string IDs
             storage_out.documents['dataset'][dataset_id] = ckan_dataset
 
         # We need to create the only organization we have
