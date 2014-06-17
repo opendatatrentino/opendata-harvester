@@ -95,7 +95,7 @@ class ComunWebToCkan(ConverterPluginBase):
 
         dataset = {
             'name': slugify(obj['objectName']),
-            'title': obj['objectName'],
+            'title': obj['objectName'].strip(),
             'notes': '',
             'author': '',
             'author_email': '',
