@@ -29,22 +29,22 @@ set -v    # Verbose
 harvester crawl \
     --crawler pat_statistica \
     --storage "${MONGODB}"/pat_statistica \
-	--storage-option clean_first=true
+    --storage-option clean_first=true
 
 harvester crawl \
     --crawler pat_statistica_subpro \
     --storage "${MONGODB}"/pat_statistica_subpro \
-	--storage-option clean_first=true
+    --storage-option clean_first=true
 
 harvester crawl \
     --crawler pat_geocatalogo \
     --storage "${MONGODB}"/pat_geocatalogo \
-	--storage-option clean_first=true
+    --storage-option clean_first=true
 
 harvester crawl \
     --crawler comunweb+http://www.comune.trento.it/ \
     --storage "${MONGODB}"/cweb_trento \
-	--storage-option clean_first=true
+    --storage-option clean_first=true
 
 # Then, run the converters
 # --------------------------------------------------
@@ -52,28 +52,28 @@ harvester crawl \
 harvester convert \
     --converter pat_statistica_to_ckan \
     --input "${MONGODB}"/pat_statistica \
-	--output "${MONGODB}"/pat_statistica_clean \
+    --output "${MONGODB}"/pat_statistica_clean \
     --output-option clean_first=true
 
 harvester convert \
     --converter pat_statistica_subpro_to_ckan \
     --input "${MONGODB}"/pat_statistica_subpro \
-	--output "${MONGODB}"/pat_statistica_subpro_clean \
+    --output "${MONGODB}"/pat_statistica_subpro_clean \
     --output-option clean_first=true
 
 harvester convert \
     --converter pat_geocatalogo_to_ckan \
     --input "${MONGODB}"/pat_geocatalogo \
-	--output "${MONGODB}"/pat_geocatalogo_clean \
+    --output "${MONGODB}"/pat_geocatalogo_clean \
     --output-option clean_first=true
 
 harvester convert \
     --converter comunweb_to_ckan \
     --converter-option org_name=comune-di-trento \
-	--converter-option org_title="Comune di Trento" \
-	--input "${MONGODB}"/cweb_trento \
-	--output "${MONGODB}"/cweb_trento_clean \
-	--output-option clean_first=true
+    --converter-option org_title="Comune di Trento" \
+    --input "${MONGODB}"/cweb_trento \
+    --output "${MONGODB}"/cweb_trento_clean \
+    --output-option clean_first=true
 ```
 
 **Note:** if you are reusing the same database, append
@@ -136,23 +136,23 @@ CKAN_API_KEY=1234-5678-...
 
 harvester import --storage "${MONGODB}"/pat_statistica_clean \
     --importer ckan+"$CKAN_URL" \
-	--importer-option api_key="$CKAN_API_KEY" \
-	--importer-option source_name=statistica
+    --importer-option api_key="$CKAN_API_KEY" \
+    --importer-option source_name=statistica
 
 harvester import --storage "${MONGODB}"/pat_statistica_subpro_clean \
     --importer ckan+"$CKAN_URL" \
-	--importer-option api_key="$CKAN_API_KEY" \
-	--importer-option source_name=statistica_subpro
+    --importer-option api_key="$CKAN_API_KEY" \
+    --importer-option source_name=statistica_subpro
 
 harvester import --storage "${MONGODB}"/pat_geocatalogo_clean \
-  --importer ckan+"$CKAN_URL" \
-  --importer-option api_key="$CKAN_API_KEY" \
-  --importer-option source_name=geocatalogo
+    --importer ckan+"$CKAN_URL" \
+    --importer-option api_key="$CKAN_API_KEY" \
+    --importer-option source_name=geocatalogo
 
 harvester import --storage "${MONGODB}"/cweb_trento_clean \
-  --importer ckan+"$CKAN_URL" \
-  --importer-option api_key="$CKAN_API_KEY" \
-  --importer-option source_name=cweb_trento
+    --importer ckan+"$CKAN_URL" \
+    --importer-option api_key="$CKAN_API_KEY" \
+    --importer-option source_name=cweb_trento
 ```
 
 
