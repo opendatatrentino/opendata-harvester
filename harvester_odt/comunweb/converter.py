@@ -107,6 +107,7 @@ class ComunWebToCkan(ConverterPluginBase):
             'groups': [],  # todo: set this?
             'extras': {},
             'tags': [],
+            'resources': [],
         }
 
         # Set dataset extras
@@ -115,6 +116,28 @@ class ComunWebToCkan(ConverterPluginBase):
                 if isinstance(val['value'], datetime.datetime):
                     val['value'] = val['value'].strftime(DATE_FORMAT)
                 dataset['extras'][val['label']] = val['value']
+
+        # Update fields by reading from extras
+        try:
+            dataset['notes'] = values['abstract']['value']
+        except KeyError:
+            pass
+
+        # Create resources
+        for i in xrange(1, 6):
+            key = 'file{0}'.format(i)
+            obj = values.get(key)
+            if (obj is None) or (not obj['value']):
+                continue
+
+            resource = {
+                'name': 'Dati in formato CSV',
+                'description': dataset['title'],
+                'format': 'CSV',
+                'mimetype': 'text/csv',
+                'url': obj['value'],
+            }
+            dataset['resources'].append(resource)
 
         return dataset
 
