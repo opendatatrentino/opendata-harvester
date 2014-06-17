@@ -112,9 +112,9 @@ class ComunWebToCkan(ConverterPluginBase):
         # Set dataset extras
         for key, val in values.iteritems():
             if val['value'] is not None:
-                dataset['extras'][val['label']] = val['value']
                 if isinstance(val['value'], datetime.datetime):
                     val['value'] = val['value'].strftime(DATE_FORMAT)
+                dataset['extras'][val['label']] = val['value']
 
         return dataset
 
