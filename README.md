@@ -19,10 +19,16 @@ Simply install the tarball from github:
 pip install https://github.com/opendatatrentino/data-crawlers/tarball/master
 ```
 
-if you plan to use it to import data to ckan:
+if you plan to use it to import data to ckan, you'll need the [Ckan API client](https://github.com/opendatatrentino/ckan-api-client/) too. To install the stable version from pypi:
 
 ```
-pip install https://github.com/opendatatrentino/ckan-api-client/tarball/master
+pip install ckan-api-client
+```
+
+Or the latest from git:
+
+```
+pip install http://git.io/ckan-api-client.tar.gz
 ```
 
 ## Concepts
@@ -43,20 +49,20 @@ There are four plugin types that can be defined:
 
 ## Core plugins
 
-**Crawlers:**
-
-- ``pat_statistica`` -- for ODT / servizio statistica
-- ``pat_statistica_subpro`` -- for ODT / servizio statistica
-- ``pat_geocatalogo`` -- for ODT / GeoCatalogo PAT
-- ``comunweb`` -- for ComunWeb sites
-
-
 **Storages:**
 
 - ``memory`` -- keep data in memory (mainly for testing)
 - ``jsondir`` -- keep data as json files in a directory (for local testing)
 - ``sqlite`` -- keep data in a sqlite database (for local testing)
 - ``mongodb`` -- keep data in a mongodb database (recommended for production)
+
+
+**Crawlers:**
+
+- ``pat_statistica`` -- for ODT / servizio statistica
+- ``pat_statistica_subpro`` -- for ODT / servizio statistica
+- ``pat_geocatalogo`` -- for ODT / GeoCatalogo PAT
+- ``comunweb`` -- for ComunWeb sites
 
 
 **Converters:**

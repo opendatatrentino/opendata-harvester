@@ -134,20 +134,25 @@ Relevant options:
 CKAN_URL=http://dati.trentino.it
 CKAN_API_KEY=1234-5678-...
 
-$HARVESTER import --storage "${MONGODB}"/pat_statistica_clean \
+harvester import --storage "${MONGODB}"/pat_statistica_clean \
     --importer ckan+"$CKAN_URL" \
 	--importer-option api_key="$CKAN_API_KEY" \
 	--importer-option source_name=statistica
 
-$HARVESTER import --storage "${MONGODB}"/pat_statistica_subpro_clean \
+harvester import --storage "${MONGODB}"/pat_statistica_subpro_clean \
     --importer ckan+"$CKAN_URL" \
 	--importer-option api_key="$CKAN_API_KEY" \
 	--importer-option source_name=statistica_subpro
 
-$HARVESTER import --storage "${MONGODB}"/pat_geocatalogo_clean \
+harvester import --storage "${MONGODB}"/pat_geocatalogo_clean \
   --importer ckan+"$CKAN_URL" \
   --importer-option api_key="$CKAN_API_KEY" \
   --importer-option source_name=geocatalogo
+
+harvester import --storage "${MONGODB}"/cweb_trento_clean \
+  --importer ckan+"$CKAN_URL" \
+  --importer-option api_key="$CKAN_API_KEY" \
+  --importer-option source_name=cweb_trento
 ```
 
 
