@@ -48,6 +48,7 @@ There are four plugin types that can be defined:
 - ``pat_statistica`` -- for ODT / servizio statistica
 - ``pat_statistica_subpro`` -- for ODT / servizio statistica
 - ``pat_geocatalogo`` -- for ODT / GeoCatalogo PAT
+- ``comunweb`` -- for ComunWeb sites
 
 
 **Storages:**
@@ -63,6 +64,7 @@ There are four plugin types that can be defined:
 - ``pat_statistica_subpro_to_ckan`` -- for ODT / servizio statistica
 - ``pat_statistica_to_ckan`` -- for ODT / servizio statistica
 - ``pat_geocatalogo_to_ckan`` -- for ODT / GeoCatalogo PAT
+- ``comunweb_to_ckan`` -- convert from ComunWeb to Ckan
 
 
 **Importers:**
