@@ -2,8 +2,12 @@
 
 from __future__ import unicode_literals
 
+import HTMLParser
 import datetime
+import json
 import logging
+import os
+import re
 
 import requests
 
@@ -13,6 +17,15 @@ from harvester.utils import slugify
 logger = logging.getLogger(__name__)
 
 DATE_FORMAT = '%F %T'
+
+# Load extension -> mimetype definitions
+HERE = os.path.dirname(__file__)
+with open(os.path.join(HERE, 'mimetypes.json'), 'r') as fp:
+    EXT_TO_MIME = json.load(fp)
+
+
+def _html_unescape(s):
+    return HTMLParser.HTMLParser().unescape(s)
 
 
 class ComunWebToCkan(ConverterPluginBase):
@@ -118,37 +131,183 @@ class ComunWebToCkan(ConverterPluginBase):
                 dataset['extras'][val['label']] = val['value']
 
         # Update fields by reading from extras
+        # ----------------------------------------
+
         try:
             dataset['notes'] = values['abstract']['value']
         except KeyError:
             pass
 
         # Create resources
-        for i in xrange(1, 6):
-            key = 'file{0}'.format(i)
-            obj = values.get(key)
-            if (obj is None) or (not obj['value']):
-                continue
+        # ----------------------------------------
 
-            resource = {
-                'name': 'Dati in formato CSV',
-                'description': dataset['title'],
-                'format': 'CSV',
-                'mimetype': 'text/csv',
-                'url': obj['value'],
-            }
-            dataset['resources'].append(resource)
+        dataset['resources'] = list(self._resources_from_metadata(metadata))
+        self._fix_resource_format_case(dataset['resources'])
 
         return dataset
 
+    def _resources_from_metadata(self, metadata):
+        """:param metadata:
+
+        Metadata object. See the ``obj`` argument to
+        ``comunweb_normalize_field_values()`` and the
+        ``docs/open_data-node-*.json`` files for more information.
+        """
+        for x in self._resources_from_metadata_files(metadata['fields']):
+            yield x
+        for x in self._resources_from_metadata_urls(metadata['fields']):
+            yield x
+
+    def _resources_from_metadata_files(self, fields):
+        for key, field in fields.iteritems():
+            if field['type'] != 'ezbinaryfile':
+                continue
+            if not field['value']:
+                # Could be ``False`` or an empty string
+                continue
+
+            url = field['value']
+
+            resource = {
+                'name': 'File da scaricare',
+                'description': 'File scaricabile contenente i dati',
+                'format': '',
+                'mimetype': 'application/octet-stream',
+                'url': url,
+            }
+
+            if '.' in url:
+                urlext = field['value'].rsplit('.', 1)[-1]
+            else:
+                urlext = ''
+
+            mime = EXT_TO_MIME.get(urlext.lower())
+            if mime:
+                resource['name'] = 'Dati in formato {0}'.format(urlext.upper())
+                resource['mimetype'] = mime
+                resource['format'] = urlext.upper()
+
+            else:
+                logger.warning(
+                    'Unable to guess mime type from url: {0}'
+                    .format(url))
+
+            yield resource
+
+    def _resources_from_metadata_urls(self, fields):
+        for key, field in fields.iteritems():
+            # Filter out uninteresting stuff
+            if field['type'] != 'ezurl':
+                continue
+            if not field['value']:
+                # Could be ``False`` or an empty string
+                continue
+
+            # We need to figure out the resource type from the stuff
+            # in the URL value..
+            if '|' in field['string_value']:
+                url, url_title = field['value'].split('|', 1)
+            else:
+                url = field['value']
+                url_title = ''
+
+            resource = {
+                'name': 'Link ai dati',
+                'description': 'Collegamento esterno ai dati scaricabili',
+                'format': '',
+                'mimetype': 'application/octet-stream',
+                'url': url,
+            }
+
+            m = re.match(r'^DOWNLOAD (?P<fmt>.*)$', url_title)
+            if m:
+                resource['format'] = fmt = m.group('fmt')
+                resource['name'] = 'Dati in formato {0}'.format(fmt)
+                mime = EXT_TO_MIME.get(fmt.lower())
+                if mime is not None:
+                    resource['mimetype'] = mime
+            else:
+                logger.warning(
+                    'Unable to determine mimetype from label: {0}'
+                    .format(url_title))
+
+            yield resource
+
+    def _fix_resource_format_case(self, resources):
+        """
+        Hack to set the case of the resource format.
+
+        Ckan will convert certain formats to uppercase and certain
+        others to lowercase, but the client will complain about this..
+
+        - todo: apply a workaround for this in the client?
+        - todo: make the client just issue warnings if updated dataset
+                doesn't match? -> warnings.warn() + logger.warn()
+        - todo: maybe that should be made configurable (in development
+                we want to make sure we catch any inconsistencies!)
+        """
+
+        must_upper = ['CSV', 'KML', 'ZIP']
+        for res in resources:
+            if res['format'].upper() in must_upper:
+                res['format'] = res['format'].upper()
+            else:
+                res['format'] = res['format'].lower()
+
 
 def comunweb_normalize_field_values(obj):
+    """
+    Normalize values from a ComunWeb object.
+
+    :param obj:
+        A metadata object in the format returned by ComunWeb.
+        Some examples can be found in ``docs/open_data-node-*.json``.
+
+        Basically, it is a dict with a top-level key "fields" pointing
+        to a dict whose keys are mapping to dicts describing the field.
+
+        Example::
+
+            "fields": {
+                "abstract": {
+                    "classattribute_id": 2643,
+                    "description": "",
+                    "id": 7657698,
+                    "identifier": "abstract",
+                    "name": "Abstract (descrizione breve)",
+                    "string_value": "Personale in servizio al 31/12/13. ...",
+                    "type": "ezxmltext",
+                    "value": "<p>Personale in servizio al 31/12/13.</p> ..."
+                },
+            }
+
+    :return: a dict like this::
+
+        {
+            'field_name': {
+                'label': 'Field label',
+                'value': 'Field value',
+            }
+        }
+    """
+
     def _get_field_value(fld):
         if fld['type'] == 'ezxmltext':
-            # todo: strip tags, convert HTML entities
-            return fld['string_value'] or None
+            # We don't want HTML entities here, instead we restore
+            # original characters and let ckan do the escaping for us.
+
+            # Otherwise, we will end up with a lot of ``[HTML
+            # Removed]`` garbage inside our texts..
+
+            return _html_unescape(fld['string_value']) or None
 
         if fld['type'] == 'ezstring':
+            if fld['value'] != fld['string_value']:
+                logger.warning(
+                    "String fields value doesn't match string_value")
+                logger.debug(
+                    "value={0!r} string_value={1!r}".format(
+                        fld['value'], fld['string_value']))
             return fld['value']  # should be == string_value
 
         if fld['type'] == 'ezkeyword':
@@ -163,6 +322,7 @@ def comunweb_normalize_field_values(obj):
 
             # Note: we have no idea of which timezone has been used
             # to generate those timestamps -- let's assume UTC.
+
             # Otherwise, we should use pytz to read timestamp
             # and export it to the desired timezone.
 

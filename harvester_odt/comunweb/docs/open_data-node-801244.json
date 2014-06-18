@@ -1,0 +1,397 @@
+{
+  "_id": 801244,
+  "classIdentifier": "open_data",
+  "dateModified": 1398862105,
+  "datePublished": 1391641200,
+  "fullUrl": "http://www.comune.trento.it/Aree-tematiche/Ambiente-e-territorio/Mobilita-e-traffico-urbano/Mobilita-alternativa/Piste-ciclabili/Piste-ciclabili-Open-Data",
+  "full_metadata": {
+    "fields": {
+      "abstract": {
+        "classattribute_id": 2643,
+        "description": "",
+        "id": 7901844,
+        "identifier": "abstract",
+        "name": "Abstract (descrizione breve)",
+        "string_value": "Piste ciclabili nel Comune di Trento",
+        "type": "ezxmltext",
+        "value": "<p>Piste ciclabili nel Comune di Trento</p>"
+      },
+      "codifica_caratteri": {
+        "classattribute_id": 2718,
+        "description": "",
+        "id": 7901865,
+        "identifier": "codifica_caratteri",
+        "name": "Codifica caratteri",
+        "string_value": "LATIN-1",
+        "type": "ezstring",
+        "value": "LATIN-1"
+      },
+      "data_fine_validita": {
+        "classattribute_id": 2717,
+        "description": "",
+        "id": 7901862,
+        "identifier": "data_fine_validita",
+        "name": "Data fine validità",
+        "string_value": "0",
+        "type": "ezdate",
+        "value": "0"
+      },
+      "data_iniziovalidita": {
+        "classattribute_id": 2651,
+        "description": "",
+        "id": 7901861,
+        "identifier": "data_iniziovalidita",
+        "name": "Data inizio validità",
+        "string_value": "1391641200",
+        "type": "ezdate",
+        "value": "1391641200"
+      },
+      "descrizione": {
+        "classattribute_id": 2644,
+        "description": "Descrizione dettagliata del dato e, ove necessario, dei sui attributi",
+        "id": 7901845,
+        "identifier": "descrizione",
+        "name": "Descrizione",
+        "string_value": "In questa sezione sono riportati i dati relativi alle piste ciclabili e ai percorsi ciclopedonali esistenti, in fase di realizzazione&nbsp;o&nbsp;in fase di progettazione di competenza sia comunale che provinciale.",
+        "type": "ezxmltext",
+        "value": "<p>In questa sezione sono riportati i dati relativi alle piste ciclabili e ai percorsi ciclopedonali esistenti, in fase di realizzazione&nbsp;o&nbsp;in fase di progettazione di competenza sia comunale che provinciale.</p>"
+      },
+      "descrizione_campi": {
+        "classattribute_id": 2716,
+        "description": "",
+        "id": 7901857,
+        "identifier": "descrizione_campi",
+        "name": "Descrizione campi",
+        "string_value": "\n\n\ntipo: viene indicato il nome della pista ciclabile, se già esistente, altrimenti l'anno previsto di realizzazione dei lavori e l'eventuale competenza (comunale o provinciale); la&nbsp;tipologia&nbsp;&quot;Area inseribilità - altro&quot; si riferisce alle piste ciclabili in attesa di finanziamento pubblico\n\nscala_10000: dato non rilevante (uso interno)\n\nscala_20000: dato non rilevante (uso interno)\n\ndescrizione: viene&nbsp;specificato&nbsp;se si tratta di pista ciclabile in progetto o già esistente; in questo secondo caso si distingue tra pista ciclabile (con percorso separato da&nbsp;quello pedonale)&nbsp;e percorso ciclopedonale (con percorso&nbsp;misto bici - pedoni) e indicata la via di ubicazione\n\n\n",
+        "type": "ezxmltext",
+        "value": "\n<ul>\n\n<li>tipo: viene indicato il nome della pista ciclabile, se già esistente, altrimenti l'anno previsto di realizzazione dei lavori e l'eventuale competenza (comunale o provinciale); la&nbsp;tipologia&nbsp;&quot;Area inseribilità - altro&quot; si riferisce alle piste ciclabili in attesa di finanziamento pubblico</li>\n\n<li>scala_10000: dato non rilevante (uso interno)</li>\n\n<li>scala_20000: dato non rilevante (uso interno)</li>\n\n<li>descrizione: viene&nbsp;specificato&nbsp;se si tratta di pista ciclabile in progetto o già esistente; in questo secondo caso si distingue tra pista ciclabile (con percorso separato da&nbsp;quello pedonale)&nbsp;e percorso ciclopedonale (con percorso&nbsp;misto bici - pedoni) e indicata la via di ubicazione</li>\n\n</ul>\n"
+      },
+      "file1": {
+        "classattribute_id": 2726,
+        "description": "",
+        "id": 7901846,
+        "identifier": "file1",
+        "name": "File da scaricare",
+        "string_value": null,
+        "type": "ezbinaryfile",
+        "value": null
+      },
+      "file2": {
+        "classattribute_id": 2727,
+        "description": "",
+        "id": 7901847,
+        "identifier": "file2",
+        "name": "File da scaricare (2)",
+        "string_value": null,
+        "type": "ezbinaryfile",
+        "value": null
+      },
+      "file3": {
+        "classattribute_id": 2728,
+        "description": "",
+        "id": 7901848,
+        "identifier": "file3",
+        "name": "File da scaricare (3)",
+        "string_value": null,
+        "type": "ezbinaryfile",
+        "value": null
+      },
+      "file4": {
+        "classattribute_id": 2729,
+        "description": "",
+        "id": 7901849,
+        "identifier": "file4",
+        "name": "File da scaricare (4)",
+        "string_value": null,
+        "type": "ezbinaryfile",
+        "value": null
+      },
+      "file5": {
+        "classattribute_id": 2730,
+        "description": "",
+        "id": 7901850,
+        "identifier": "file5",
+        "name": "File da scaricare (5)",
+        "string_value": null,
+        "type": "ezbinaryfile",
+        "value": null
+      },
+      "formato": {
+        "classattribute_id": 2725,
+        "description": "",
+        "id": 7901867,
+        "identifier": "formato",
+        "name": "Formato",
+        "string_value": "715852-723183-723182-723184-715854",
+        "type": "ezobjectrelationlist",
+        "value": [
+          {
+            "classIdentifier": "tipo_formato",
+            "dateModified": 1362067615,
+            "datePublished": 1354868182,
+            "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715852",
+            "objectId": 715852,
+            "objectName": "CSV (comma-separated values)",
+            "objectRemoteId": "356f4d6e6a1dd8d72ecfa2d12b061fcb"
+          },
+          {
+            "classIdentifier": "tipo_formato",
+            "dateModified": 1361958158,
+            "datePublished": 1359388701,
+            "link": "http://www.comune.trento.it/api/opendata/v1/content/object/723183",
+            "objectId": 723183,
+            "objectName": "DXF (Autocad)",
+            "objectRemoteId": "b016b57138c583bc14558d663a9763ea"
+          },
+          {
+            "classIdentifier": "tipo_formato",
+            "dateModified": 1361957989,
+            "datePublished": 1359388676,
+            "link": "http://www.comune.trento.it/api/opendata/v1/content/object/723182",
+            "objectId": 723182,
+            "objectName": "GML (Geographic Markup Language)",
+            "objectRemoteId": "6054344b9a0e2546833d8d216310f96e"
+          },
+          {
+            "classIdentifier": "tipo_formato",
+            "dateModified": 1361958089,
+            "datePublished": 1359388729,
+            "link": "http://www.comune.trento.it/api/opendata/v1/content/object/723184",
+            "objectId": 723184,
+            "objectName": "KML (Google)",
+            "objectRemoteId": "d24da5566a721ba28c39ea465339fbd7"
+          },
+          {
+            "classIdentifier": "tipo_formato",
+            "dateModified": 1361958036,
+            "datePublished": 1354868270,
+            "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715854",
+            "objectId": 715854,
+            "objectName": "SHP (Shapefile)",
+            "objectRemoteId": "cb3fe02dedb535b2da0370a3e937d127"
+          }
+        ]
+      },
+      "frequenza_aggiornamento": {
+        "classattribute_id": 2653,
+        "description": "",
+        "id": 7901864,
+        "identifier": "frequenza_aggiornamento",
+        "name": "Frequenza di aggiornamento",
+        "string_value": "723185",
+        "type": "ezobjectrelationlist",
+        "value": {
+          "classIdentifier": "frequenza_aggiornamento",
+          "dateModified": 1359388783,
+          "datePublished": 1359388783,
+          "link": "http://www.comune.trento.it/api/opendata/v1/content/object/723185",
+          "objectId": 723185,
+          "objectName": "Non programmata",
+          "objectRemoteId": "f51a1a855ddbccb2aae5f271c4b97da7"
+        }
+      },
+      "image": {
+        "classattribute_id": 2736,
+        "description": "",
+        "id": 7901858,
+        "identifier": "image",
+        "name": "Immagine",
+        "string_value": false,
+        "type": "ezimage",
+        "value": false
+      },
+      "licenza": {
+        "classattribute_id": 2650,
+        "description": "",
+        "id": 7901863,
+        "identifier": "licenza",
+        "name": "Licenza",
+        "string_value": "715863",
+        "type": "ezobjectrelationlist",
+        "value": {
+          "classIdentifier": "tipo_licenza",
+          "dateModified": 1361958872,
+          "datePublished": 1354868843,
+          "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715863",
+          "objectId": 715863,
+          "objectName": "CC-Zero",
+          "objectRemoteId": "8313136b229d92b7c540a7cad55f37d9"
+        }
+      },
+      "name": {
+        "classattribute_id": 2640,
+        "description": "Nome del dato pubblico",
+        "id": 7901843,
+        "identifier": "name",
+        "name": "Titolo",
+        "string_value": "Piste ciclabili (Open Data)",
+        "type": "ezstring",
+        "value": "Piste ciclabili (Open Data)"
+      },
+      "parola_chiave": {
+        "classattribute_id": 2654,
+        "description": "",
+        "id": 7901860,
+        "identifier": "parola_chiave",
+        "name": "Tags",
+        "string_value": "bicicletta, piste ciclabili, mobilita",
+        "type": "ezkeyword",
+        "value": "bicicletta, piste ciclabili, mobilita"
+      },
+      "servizio": {
+        "classattribute_id": 2655,
+        "description": "",
+        "id": 7901866,
+        "identifier": "servizio",
+        "name": "Servizio responsabile",
+        "string_value": "223858",
+        "type": "ezobjectrelationlist",
+        "value": {
+          "classIdentifier": "servizio",
+          "dateModified": 1389351217,
+          "datePublished": 1262300400,
+          "link": "http://www.comune.trento.it/api/opendata/v1/content/object/223858",
+          "objectId": 223858,
+          "objectName": "URBANISTICA E PIANIFICAZIONE DELLA MOBILITA'",
+          "objectRemoteId": "struttura273"
+        }
+      },
+      "tipologia": {
+        "classattribute_id": 2646,
+        "description": "(alfanumerico, cartografico)",
+        "id": 7901859,
+        "identifier": "tipologia",
+        "name": "Categoria",
+        "string_value": "715617",
+        "type": "ezobjectrelationlist",
+        "value": {
+          "classIdentifier": "tipo_dato",
+          "dateModified": 1354808937,
+          "datePublished": 1354808937,
+          "link": "http://www.comune.trento.it/api/opendata/v1/content/object/715617",
+          "objectId": 715617,
+          "objectName": "Geografico",
+          "objectRemoteId": "8d377e8d89fd8636ea13a763a64a55f3"
+        }
+      },
+      "url": {
+        "classattribute_id": 2777,
+        "description": "",
+        "id": 7901856,
+        "identifier": "url",
+        "name": "Link accessorio",
+        "string_value": false,
+        "type": "ezurl",
+        "value": false
+      },
+      "url1": {
+        "classattribute_id": 2731,
+        "description": "",
+        "id": 7901851,
+        "identifier": "url1",
+        "name": "Link al file da scaricare",
+        "string_value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=gml|DOWNLOAD GML",
+        "type": "ezurl",
+        "value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=gml|DOWNLOAD GML"
+      },
+      "url2": {
+        "classattribute_id": 2732,
+        "description": "",
+        "id": 7901852,
+        "identifier": "url2",
+        "name": "Link al file da scaricare (2)",
+        "string_value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=shp|DOWNLOAD SHP",
+        "type": "ezurl",
+        "value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=shp|DOWNLOAD SHP"
+      },
+      "url3": {
+        "classattribute_id": 2733,
+        "description": "",
+        "id": 7901853,
+        "identifier": "url3",
+        "name": "Link al file da scaricare (3)",
+        "string_value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=kml|DOWNLOAD KML",
+        "type": "ezurl",
+        "value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=kml|DOWNLOAD KML"
+      },
+      "url4": {
+        "classattribute_id": 2734,
+        "description": "",
+        "id": 7901854,
+        "identifier": "url4",
+        "name": "Link al file da scaricare (4)",
+        "string_value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=dxf|DOWNLOAD DXF",
+        "type": "ezurl",
+        "value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=dxf|DOWNLOAD DXF"
+      },
+      "url5": {
+        "classattribute_id": 2735,
+        "description": "",
+        "id": 7901855,
+        "identifier": "url5",
+        "name": "Link al file da scaricare (5)",
+        "string_value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=csv|DOWNLOAD CSV",
+        "type": "ezurl",
+        "value": "http://webapps.comune.trento.it/cartografia/catalogo?db=base&sc=mobilita&ly=piste_ciclabili&fr=csv|DOWNLOAD CSV"
+      }
+    },
+    "links": {
+      "*": "http://www.comune.trento.it/api/opendata/content/node/801244/fields",
+      "abstract": "http://www.comune.trento.it/api/opendata/content/node/801244/field/abstract",
+      "codifica_caratteri": "http://www.comune.trento.it/api/opendata/content/node/801244/field/codifica_caratteri",
+      "data_fine_validita": "http://www.comune.trento.it/api/opendata/content/node/801244/field/data_fine_validita",
+      "data_iniziovalidita": "http://www.comune.trento.it/api/opendata/content/node/801244/field/data_iniziovalidita",
+      "descrizione": "http://www.comune.trento.it/api/opendata/content/node/801244/field/descrizione",
+      "descrizione_campi": "http://www.comune.trento.it/api/opendata/content/node/801244/field/descrizione_campi",
+      "file1": "http://www.comune.trento.it/api/opendata/content/node/801244/field/file1",
+      "file2": "http://www.comune.trento.it/api/opendata/content/node/801244/field/file2",
+      "file3": "http://www.comune.trento.it/api/opendata/content/node/801244/field/file3",
+      "file4": "http://www.comune.trento.it/api/opendata/content/node/801244/field/file4",
+      "file5": "http://www.comune.trento.it/api/opendata/content/node/801244/field/file5",
+      "formato": "http://www.comune.trento.it/api/opendata/content/node/801244/field/formato",
+      "frequenza_aggiornamento": "http://www.comune.trento.it/api/opendata/content/node/801244/field/frequenza_aggiornamento",
+      "image": "http://www.comune.trento.it/api/opendata/content/node/801244/field/image",
+      "licenza": "http://www.comune.trento.it/api/opendata/content/node/801244/field/licenza",
+      "name": "http://www.comune.trento.it/api/opendata/content/node/801244/field/name",
+      "parola_chiave": "http://www.comune.trento.it/api/opendata/content/node/801244/field/parola_chiave",
+      "servizio": "http://www.comune.trento.it/api/opendata/content/node/801244/field/servizio",
+      "tipologia": "http://www.comune.trento.it/api/opendata/content/node/801244/field/tipologia",
+      "url": "http://www.comune.trento.it/api/opendata/content/node/801244/field/url",
+      "url1": "http://www.comune.trento.it/api/opendata/content/node/801244/field/url1",
+      "url2": "http://www.comune.trento.it/api/opendata/content/node/801244/field/url2",
+      "url3": "http://www.comune.trento.it/api/opendata/content/node/801244/field/url3",
+      "url4": "http://www.comune.trento.it/api/opendata/content/node/801244/field/url4",
+      "url5": "http://www.comune.trento.it/api/opendata/content/node/801244/field/url5"
+    },
+    "locations": [
+      {
+        "fullUrl": "http://www.comune.trento.it/Aree-tematiche/Ambiente-e-territorio/Mobilita-e-traffico-urbano/Mobilita-alternativa/Piste-ciclabili/Piste-ciclabili-Open-Data",
+        "isMain": true,
+        "nodeId": 801244,
+        "nodeRemoteId": "3c272397a7da11873b1c69214f82bdbe"
+      }
+    ],
+    "metadata": {
+      "classIdentifier": "open_data",
+      "dateModified": 1398862105,
+      "datePublished": 1391641200,
+      "fullUrl": "http://www.comune.trento.it/Aree-tematiche/Ambiente-e-territorio/Mobilita-e-traffico-urbano/Mobilita-alternativa/Piste-ciclabili/Piste-ciclabili-Open-Data",
+      "nodeId": 801244,
+      "nodeRemoteId": "3c272397a7da11873b1c69214f82bdbe",
+      "objectId": 821278,
+      "objectName": "Piste ciclabili (Open Data)",
+      "objectRemoteId": "4f2472492db48e2561cb7ef5f1c8a89f"
+    },
+    "requestedResponseGroups": [
+      "Metadata",
+      "Fields",
+      "Locations"
+    ]
+  },
+  "link": "http://www.comune.trento.it/api/opendata/v1/content/node/801244",
+  "nodeId": 801244,
+  "nodeRemoteId": "3c272397a7da11873b1c69214f82bdbe",
+  "objectId": 821278,
+  "objectName": "Piste ciclabili (Open Data)",
+  "objectRemoteId": "4f2472492db48e2561cb7ef5f1c8a89f"
+}
