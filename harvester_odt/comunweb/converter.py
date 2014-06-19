@@ -134,7 +134,37 @@ class ComunWebToCkan(ConverterPluginBase):
         # ----------------------------------------
 
         try:
-            dataset['notes'] = values['abstract']['value']
+            dataset['notes'] = unicode(values['abstract']['value'] or '')
+        except KeyError:
+            pass
+
+        try:
+            dataset['notes'] += u'\n\n' + unicode(values['descrizione']['value'] or '')  # noqa
+        except KeyError:
+            pass
+
+        extras = dataset['extras']
+
+        try:
+            extras['Copertura Temporale (Data di inizio)'] = \
+                values['data_iniziovalidita']['value']
+        except KeyError:
+            pass
+
+        try:
+            extras['Copertura Temporale (Data di fine)'] = \
+                values['data_fine_validita']['value']
+        except KeyError:
+            pass
+
+        try:
+            extras['Aggiornamento'] = \
+                metadata['frequenza_aggiornamento']['value']['objectName']
+        except KeyError:
+            pass
+
+        try:
+            extras['Codifica Caratteri'] = extras.pop('Codifica caratteri')
         except KeyError:
             pass
 

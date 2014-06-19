@@ -2,9 +2,9 @@ import logging
 
 from harvester.ext.converter.base import ConverterPluginBase
 
-from .client import (dataset_statistica_to_ckan,
-                     dataset_statistica_subpro_to_ckan,
-                     ORGANIZATIONS, CATEGORIES)
+from .conv_statistica import dataset_statistica_to_ckan
+from .conv_statistica_subpro import dataset_statistica_subpro_to_ckan
+from .contstants import ORGANIZATIONS, CATEGORIES
 
 
 class StatisticaToCkan(ConverterPluginBase):
