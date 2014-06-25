@@ -146,23 +146,28 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             search_result_xml = dataset['raw_xml']
             linked_xml = storage_in.blobs['resource_xml'][dataset_id]
 
-            converted = extract_metadata_from_api_xml(search_result_xml)
-            converted['resources'] = get_resources_from_api_xml(
-                search_result_xml)
+            try:
 
-            extras = extract_metadata_from_linked_xml(linked_xml)
-            converted['extras'] = dict(
-                (': '.join(k), v)
-                for k, v in flatten_dict(extras).iteritems())
+                converted = extract_metadata_from_api_xml(search_result_xml)
+                converted['resources'] = get_resources_from_api_xml(
+                    search_result_xml)
 
-            # If the website is the one from "catasto", we want to put
-            # the dataset in **that** organization
-            if extras.get('URL sito') == 'http://www.catasto.provincia.tn.it':
-                converted['owner_org'] = ORG_CATASTO
+                extras = extract_metadata_from_linked_xml(linked_xml)
+                converted['extras'] = dict(
+                    (': '.join(k), v)
+                    for k, v in flatten_dict(extras).iteritems())
 
-            # Do the actual conversion
-            assert int(converted['id']) == dataset_id
-            storage_out.documents['dataset'][str(converted['id'])] = converted
+                # If the website is the one from "catasto", we want to put
+                # the dataset in **that** organization
+                if extras.get('URL sito') == 'http://www.catasto.provincia.tn.it':  # noqa
+                    converted['owner_org'] = ORG_CATASTO
+
+                # Do the actual conversion
+                assert int(converted['id']) == dataset_id
+                storage_out.documents['dataset'][str(converted['id'])] = converted  # noqa
+
+            except:
+                logger.exception('Conversion failed')
 
         logger.info('Importing organizations')
         for org_name, org in ORGANIZATIONS.iteritems():
