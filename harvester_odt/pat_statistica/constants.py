@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 LEGEND_TIPO_INDICATORE = {
     'R': 'rapporto',
     'M': 'media',

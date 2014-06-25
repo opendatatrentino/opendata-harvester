@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Functions to convert data from statistica sub-pro to ckan
 """

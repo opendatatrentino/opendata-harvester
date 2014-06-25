@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 import logging
 
 from harvester.ext.converter.base import ConverterPluginBase
 
 from .conv_statistica import dataset_statistica_to_ckan
 from .conv_statistica_subpro import dataset_statistica_subpro_to_ckan
-from .contstants import ORGANIZATIONS, CATEGORIES
+from .constants import ORGANIZATIONS, CATEGORIES
 
 
 class StatisticaToCkan(ConverterPluginBase):
