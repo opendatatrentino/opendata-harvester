@@ -2,6 +2,11 @@
 
 # flake8: noqa
 
+# Tags set to None of False will be ignored
+# Tags set to True will be used as-is
+# Tags set to a string will be replaced by that string
+# Tags set to a list will be replaced with multiple tags
+
 from __future__ import unicode_literals
 
 TAGS_MAP = {u'1:2000': None,
@@ -294,4 +299,6 @@ TAGS_MAP = {u'1:2000': None,
  u'viabilit\xe0 esistente': True,
  u'viabilit\xe0 ferroviaria': True,
  u'viabilit\xe0 forestale': True,
- u'zone di protezione speciale': False}
+ u'zone di protezione speciale': False,
+ u'ZSC, Zone Speciali di Conservazione': u'Zone speciali di conservazione',
+ u'zone speciali conservazione, ZSC': u'Zone speciali di conservazione'}
