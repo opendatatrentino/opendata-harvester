@@ -179,6 +179,7 @@ class GeoCatalogoToCkan(ConverterPluginBase):
 
 
 def extract_metadata_from_api_xml(xmldata):
+    xmldata = xmldata.decode('latin-1')
     xml = lxml.etree.fromstring(xmldata)
     xph = XPathHelper(xml, nsmap=API_XML_NSMAP)
 
@@ -212,6 +213,7 @@ def extract_metadata_from_api_xml(xmldata):
 
 
 def get_resources_from_api_xml(xmldata):
+    xmldata = xmldata.decode('latin-1')
     xml = lxml.etree.fromstring(xmldata)
     xph = XPathHelper(xml, nsmap=API_XML_NSMAP)
 
@@ -261,6 +263,7 @@ def get_resources_from_api_xml(xmldata):
 
 
 def extract_metadata_from_linked_xml(xmldata):
+    xmldata = xmldata.decode('latin-1')
     xml = lxml.etree.fromstring(xmldata)
     result = {}
 
