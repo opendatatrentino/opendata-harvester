@@ -149,8 +149,9 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             try:
 
                 converted = extract_metadata_from_api_xml(search_result_xml)
+
                 converted['resources'] = get_resources_from_api_xml(
-                    search_result_xml)
+                    search_result_xml, linked_xml)
 
                 extras = extract_metadata_from_linked_xml(linked_xml)
                 converted['extras'] = dict(
@@ -212,7 +213,7 @@ def extract_metadata_from_api_xml(xmldata):
     }
 
 
-def get_resources_from_api_xml(xmldata):
+def get_resources_from_api_xml(xmldata, xmldata2):
     xmldata = xmldata.decode('latin-1')
     xml = lxml.etree.fromstring(xmldata)
     xph = XPathHelper(xml, nsmap=API_XML_NSMAP)
@@ -221,6 +222,22 @@ def get_resources_from_api_xml(xmldata):
     _url_ogd_xml = xph('geonet:info/ogd_xml/text()').get_one()
     _url_ogd_zip = xph('geonet:info/ogd_zip/text()').get_one()
     _url_ogd_rdf = xph('geonet:info/ogd_rdf/text()').get_one()
+
+    links = get_links_from_linked_xml(xmldata2)
+    linked_files = {'zip': [], 'xls': []}
+    for link in links:
+        for ext in ('zip', 'xls'):
+            if link.endswith('.' + ext):
+                linked_files[ext].append(link)
+
+    if len(linked_files['zip']) > 0:
+        if len(linked_files['zip']) > 1:
+            logger.warning('Linked XML contains more than one link '
+                           'to a zip file! Using first one.')
+        if linked_files['zip'][0] != _url_ogd_zip:
+            logger.warning('Replacing link to ZIP with one found '
+                           'in linked XML')
+            _url_ogd_zip = linked_files['zip'][0]
 
     resources = []
 
@@ -259,7 +276,33 @@ def get_resources_from_api_xml(xmldata):
             'url': _url_ogd_zip,
         })
 
+    if len(linked_files['xls']) > 0:
+        logger.info("Found XLS file in linked XML -- assuming "
+                    "it is documentation")
+        for link in linked_files['xls']:
+            resources.append({
+                'name': 'Documentazione in formato XLS',
+                'description': _description,
+                'format': 'xls',
+                'mimetype': 'application/vnd.ms-excel',
+                'url': link,
+            })
+
     return resources
+
+
+def get_links_from_linked_xml(xmldata):
+    xmldata = xmldata.decode('latin-1')
+    xml = lxml.etree.fromstring(xmldata)
+    xmlxph = XPathHelper(xml, nsmap=LINKED_XML_NSMAP)
+
+    links_xpath = ('/gmd:MD_Metadata/gmd:distributionInfo/'
+                   'gmd:MD_Distribution/gmd:transferOptions/'
+                   'gmd:MD_DigitalTransferOptions/gmd:onLine/'
+                   'gmd:CI_OnlineResource/gmd:linkage/gmd:URL/text()')
+    links = xmlxph(links_xpath)
+
+    return list(links)
 
 
 def extract_metadata_from_linked_xml(xmldata):
