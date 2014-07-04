@@ -4,7 +4,8 @@ import sys
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 
-from .utils import ColorLogFormatter
+# from .utils import ColorLogFormatter
+from nicelog.formatters import ColorLineFormatter
 
 
 class HarvesterApp(App):
@@ -41,7 +42,8 @@ class HarvesterApp(App):
                          }.get(self.options.verbose_level, logging.DEBUG)
         console.setLevel(console_level)
         # formatter = logging.Formatter(self.CONSOLE_MESSAGE_FORMAT)
-        formatter = ColorLogFormatter()  # This one is nicer!
+        formatter = ColorLineFormatter(
+            show_date=True, show_function=True, show_filename=True)
         console.setFormatter(formatter)
         root_logger.addHandler(console)
         return

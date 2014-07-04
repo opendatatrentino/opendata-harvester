@@ -12,6 +12,7 @@ install_requires = [
     'stevedore',  # to load plugins
     'termcolor',  # for colored logs
     'unidecode',  # to transliterate characters
+    'nicelog',  # For log formatting
 
     # For the director (todo: use extras?)
     'celery[redis]',  # for running async tasks
