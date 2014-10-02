@@ -31,6 +31,15 @@ Or the latest from git:
 pip install http://git.io/ckan-api-client.tar.gz
 ```
 
+### System dependencies
+
+Several libraries are required to build dependencies. On debian:
+
+```
+apt-get install python-dev libxslt1-dev libxml2-dev
+```
+
+
 ## Concepts
 
 This package will install a command-line script named ``harvester`` which
