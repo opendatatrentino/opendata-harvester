@@ -16,7 +16,7 @@ to data catalogs.
 Simply install the tarball from github:
 
 ```
-pip install https://github.com/opendatatrentino/data-crawlers/tarball/master
+pip install https://github.com/opendatatrentino/opendata-harvester/tarball/master
 ```
 
 if you plan to use it to import data to ckan, you'll need the [Ckan API client](https://github.com/opendatatrentino/ckan-api-client/) too. To install the stable version from pypi:
