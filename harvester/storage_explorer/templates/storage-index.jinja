@@ -21,19 +21,21 @@
   {% endfor %}
   </ul>
 
-  <h2>Documents</h2>
+  <h2>Document buckets</h2>
 
   <ul>
   {% for name in storage.documents %}
     <li><a href="{{ url_for('.storage_documents_index', storage_url=storage.url, bucket_name=name) }}">
 	{{name}}
-    </a></li>
+    </a>
+      ({{ storage.documents[name]|length }})
+    </li>
   {% else %}
     <li>The storage contains no documents.</li>
   {% endfor %}
   </ul>
 
-  <h2>Blobs</h2>
+  <h2>Blob buckets</h2>
 
   <ul>
   {% for name in storage.blobs %}
@@ -45,7 +47,7 @@
   {% endfor %}
   </ul>
 
-  <h2>Key/value</h2>
+  <h2>Key/value buckets</h2>
 
   <ul>
   {% for name in storage.keyvals %}
