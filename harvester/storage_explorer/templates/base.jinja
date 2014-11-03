@@ -12,8 +12,10 @@
 
     {% call macros.navbar(inverse=True, static="top", brand="Storage Explorer") %}
         <ul class="nav navbar-nav">
-          <li><a href="/job/">Jobs</a></li>
-          <li><a href="#">New Job</a></li>
+	  {% if storage %}
+          <li><a href="{{ url_for('.storage_index', storage_url=storage.url) }}">
+	      {{ storage.url }}</a></li>
+	  {% endif %}
         </ul>
     {% endcall %}
 
@@ -38,13 +40,15 @@
     {% block page_body %}{% endblock %}
 
     <footer class="site-footer">
-    {#   <ul class="list-inline"> #}
-    {#	<li><a target="_blank" href="https://github.com/rshk/jobcontrol">Source code</a></li> #}
-    {#	<li><a target="_blank" href="https://github.com/rshk/jobcontrol/issues">Issues</a></li> #}
-    {#	<li><a target="_blank" href="https://github.com/rshk/jobcontrol/issues/new?labels=bug">Report bug</a></li> #}
-    {#	<li><a target="_blank" href="https://github.com/rshk/jobcontrol/issues/new?labels=enhancement">Request feature</a></li> #}
-    {#	<li><a target="_blank" href="https://rshk.github.io/jobcontrol">Documentation</a></li> #}
-    {#   </ul> #}
+
+      {% set repository = 'opendatatrentino/opendata-harvester' %}
+      <ul class="list-inline">
+	<li><a target="_blank" href="https://github.com/{{ repository }}">Source code</a></li>
+	<li><a target="_blank" href="https://github.com/{{ repository }}/issues">Issues</a></li>
+	<li><a target="_blank" href="https://github.com/{{ repository }}/issues/new?labels=bug">Report bug</a></li>
+	<li><a target="_blank" href="https://github.com/{{ repository }}/issues/new?labels=enhancement">Request feature</a></li>
+	<li><a target="_blank" href="https://opendatatrentino.github.io/opendata-harvester">Documentation</a></li>
+      </ul>
 
       <p>Storage Explorer (part of the Opendata Harvester project) &mdash; Copyright &copy; 2014
 	<a target="_blank" href="https://github.com/rshk">Samuele Santi</a>

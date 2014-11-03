@@ -9,8 +9,9 @@
 
   <ol class="breadcrumb">
     <li><a href="{{ url_for('.storage_index', storage_url=storage.url) }}">
-	Storage: {{ storage.url }}
+	Storage
     </a></li>
+    <li>documents bucket: {{ bucket_name }}</li>
   </ol>
 
   <h1>Documents bucket: <code>{{ bucket_name }}</code></h1>

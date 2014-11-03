@@ -8,16 +8,20 @@
 <div class="container-fluid">
 
   <ol class="breadcrumb">
+
     <li><a href="{{ url_for('.storage_index', storage_url=storage.url) }}">
-	Storage: {{ storage.url }}
+	Storage
     </a></li>
-    <li>documents</li>
     <li><a href="{{ url_for('.storage_documents_index', storage_url=storage.url, bucket_name=bucket_name) }}">
-	Bucket: {{ bucket_name }}
+	documents bucket: {{ bucket_name }}
     </a></li>
+    <li>{{ object_id }}</li>
   </ol>
 
-  <h1>Object: <code>{{ object_id }}</code></h1>
+  <h1>Document:
+    <code>{{ bucket_name }}</code> /
+    <code>{{ object_id }}</code>
+  </h1>
 
     <a href="{{ url_for('.storage_document_download', storage_url=storage.url, bucket_name=bucket_name, object_id=object_id) }}">
 	Download
