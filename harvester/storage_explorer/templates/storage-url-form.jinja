@@ -1,17 +1,17 @@
 {% extends 'base.jinja' %}
 
 {% block page_title %}
-  Insert storage URL
+  Connect to storage
 {% endblock %}
 
 {% block page_body %}
 <div class="container-fluid">
 
-  <h1>Insert storage URL</h1>
+  <h1>Connect to storage</h1>
 
   {% call macros.form(action=url_for('webui.storage_connect')) %}
     {{ macros.form_input('Storage URL', 'storage_url') }}
-    {{ macros.form_button('Connect to storage') }}
+    {{ macros.form_button('Connect') }}
   {% endcall %}
 
 </div>
