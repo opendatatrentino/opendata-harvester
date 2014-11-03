@@ -1,0 +1,60 @@
+{% extends 'base.jinja' %}
+
+{% block page_title %}
+  Storage index
+{% endblock %}
+
+{% block page_body %}
+<div class="container-fluid">
+
+  <h1>Storage index
+    <small>{{ storage.url }}</small>
+  </h1>
+
+  <h2>Information</h2>
+
+  <ul>
+  {% for name, value in storage.info.iteritems() %}
+    <li><strong>{{name}}:</strong> {{value}}</li>
+  {% endfor %}
+  </ul>
+
+  <h2>Documents</h2>
+
+  <ul>
+  {% for name in storage.documents %}
+    <li><a href="{{ url_for('.storage_documents_index', storage_url=storage.url, bucket_name=name) }}">
+	{{name}}
+    </a></li>
+  {% endfor %}
+  </ul>
+
+  <h2>Blobs</h2>
+
+  <ul>
+  {% for name in storage.blobs %}
+    <li>{{name}}</li>
+    <li><a href="{{ url_for('.storage_blobs_index', storage_url=storage.url, bucket_name=name) }}">
+	{{name}}
+    </a></li>
+  {% endfor %}
+  </ul>
+
+  <h2>Key/value</h2>
+
+  <ul>
+  {% for name in storage.keyvals %}
+    <li>{{name}}</li>
+    <li><a href="{{ url_for('.storage_keyvals_index', storage_url=storage.url, bucket_name=name) }}">
+	{{name}}
+    </a></li>
+  {% endfor %}
+  </ul>
+
+  {# {% call macros.form(action=url_for('webui.storage_connect')) %} #}
+  {#   {{ macros.form_input('Storage URL', 'storage_url') }} #}
+  {#   {{ macros.form_button('Connect to storage') }} #}
+  {# {% endcall %} #}
+
+</div>
+{% endblock %}

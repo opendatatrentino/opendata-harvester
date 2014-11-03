@@ -1,0 +1,29 @@
+{% extends 'base.jinja' %}
+
+{% block page_title %}
+  Storage documents index
+{% endblock %}
+
+{% block page_body %}
+<div class="container-fluid">
+
+  <ol class="breadcrumb">
+    <li><a href="{{ url_for('.storage_index', storage_url=storage.url) }}">
+	Storage: {{ storage.url }}
+    </a></li>
+    <li>documents</li>
+    <li><a href="{{ url_for('.storage_documents_index', storage_url=storage.url, bucket_name=bucket_name) }}">
+	Bucket: {{ bucket_name }}
+    </a></li>
+  </ol>
+
+  <h1>Object: <code>{{ object_id }}</code></h1>
+
+    <a href="{{ url_for('.storage_document_download', storage_url=storage.url, bucket_name=bucket_name, object_id=object_id) }}">
+	Download
+    </a>
+
+  <pre>{{ obj|pprint }}</pre>
+
+</div>
+{% endblock %}

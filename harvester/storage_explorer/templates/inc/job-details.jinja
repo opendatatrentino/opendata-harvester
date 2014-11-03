@@ -1,0 +1,60 @@
+{%- import "inc/macros.jinja" as macros -%}
+
+{% set job_docs = job.get_docs() %}
+
+
+{{ job_docs.call_code_html }}
+
+
+<table class="table table-bordered">
+  <tr>
+    <th>Function</th>
+    <td>
+	<div style="font-size: 120%;margin-bottom: 1em;">
+	      <em>{{ job_docs.function_module -}}</em>{{ '' -}}
+	      .<strong>{{ job_docs.function_name -}}</strong>{{ '' -}}
+	      ({{ job_docs.function_argspec_human }})
+	</div>
+
+	{% if job_docs.function_doc %}
+	  <div>{{ job_docs.function_doc }}</div>
+	{% endif %}
+
+    </td>
+  </tr>
+  <tr>
+    <th>Arguments</th>
+    <td>
+	<pre>{{ job.args|pprint }}</pre>
+    </td>
+  </tr>
+  <tr>
+    <th>Keyword arguments</th>
+    <td>
+	<pre>{{ job.kwargs|pprint }}</pre>
+    </td>
+  </tr>
+  <tr>
+    <th>Created</th>
+    <td>{{ job.ctime|strftime }} ({{ job.ctime|humanize_timestamp }})</td>
+  </tr>
+  <tr>
+    <th>Updated</th>
+    <td>{{ job.mtime|strftime }} ({{ job.mtime|humanize_timestamp }})</td>
+  </tr>
+
+  <tr>
+    <th>Dependencies</th>
+    <td>
+      {% set deps = job.get_deps()|list %}
+      {{ macros.jobs_list(deps, emptymsg='No dependencies') }}
+    </td>
+  </tr>
+  <tr>
+    <th>Reverse dependencies</th>
+    <td>
+      {% set revdeps = job.get_revdeps()|list %}
+      {{ macros.jobs_list(revdeps, emptymsg='No reverse dependencies') }}
+    </td>
+  </tr>
+</table>
