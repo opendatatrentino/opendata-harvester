@@ -6,7 +6,9 @@ from datetime import datetime
 import logging
 import os
 
-from harvester.utils import get_storage_direct
+import eventlite
+
+from harvester.utils import get_storage_direct, ProgressReport
 from harvester_odt.pat_statistica.client import (
     StatisticaClient, StatisticaSubproClient)
 from harvester_odt.pat_statistica.conv_statistica \
@@ -28,6 +30,11 @@ def _update_progress(*a):
 
 def _get_uniqid():
     return "{0:%y%m%d-%H%M%S}-{1}".format(datetime.now(), os.getpid())
+
+
+def handle_events(*a, **kw):
+    if len(a) and isinstance(a[0], ProgressReport):
+        _update_progress(a[0].current, a[0].total)
 
 
 def get_storage(url, options=None):
@@ -97,6 +104,28 @@ def crawl_statistica_subpro(storage_url, storage_options=None):
         _update_progress(i + 1, total)
 
     return storage.url
+
+
+def crawl_geocatalogo(storage_url, storage_options=None):
+    """
+    Run crawler for GeoCatalogo
+
+    :param storage_url:
+        URL of the storage to use. The following replacements
+        will be applied:
+
+        - ``{id}`` - A unique id, based on date/time and process PID.
+
+    :param storage_options:
+        Options to be passed to storage constructor.
+    """
+
+    from harvester_odt.pat_geocatalogo.crawler import Geocatalogo
+
+    storage = get_storage(storage_url, storage_options)
+    crawler = Geocatalogo('', {'with_resources': False})
+    with eventlite.handler(handle_events):
+        crawler.fetch_data(storage)
 
 
 def _get_input_storage_url():
