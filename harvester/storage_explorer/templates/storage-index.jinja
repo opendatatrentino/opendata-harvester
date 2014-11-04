@@ -1,0 +1,95 @@
+{% extends 'base.jinja' %}
+
+{% block page_title %}
+  Storage index
+{% endblock %}
+
+{% block page_body %}
+<div class="container-fluid">
+
+  <h1>Storage index</h1>
+
+  <p>
+    <strong>Connection URL:</strong>
+    <code>{{ storage.url }}</code>
+  </p>
+
+  <h2>Information</h2>
+
+  {% if storage.info|length %}
+    <dl class="dl-horizontal">
+      {% for name, value in storage.info.iteritems() %}
+	<dt>{{name}}</dt>
+	<dd>{{value}}</dd>
+      {% endfor %}
+    </dl>
+  {% else %}
+    <p>The storage contains no information ("info" keyval bucket).</p>
+  {% endif %}
+
+  <div class="row row-fluid">
+    <div class="col-md-4">
+
+      <h2>Document buckets</h2>
+
+      <ul class="nav nav-list">
+	{% for name in storage.documents %}
+	  <li><a href="{{ url_for('.storage_documents_index', storage_url=storage.url, bucket_name=name) }}">
+	      <span class="fa fa-file-text-o"></span>
+	      {{name}}
+	      <span class="label label-primary">
+		{{ storage.documents[name]|length }}
+	      </span>
+	    </a>
+	  </li>
+	{% else %}
+	  <li>The storage contains no documents.</li>
+	{% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-4">
+
+      <h2>Blob buckets</h2>
+
+      <ul class="nav nav-list">
+	{% for name in storage.blobs %}
+	  <li><a href="{{ url_for('.storage_blobs_index', storage_url=storage.url, bucket_name=name) }}">
+	      <span class="fa fa-truck"></span>
+	      {{name}}
+	      <span class="label label-primary">
+		{{ storage.blobs[name]|length }}
+	      </span>
+	    </a>
+	  </li>
+	{% else %}
+	  <li>The storage contains no blobs.</li>
+	{% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-4">
+
+      <h2>
+	<span class="fa fa-tag"></span>
+	Key/value buckets
+      </h2>
+
+      <ul class="nav nav-list">
+	{% for name in storage.keyvals %}
+	  <li><a href="{{ url_for('.storage_keyvals_index', storage_url=storage.url, bucket_name=name) }}">
+	      <span class="fa fa-tag"></span>
+	      {{name}}
+	      <span class="label label-primary">
+		{{ storage.keyvals[name]|length }}
+	      </span>
+	    </a>
+	  </li>
+	{% else %}
+	  <li>The storage contains no keyvals.</li>
+	{% endfor %}
+      </ul>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

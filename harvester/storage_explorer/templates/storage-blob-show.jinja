@@ -1,0 +1,33 @@
+{% extends 'base.jinja' %}
+
+{% block page_title %}
+  Storage blobs index
+{% endblock %}
+
+{% block page_body %}
+<div class="container-fluid">
+
+  <ol class="breadcrumb">
+
+    <li><a href="{{ url_for('.storage_index', storage_url=storage.url) }}">
+	Storage
+    </a></li>
+    <li><a href="{{ url_for('.storage_blobs_index', storage_url=storage.url, bucket_name=bucket_name) }}">
+	blobs bucket: {{ bucket_name }}
+    </a></li>
+    <li>{{ object_id }}</li>
+  </ol>
+
+  <h1>Blob:
+    <code>{{ bucket_name }}</code> /
+    <code>{{ object_id }}</code>
+  </h1>
+
+    <a href="{{ url_for('.storage_blob_download', storage_url=storage.url, bucket_name=bucket_name, object_id=object_id) }}">
+	Download
+    </a>
+
+  <pre>[ Binary object not shown ]</pre>
+
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.jinja' %}
+
+{% block page_title %}
+  Storage documents index
+{% endblock %}
+
+{% block page_body %}
+<div class="container-fluid">
+
+  <ol class="breadcrumb">
+    <li><a href="{{ url_for('.storage_index', storage_url=storage.url) }}">
+	Storage
+    </a></li>
+    <li>documents bucket: {{ bucket_name }}</li>
+  </ol>
+
+  <h1>Documents bucket: <code>{{ bucket_name }}</code></h1>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+	<th>Id</th>
+	<th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for name in paged_ids.get_items() %}
+	<tr>
+	  <td>{{ name }}</td>
+	  <td>
+	    <a href="{{ url_for('.storage_document_show', storage_url=storage.url, bucket_name=bucket_name, object_id=name) }}">show</a>
+	    <a href="{{ url_for('.storage_document_download', storage_url=storage.url, bucket_name=bucket_name, object_id=name) }}">download</a>
+	  </td>
+	</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+<nav>
+  <ul class="pagination">
+    {% for label, id in paged_ids.get_pager_links() %}
+      <li {% if id == paged_ids.current_page %}class="active"{% endif %}>
+	{% if id %}
+	  <a href="?page={{ id }}">{{ label }}</a></li>
+        {% else %}
+	  <a>{{ label }}</a>
+	{% endif %}
+    {% endfor %}
+  </ul>
+</nav>
+
+</div>
+{% endblock %}

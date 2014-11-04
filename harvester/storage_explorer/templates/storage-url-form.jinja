@@ -1,0 +1,28 @@
+{% extends 'base.jinja' %}
+
+{% block page_title %}
+  Connect to storage
+{% endblock %}
+
+{% block page_body %}
+<div class="container-fluid">
+
+  <h1>Connect to storage</h1>
+
+  {% call macros.form(action=url_for('webui.storage_connect')) %}
+    {{ macros.form_input('Storage URL', 'storage_url') }}
+    {{ macros.form_checkbox('Remember this storage', 'bookmark', val=True) }}
+    {{ macros.form_button('Connect') }}
+  {% endcall %}
+
+  {% if bookmarks %}
+    <h2>Saved URLs</h2>
+    <ul>
+      {% for url in bookmarks %}
+	<li><a href="{{ url_for('.storage_index', storage_url=url) }}">{{ url }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+</div>
+{% endblock %}

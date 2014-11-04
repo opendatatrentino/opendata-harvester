@@ -1,5 +1,12 @@
 """
 Miscellaneous utilities.
+
+.. todo:: Refactor this, to provide better distinction between
+          options passed from the command line and options specified
+          directly from Python library calls.
+
+          In the latter case, we just need to validate options (?)
+          and set default values.
 """
 
 from collections import namedtuple
@@ -109,13 +116,13 @@ def prepare_plugin_options(plugin_class, options):
     values from a plugin.
     """
 
-    plugin_options = get_plugin_options(plugin_class)
+    opt_schema = plugin_class.get_options()
 
     if options is None:
         options = {}
 
     conf = {}
-    for opt_def in plugin_options.itervalues():
+    for opt_def in opt_schema.itervalues():
         if opt_def.name in options:
             # Take type, value from the passed-in value
             type_, value = options.pop(opt_def.name)
@@ -173,6 +180,10 @@ def get_plugin(plugin_type, url, options):
     conf = prepare_plugin_options(plugin_class, options)
 
     return plugin_class(url, conf)
+
+
+def get_storage(url, options):
+    return get_plugin('storage', url, options)
 
 
 def parse_plugin_url(url):
@@ -389,3 +400,18 @@ def check_tcp_port(host, port, timeout=3):
     else:
         s.close()
         return True
+
+
+def get_storage_direct(url, options=None):
+    """
+    Get storage directly, trusting the passed-in options.
+    """
+    name, url = parse_plugin_url(url)
+    plugin_class = get_plugin_class('storage', name)
+    return plugin_class(url, options)
+
+
+class ProgressReport(object):
+    def __init__(self, current, total):
+        self.current = current
+        self.total = total

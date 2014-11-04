@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{%- import "inc/macros.jinja" as macros -%}
+<html><head>
+    <title>{% block page_title %}{% endblock %} - Storage Explorer</title>
+    {{ macros.css("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css") }}
+    {{ macros.css("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css") }}
+    {{ macros.css("https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css") }}
+    {{ macros.google_fonts(["Roboto:400,700,400italic", "Roboto+Condensed:400,700,400italic"]) }}
+    {{ macros.css(url_for('static', filename='pygments.css')) }}
+    {{ macros.css(url_for('static', filename='style.css')) }}
+</head><body>
+
+    {% call macros.navbar(inverse=True, static="top", brand="Storage Explorer") %}
+        <ul class="nav navbar-nav">
+	  {% if storage %}
+          <li><a href="{{ url_for('.storage_index', storage_url=storage.url) }}">
+	      {{ storage.url }}</a></li>
+	  {% endif %}
+        </ul>
+    {% endcall %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container-fluid">
+          {% for category, message in messages %}
+            {% if category == 'error' %}{% set category = 'danger' %}{% endif %}
+            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+
+    {% block page_body %}{% endblock %}
+
+    <footer class="site-footer">
+
+      {% set repository = 'opendatatrentino/opendata-harvester' %}
+      <ul class="list-inline">
+	<li><a target="_blank" href="https://github.com/{{ repository }}">Source code</a></li>
+	<li><a target="_blank" href="https://github.com/{{ repository }}/issues">Issues</a></li>
+	<li><a target="_blank" href="https://github.com/{{ repository }}/issues/new?labels=bug">Report bug</a></li>
+	<li><a target="_blank" href="https://github.com/{{ repository }}/issues/new?labels=enhancement">Request feature</a></li>
+	<li><a target="_blank" href="https://opendatatrentino.github.io/opendata-harvester">Documentation</a></li>
+      </ul>
+
+      <p>Storage Explorer (part of the Opendata Harvester project) &mdash; Copyright &copy; 2014
+	<a target="_blank" href="https://github.com/rshk">Samuele Santi</a>
+	and <a target="_blank" href="http://trentorise.eu">Trento RISE</a>.
+	Under Apache 2.0 License.</p>
+
+    </footer>
+
+    {{ macros.js("https://code.jquery.com/jquery-1.11.0.min.js") }}
+    {{ macros.js("https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js") }}
+    {% block scripts %}{% endblock %}
+</body></html>
