@@ -409,3 +409,9 @@ def get_storage_direct(url, options=None):
     name, url = parse_plugin_url(url)
     plugin_class = get_plugin_class('storage', name)
     return plugin_class(url, options)
+
+
+class ProgressReport(object):
+    def __init__(self, current, total):
+        self.current = current
+        self.total = total

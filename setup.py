@@ -13,6 +13,7 @@ install_requires = [
     'termcolor',  # for colored logs
     'unidecode',  # to transliterate characters
     'nicelog',  # For log formatting
+    'eventlite',  # For reporting execution status
 
     # For the director (todo: use extras?)
     'celery[redis]',  # for running async tasks
