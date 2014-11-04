@@ -26,7 +26,7 @@ class Geocatalogo(CrawlerPluginBase):
 
         client = GeoCatalogoClient(self.url)
 
-        progress_total = 0
+        # progress_total = 0
 
         # We iterate all the datasets in the catalog and store
         # them as raw xml, by id.

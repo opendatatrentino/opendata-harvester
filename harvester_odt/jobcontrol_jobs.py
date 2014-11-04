@@ -13,8 +13,8 @@ from harvester_odt.pat_statistica.client import (
     StatisticaClient, StatisticaSubproClient)
 from harvester_odt.pat_statistica.conv_statistica \
     import dataset_statistica_to_ckan
-from harvester_odt.pat_statistica.conv_statistica_subpro \
-    import dataset_statistica_subpro_to_ckan
+# from harvester_odt.pat_statistica.conv_statistica_subpro \
+#     import dataset_statistica_subpro_to_ckan
 from harvester_odt.pat_statistica.constants import ORGANIZATIONS, CATEGORIES
 
 from jobcontrol.globals import current_app, execution_context
