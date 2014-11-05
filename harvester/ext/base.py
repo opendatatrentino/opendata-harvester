@@ -10,6 +10,19 @@ class PluginBase(object):
         self.url = url
         self.conf = conf or {}
 
+    def __getstate__(self):
+        # Return state for pickling.
+        # At unpicklet time, __dict__ will be set to the returned
+        # value. Also note that __init__ will **not** be called!
+        return {'url': self.url, 'conf': self.conf}
+
+    def __repr__(self):
+        return '{0}({1!r}, conf={2!r})'.format(
+            self.__class__.__name__, self.url, self.conf)
+
+    def __unicode__(self):
+        return unicode(self.url)
+
     @classmethod
     def get_options(cls):
         """
