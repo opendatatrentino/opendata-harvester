@@ -77,8 +77,10 @@ def index():
 
 @html_views.route('/', methods=['POST'])
 def storage_connect():
-    url = request.form['storage_url']
+    # Strip spaces and quotes, which are not legal in an URL anyways..
+    url = request.form['storage_url'].strip('\t\n\x0b\x0c\r "\'')
 
+    # Add to bookmarks, if required to do so
     if request.form.get('bookmark'):
         if 'bookmarked_urls' not in session:
             session['bookmarked_urls'] = []
@@ -88,6 +90,17 @@ def storage_connect():
 
     return redirect(url_for(
         '.storage_index', storage_url=url))
+
+
+@html_views.route('/bookmarks/remove', methods=['POST'])
+def bookmark_remove():
+    # Strip spaces and quotes, which are not legal in an URL anyways..
+    url = request.form['storage_url']
+
+    if 'bookmarked_urls' in session:
+        session['bookmarked_urls'].remove(url)
+
+    return redirect(request.headers.get('referer') or '/')
 
 
 @html_views.route('/storage/<quotedstring:storage_url>', methods=['GET'])

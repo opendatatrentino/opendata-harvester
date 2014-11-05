@@ -1,5 +1,6 @@
 from werkzeug.routing import BaseConverter
 
+import json
 import urllib
 import flask
 # from flask import request, session, abort
@@ -79,3 +80,23 @@ app.secret_key = "This is no secret"
 # app.jinja_env.globals['csrf_token'] = generate_csrf_token
 
 # app.jinja_env.filters.update(filters)
+
+def json_filter(obj, sort_keys=True, indent=4, **kw):
+    kw['sort_keys'] = sort_keys
+    kw['indent'] = indent
+    return json.dumps(obj, **kw)
+
+app.jinja_env.filters['json'] = json_filter
+
+
+def format_blob_filter(obj):
+    if '\x00' in obj:  # If contains a NULL, it's binary (grep strategy)
+        return '[ Binary object not shown ]'
+
+    if isinstance(obj, bytes):
+        # todo: detect encoding
+        return obj.decode('utf-8')
+
+    return obj
+
+app.jinja_env.filters['format_blob'] = format_blob_filter

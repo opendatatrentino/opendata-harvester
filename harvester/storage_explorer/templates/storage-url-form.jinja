@@ -19,7 +19,15 @@
     <h2>Saved URLs</h2>
     <ul>
       {% for url in bookmarks %}
-	<li><a href="{{ url_for('.storage_index', storage_url=url) }}">{{ url }}</a></li>
+	<li>
+	  <a href="{{ url_for('.storage_index', storage_url=url) }}">{{ url }}</a>
+	  <form action="{{ url_for('.bookmark_remove') }}" method="POST" class="form-inline" role="form" style="display:inline;">
+	    <input type="hidden" name="storage_url" value="{{ url }}">
+	    <button type="submit" class="btn btn-link" title="Remove">
+	      <span class="fa fa-times"></span>
+	    </button>
+	  </form>
+	</li>
       {% endfor %}
     </ul>
   {% endif %}
