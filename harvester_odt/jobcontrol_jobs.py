@@ -9,10 +9,7 @@ import os
 import eventlite
 
 from harvester.utils import get_storage_direct, ProgressReport
-from harvester_odt.pat_statistica.client import (
-    StatisticaClient, StatisticaSubproClient)
-from harvester_odt.pat_statistica.conv_statistica \
-    import dataset_statistica_to_ckan
+
 # from harvester_odt.pat_statistica.conv_statistica_subpro \
 #     import dataset_statistica_subpro_to_ckan
 from harvester_odt.pat_statistica.constants import ORGANIZATIONS, CATEGORIES
@@ -57,22 +54,11 @@ def crawl_statistica(storage_url, storage_options=None):
         Options to be passed to storage constructor.
     """
 
+    import harvester_odt.pat_statistica.crawler
     storage = get_storage(storage_url, storage_options)
-    client = StatisticaClient()
-
-    # Get the total number of datasets
-    total = len(client.list_datasets())
-    logger.debug('Found {0} datasets'.format(total))
-    _update_progress(0, total)
-
-    datasets = client.iter_datasets()
-
-    for i, dataset in enumerate(datasets):
-        logger.info('Got dataset #{0}: {1}'.format(i, dataset['id']))
-        storage.documents['dataset'][dataset['id']] = dataset
-        _update_progress(i + 1, total)
-
-    return storage.url
+    with eventlite.handler(handle_events):
+        harvester_odt.pat_statistica.crawler.crawl_statistica(storage)
+    return storage
 
 
 def crawl_statistica_subpro(storage_url, storage_options=None):
@@ -89,21 +75,11 @@ def crawl_statistica_subpro(storage_url, storage_options=None):
         Options to be passed to storage constructor.
     """
 
+    import harvester_odt.pat_statistica.crawler
     storage = get_storage(storage_url, storage_options)
-    client = StatisticaSubproClient()
-
-    total = len(client.list_datasets())
-    logger.debug('Found {0} datasets'.format(total))
-    _update_progress(0, total)
-
-    datasets = client.iter_datasets()
-
-    for i, dataset in enumerate(datasets):
-        logger.info('Got dataset #{0}: {1}'.format(i, dataset['id']))
-        storage.documents['dataset'][dataset['id']] = dataset
-        _update_progress(i + 1, total)
-
-    return storage.url
+    with eventlite.handler(handle_events):
+        harvester_odt.pat_statistica.crawler.crawl_statistica_subpro(storage)
+    return storage
 
 
 def crawl_geocatalogo(storage_url, storage_options=None):
@@ -121,11 +97,11 @@ def crawl_geocatalogo(storage_url, storage_options=None):
     """
 
     from harvester_odt.pat_geocatalogo.crawler import Geocatalogo
-
     storage = get_storage(storage_url, storage_options)
     crawler = Geocatalogo('', {'with_resources': False})
     with eventlite.handler(handle_events):
         crawler.fetch_data(storage)
+    return storage
 
 
 def _get_input_storage_url():
@@ -168,50 +144,13 @@ def convert_statistica_to_ckan(storage_url, storage_options=None):
         Options to be passed to storage constructor.
     """
 
-    input_storage_url = _get_input_storage_url()
-    input_storage = get_storage_direct(input_storage_url)
-
+    from harvester_odt.pat_statistica.converter \
+        import convert_statistica_to_ckan
+    input_storage = _get_input_storage_url()
     storage = get_storage(storage_url, storage_options)
-
-    logger.debug('Converting data statistica -> ckan')
-    logger.debug('Input storage: {0}'.format(input_storage.url))
-    logger.debug('Output storage: {0}'.format(storage.url))
-
-    # ------------------------------------------------------------
-    # First, calculate the number of objects we are going
-    # to create, to report progress.
-
-    progress_total = len(input_storage.documents['dataset'])
-    progress_total += len(CATEGORIES)
-    progress_total += len(ORGANIZATIONS)
-
-    progress_current = 0
-
-    _update_progress(0, progress_total)
-
-    for dataset_id in input_storage.documents['dataset']:
-        logger.debug('Importing dataset {0}'.format(dataset_id))
-        dataset = input_storage.documents['dataset'][dataset_id]
-        clean_dataset = dataset_statistica_to_ckan(dataset)
-        _dsid = clean_dataset['id']
-        storage.documents['dataset'][_dsid] = clean_dataset
-
-        progress_current += 1
-        _update_progress(progress_current, progress_total)
-
-    logger.debug('Importing groups')
-    for group in CATEGORIES.itervalues():
-        storage.documents['group'][group['name']] = group
-
-        progress_current += 1
-        _update_progress(progress_current, progress_total)
-
-    logger.debug('Importing organizations')
-    for org in ORGANIZATIONS.itervalues():
-        storage.documents['organization'][org['name']] = org
-
-        progress_current += 1
-        _update_progress(progress_current, progress_total)
+    with eventlite.handler(handle_events):
+        convert_statistica_to_ckan(input_storage, storage)
+    return storage
 
 
 def convert_statistica_subpro_to_ckan(storage_url, storage_options=None):
@@ -227,3 +166,42 @@ def convert_statistica_subpro_to_ckan(storage_url, storage_options=None):
     :param storage_options:
         Options to be passed to storage constructor.
     """
+
+    from harvester_odt.pat_statistica.converter \
+        import convert_statistica_to_ckan
+    input_storage = _get_input_storage_url()
+    storage = get_storage(storage_url, storage_options)
+    with eventlite.handler(handle_events):
+        convert_statistica_to_ckan(input_storage, storage)
+    return storage
+
+
+def debugging_job(storage_url, storage_options=None):
+    """
+    Job to be used for debugging purposes.
+    """
+
+    storage = get_storage(storage_url, storage_options)
+
+    with eventlite.handler(handle_events):
+        eventlite.emit(ProgressReport(0, 1))
+
+    job = current_app.get_job(execution_context.job_id)
+    logger.debug('Running job: {0!r}'.format(job))
+
+    deps = list(job.get_deps())
+    logger.debug('Found {0} dependencies'.format(len(deps)))
+
+    for dep in deps:
+        build = dep.get_latest_successful_build()
+        if build is None:
+            logger.debug('Dependency {0!r} has no builds'
+                         .format(dep))
+        else:
+            logger.debug('Dependency {0!r} latest build returned {1!r}'
+                         .format(dep, build['retval']))
+
+    with eventlite.handler(handle_events):
+        eventlite.emit(ProgressReport(1, 1))
+
+    return storage

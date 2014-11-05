@@ -2,9 +2,15 @@
 
 import logging
 
+import eventlite
+
 from harvester.ext.crawler.base import CrawlerPluginBase
+from harvester.utils import ProgressReport
 
 from .client import (StatisticaClient, StatisticaSubproClient)
+
+
+logger = logging.getLogger(__name__)
 
 
 class Statistica(CrawlerPluginBase):
@@ -27,19 +33,7 @@ class Statistica(CrawlerPluginBase):
 
     def fetch_data(self, storage):
         self.logger.info("Fetching data from statistica")
-
-        client = StatisticaClient()  # todo: consider the base URL?
-
-        if self.conf.get('bruteforce_find', False):
-            datasets = client.force_iter_datasets()
-        else:
-            datasets = client.iter_datasets()
-
-        for dataset in datasets:
-            self.logger.info('Got dataset: {0}'.format(dataset['id']))
-            storage.documents['dataset'][dataset['id']] = dataset
-
-            # todo: we could download resources as blobs too..
+        return crawl_statistica(storage)
 
 
 class StatisticaSubPro(CrawlerPluginBase):
@@ -63,16 +57,39 @@ class StatisticaSubPro(CrawlerPluginBase):
 
     def fetch_data(self, storage):
         self.logger.info("Fetching data from statistica-subpro")
+        return crawl_statistica_subpro(storage)
 
-        client = StatisticaSubproClient()
 
-        if self.conf.get('bruteforce_find', False):
-            datasets = client.force_iter_datasets()
-        else:
-            datasets = client.iter_datasets()
+def crawl_statistica(storage):
+    client = StatisticaClient()
 
-        for dataset in datasets:
-            self.logger.info('Dataset: {0}'.format(dataset['id']))
-            storage.documents['dataset'][dataset['id']] = dataset
+    # Get the total number of datasets
+    total = len(client.list_datasets())
+    logger.debug('Found {0} datasets'.format(total))
+    eventlite.emit(ProgressReport(0, total))
 
-            # todo: we could download resources as blobs too..
+    datasets = client.iter_datasets()
+
+    for i, dataset in enumerate(datasets):
+        logger.info('Got dataset #{0}: {1}'.format(i, dataset['id']))
+        storage.documents['dataset'][dataset['id']] = dataset
+        eventlite.emit(ProgressReport(i + 1, total))
+
+    return storage.url
+
+
+def crawl_statistica_subpro(storage):
+    client = StatisticaSubproClient()
+
+    total = len(client.list_datasets())
+    logger.debug('Found {0} datasets'.format(total))
+    eventlite.emit(ProgressReport(0, total))
+
+    datasets = client.iter_datasets()
+
+    for i, dataset in enumerate(datasets):
+        logger.info('Got dataset #{0}: {1}'.format(i, dataset['id']))
+        storage.documents['dataset'][dataset['id']] = dataset
+        eventlite.emit(ProgressReport(i + 1, total))
+
+    return storage.url
