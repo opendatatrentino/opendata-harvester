@@ -21,6 +21,7 @@ import warnings
 from stevedore.extension import ExtensionManager
 from termcolor import colored
 from unidecode import unidecode
+import eventlite
 
 from .flattening import *  # noqa
 from .xml_data_extraction import *  # noqa
@@ -415,3 +416,7 @@ class ProgressReport(object):
     def __init__(self, current, total):
         self.current = current
         self.total = total
+
+
+def report_progress(cur, tot):
+    eventlite.emit(ProgressReport(cur, tot))

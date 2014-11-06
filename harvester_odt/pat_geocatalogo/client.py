@@ -10,6 +10,14 @@ class GeoCatalogoClient(object):
     def __init__(self, url):
         self.url = url or DEFAULT_URL
 
+    def count_datasets(self):
+        client = CatalogueServiceWeb(self.url)
+        client.getrecords2(
+            # We need to use this type in order to get links!
+            resulttype='results_with_summary',
+            startposition=0, maxrecords=1)
+        return client.results['matches']
+
     def iter_datasets(self):
         client = CatalogueServiceWeb(self.url)
         PAGE_SIZE = 20

@@ -1,11 +1,10 @@
 import logging
 
-import eventlite
 import lxml
 import requests
 
 from harvester.ext.crawler.base import CrawlerPluginBase
-from harvester.utils import ProgressReport
+from harvester.utils import report_progress
 from .client import GeoCatalogoClient
 
 logger = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ class Geocatalogo(CrawlerPluginBase):
 
         client = GeoCatalogoClient(self.url)
 
-        # progress_total = 0
+        progress_total = client.count_datasets()
 
         # We iterate all the datasets in the catalog and store
         # them as raw xml, by id.
@@ -107,5 +106,4 @@ class Geocatalogo(CrawlerPluginBase):
                     logger.error(u'Failed downloading {0} (code: {1})'
                                  .format(url, response.status_code))
 
-            # todo: get the *real* total number of datasets!
-            eventlite.emit(ProgressReport(i + 1, i + 1))
+            report_progress(i + 1, progress_total)
