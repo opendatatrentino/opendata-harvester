@@ -168,11 +168,11 @@ def convert_statistica_subpro_to_ckan(storage_url, storage_options=None):
     """
 
     from harvester_odt.pat_statistica.converter \
-        import convert_statistica_to_ckan
+        import convert_statistica_subpro_to_ckan
     input_storage = _get_input_storage_url()
     storage = get_storage(storage_url, storage_options)
     with eventlite.handler(handle_events):
-        convert_statistica_to_ckan(input_storage, storage)
+        convert_statistica_subpro_to_ckan(input_storage, storage)
     return storage
 
 
