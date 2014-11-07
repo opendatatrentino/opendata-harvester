@@ -5,7 +5,9 @@ import requests
 
 from harvester.ext.crawler.base import CrawlerPluginBase
 from harvester.utils import report_progress
+
 from .client import GeoCatalogoClient
+from .constants import API_XML_NSMAP
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ class Geocatalogo(CrawlerPluginBase):
         for i, dataset in enumerate(client.iter_datasets()):
             logger.debug("Processing dataset {0}".format(i))
 
-            xp = lambda x: dataset.xpath(x, namespaces=dataset.nsmap)
+            xp = lambda x: dataset.xpath(x, namespaces=API_XML_NSMAP)
 
             dataset_xml = lxml.etree.tostring(dataset)
             dataset_id = int(xp('geonet:info/id/text()')[0])
@@ -60,13 +62,13 @@ class Geocatalogo(CrawlerPluginBase):
                 'subject': xp('dc:subject/text()'),
 
                 # ...the raw XML
+                # todo: there should be no need to store it here..
                 'raw_xml': dataset_xml,
 
-                # todo: we should figure out some way to convert xml -> json
-                # in order to easily perform further inspection on objects..
+                # URLs to resources
+                'urls': {},
             }
 
-            obj['urls'] = {}
             for fmt in ('xml', 'zip', 'rdf'):
                 found = xp('geonet:info/ogd_{0}/text()'.format(fmt))
                 if len(found) < 1:
@@ -75,14 +77,14 @@ class Geocatalogo(CrawlerPluginBase):
                 if url:
                     obj['urls'][fmt] = url
 
-            # Actually store the thing in the storage
             logger.info(
                 u'Storing dataset: {id!r} ({title!r})'
-                .format(id=dataset_id,
-                        title=obj['title']))
+                .format(id=dataset_id, title=obj['title']))
 
-            # Store information as a document and XML as a blob
+            # Store the "converted" json document
             storage.documents['dataset'][dataset_id] = obj
+
+            # Store the original dataset, as XML
             storage.blobs['dataset'][dataset_id] = dataset_xml
 
             # Now download resources and store as blobs

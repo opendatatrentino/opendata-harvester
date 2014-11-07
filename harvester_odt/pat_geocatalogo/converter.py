@@ -8,9 +8,10 @@ import logging
 import lxml.etree
 
 from harvester.ext.converter.base import ConverterPluginBase
-from harvester.utils import slugify, XPathHelper, flatten_dict
+from harvester.utils import slugify, XPathHelper, flatten_dict, report_progress
 
 from .tags_map import TAGS_MAP
+from .constants import LINKED_XML_NSMAP, API_XML_NSMAP
 
 logger = logging.getLogger(__name__)
 
@@ -69,25 +70,6 @@ GROUPS = {
 }
 
 
-API_XML_NSMAP = {
-    "csw": "http://www.opengis.net/cat/csw/2.0.2",
-    "dc": "http://purl.org/dc/elements/1.1/",
-    "dct": "http://purl.org/dc/terms/",
-    "geonet": "http://www.fao.org/geonetwork",
-    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-}
-LINKED_XML_NSMAP = {
-    "csw": "http://www.opengis.net/cat/csw/2.0.2",
-    "gco": "http://www.isotc211.org/2005/gco",
-    "gmd": "http://www.isotc211.org/2005/gmd",
-    "gml": "http://www.opengis.net/gml/3.2",
-    "gmx": "http://www.isotc211.org/2005/gmx",
-    "srv": "http://www.isotc211.org/2005/srv",
-    "xlink": "http://www.w3.org/1999/xlink",
-    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-}
-
-
 def _multistrptime(dt, formats):
     for fmt in formats:
         try:
@@ -135,6 +117,8 @@ class GeoCatalogoToCkan(ConverterPluginBase):
         logger.info('Converting datasets PAT Geocatalogo -> ckan')
 
         _num_datasets = len(storage_in.documents['dataset'])
+        report_progress(0, _num_datasets)
+
         all_datasets = storage_in.documents['dataset'].iteritems()
         for i, (dataset_id, dataset) in enumerate(all_datasets):
             logger.info('Converting dataset {0} [{1}/{2}]'
@@ -169,6 +153,8 @@ class GeoCatalogoToCkan(ConverterPluginBase):
 
             except:
                 logger.exception('Conversion failed')
+
+            report_progress(i + 1, _num_datasets)
 
         logger.info('Importing organizations')
         for org_name, org in ORGANIZATIONS.iteritems():

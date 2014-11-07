@@ -412,6 +412,22 @@ def get_storage_direct(url, options=None):
     return plugin_class(url, options)
 
 
+def get_storage_from_arg(arg):
+    """
+    Get a storage instance from an argument to a function.
+
+    This is needed for functions that may be called via
+    an external tool that doesn't allow passing object instances
+    directly.
+    """
+
+    if isinstance(arg, BaseStorage):
+        return arg
+
+    return get_storage_direct(
+        arg['url'], options=arg.get('conf', None))
+
+
 class ProgressReport(object):
     def __init__(self, current, total):
         self.current = current
