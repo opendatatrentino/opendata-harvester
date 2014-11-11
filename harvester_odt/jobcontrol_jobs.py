@@ -3,7 +3,6 @@ Functions to be used as JobControl jobs
 """
 
 from datetime import datetime
-import functools
 import logging
 import os
 
@@ -36,17 +35,17 @@ def get_storage(url, options=None):
     return get_storage_direct(url, options)
 
 
-storage_docs = """
+# storage_docs = """
 
-    :param storage_url:
-        URL of the storage to use. The following replacements
-        will be applied:
+#     :param storage_url:
+#         URL of the storage to use. The following replacements
+#         will be applied:
 
-        - ``{id}`` - A unique id, based on date/time and process PID.
+#         - ``{id}`` - A unique id, based on date/time and process PID.
 
-    :param storage_options:
-        Options to be passed to storage constructor.
-"""
+#     :param storage_options:
+#         Options to be passed to storage constructor.
+# """
 
 
 # def with_storage(func):

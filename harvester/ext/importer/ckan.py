@@ -1,9 +1,10 @@
 import logging
 
-from ckan_api_client.syncing import SynchronizationClient
+# from ckan_api_client.syncing import SynchronizationClient
 
 from harvester.ext.importer.base import ImporterPluginBase
 from harvester.utils import get_storage_from_arg
+from harvester.ext.importer.ckan_sync_client import SynchronizationClient
 
 
 logger = logging.getLogger(__name__)
@@ -108,3 +109,60 @@ def import_to_ckan(storage, ckan_url, api_key, source_name,
     }
 
     client.sync(source_name, data)
+
+
+def _get_input_storage():
+    """
+    Get the input storage from job dependencies.
+    """
+
+    # Get a list of dependencies of this job
+    # We expect to get exactly *one*
+
+    from jobcontrol.globals import current_app, execution_context
+
+    deps = current_app.storage.get_job_deps(execution_context.job_id)
+
+    if len(deps) != 1:
+        raise RuntimeError("This job requires exactly *one* dependency, "
+                           "which returned the URL to storage containing "
+                           "the crawled data.")
+
+    logger.debug('Job {0} dependencies: {1!r}'
+                 .format(execution_context.job_id,
+                         [x['id'] for x in deps]))
+
+    # Get the output storage URL from the latest successful
+    # build. Again, we need at least one successful build.
+
+    dep_build = current_app.storage.get_latest_successful_build(deps[0]['id'])
+
+    if dep_build is None:
+        raise RuntimeError("Expected at least a successful build")
+
+    return dep_build['retval']
+
+
+def import_to_ckan_job(**kw):
+    from harvester.utils import ProgressReport
+    import eventlite
+    from jobcontrol.globals import current_app, execution_context
+
+    def _update_progress(*a):
+        current_app.storage.update_build_progress(
+            execution_context.build_id, *a)
+
+    def handle_events(*a, **kw):
+        if len(a) and isinstance(a[0], ProgressReport):
+            _update_progress(a[0].current, a[0].total)
+
+    input_storage = _get_input_storage()
+    with eventlite.handler(handle_events):
+        import_to_ckan(storage=input_storage, **kw)
+
+
+import_to_ckan_job.__doc__ = import_to_ckan.__doc__ + """
+
+    **Note:** in the "job" version, the storage will be taken from the result
+    of dependency job(s), *not* from the argument!
+"""

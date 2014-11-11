@@ -421,8 +421,13 @@ def get_storage_from_arg(arg):
     directly.
     """
 
+    from harvester.ext.storage.base import BaseStorage
+
     if isinstance(arg, BaseStorage):
         return arg
+
+    if isinstance(arg, basestring):
+        return get_storage_direct(arg, options={})
 
     return get_storage_direct(
         arg['url'], options=arg.get('conf', None))
