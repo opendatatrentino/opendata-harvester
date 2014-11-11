@@ -52,7 +52,7 @@ def convert_statistica_to_ckan(storage_in, storage_out):
     progress_total += len(CATEGORIES)
     progress_total += len(ORGANIZATIONS)
 
-    progress = itertools.count()
+    progress = itertools.count(1)
     eventlite.emit(ProgressReport(0, progress_total))
 
     for dataset_id, dataset in storage_in.documents['dataset'].iteritems():
@@ -83,7 +83,7 @@ def convert_statistica_subpro_to_ckan(storage_in, storage_out):
     progress_total += len(CATEGORIES)
     progress_total += len(ORGANIZATIONS)
 
-    progress = itertools.count()
+    progress = itertools.count(1)
     eventlite.emit(ProgressReport(0, progress_total))
 
     logger.debug('Converting datasets')

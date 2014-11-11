@@ -173,7 +173,7 @@ class SynchronizationClient(object):
 
         _progress_total = sum(len(differences[x])
                               for x in ('left', 'right', 'differing'))
-        _progress_next = itertools.count().next
+        _progress_next = itertools.count(1).next
         report_progress(0, _progress_total)
 
         # We delete first, in order to (possibly) deallocate
