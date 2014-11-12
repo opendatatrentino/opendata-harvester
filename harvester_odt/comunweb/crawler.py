@@ -1,10 +1,11 @@
+import itertools
 import logging
 import urlparse
 
 import requests
 
 from harvester.ext.crawler.base import CrawlerPluginBase
-from harvester.utils import to_ordinal
+from harvester.utils import to_ordinal, report_progress
 from . import DEFAULT_CLASSES
 
 logger = logging.getLogger(__name__)
@@ -63,8 +64,16 @@ class ComunWebCrawler(CrawlerPluginBase):
     def fetch_data(self, storage):
         logger.info("Fetching data from comunweb")
 
-        classes = (c for c in self._list_object_classes()
-                   if c['identifier'] in DEFAULT_CLASSES)
+        classes = [c for c in self._list_object_classes()
+                   if c['identifier'] in DEFAULT_CLASSES]
+
+        # Calculate total for progress
+        _progress_total = 0
+        for clsinfo in classes:
+            resp = requests.get(clsinfo['link'])
+            _progress_total += int(resp.json()['metadata']['count'])
+        _progress_next = itertools.count(1).next
+        report_progress(0, _progress_total)
 
         for clsinfo in classes:
             # Each clsinfo has "identifier", "link", "name"
@@ -118,6 +127,8 @@ class ComunWebCrawler(CrawlerPluginBase):
 
                 # Store it by nodeId
                 storage.documents[obj_type][node_id] = obj
+
+                report_progress(_progress_next(), _progress_total)
 
     def _list_object_classes(self):
         """

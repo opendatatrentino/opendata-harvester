@@ -89,6 +89,21 @@ def crawl_geocatalogo(storage):
     return storage
 
 
+def crawl_comunweb(storage, url):
+    """Run crawler for comunweb
+
+    :param storage: Output storage
+    :param url: base URL of the ComunWeb website
+    """
+
+    from harvester_odt.comunweb.crawler import ComunWebCrawler
+    crawler = ComunWebCrawler(url)
+    storage = get_storage_from_arg(storage)
+    with eventlite.handler(handle_events):
+        crawler.fetch_data(storage)
+    return storage
+
+
 def _get_input_storage():
     """
     Get the input storage from job dependencies.
