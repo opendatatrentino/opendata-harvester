@@ -143,7 +143,7 @@ def _get_input_storage():
     return dep_build['retval']
 
 
-def import_to_ckan_job(**kw):
+def import_to_ckan_job(input_storage, **kw):
     from harvester.utils import ProgressReport
     import eventlite
     from jobcontrol.globals import current_app, execution_context
@@ -156,7 +156,9 @@ def import_to_ckan_job(**kw):
         if len(a) and isinstance(a[0], ProgressReport):
             _update_progress(a[0].current, a[0].total)
 
-    input_storage = _get_input_storage()
+    # input_storage = _get_input_storage()
+    input_storage = get_storage_from_arg(input_storage)
+
     with eventlite.handler(handle_events):
         import_to_ckan(storage=input_storage, **kw)
 

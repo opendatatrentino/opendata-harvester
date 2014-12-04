@@ -134,38 +134,41 @@ def _get_input_storage():
     return dep_build['retval']
 
 
-def convert_statistica_to_ckan(storage):
+def convert_statistica_to_ckan(input_storage, storage):
     """Convert data from pat_statistica to Ckan"""
 
     from harvester_odt.pat_statistica.converter \
         import convert_statistica_to_ckan
+    input_storage = get_storage_from_arg(input_storage)
     storage = get_storage_from_arg(storage)
-    input_storage = _get_input_storage()
+
     with eventlite.handler(handle_events):
         convert_statistica_to_ckan(input_storage, storage)
     return storage
 
 
-def convert_statistica_subpro_to_ckan(storage):
+def convert_statistica_subpro_to_ckan(input_storage, storage):
     """Convert data from pat_statistica_subpro to Ckan"""
 
     from harvester_odt.pat_statistica.converter \
         import convert_statistica_subpro_to_ckan
+    input_storage = get_storage_from_arg(input_storage)
     storage = get_storage_from_arg(storage)
-    input_storage = _get_input_storage()
+
     with eventlite.handler(handle_events):
         convert_statistica_subpro_to_ckan(input_storage, storage)
     return storage
 
 
-def convert_geocatalogo_to_ckan(storage):
+def convert_geocatalogo_to_ckan(input_storage, storage):
     """Convert data from pat_geocatalogo to Ckan"""
 
     from harvester_odt.pat_geocatalogo.converter \
         import GeoCatalogoToCkan
+    input_storage = get_storage_from_arg(input_storage)
     storage = get_storage_from_arg(storage)
-    input_storage = _get_input_storage()
     converter = GeoCatalogoToCkan('', {})
+
     with eventlite.handler(handle_events):
         converter.convert(input_storage, storage)
     return storage
