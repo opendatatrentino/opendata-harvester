@@ -433,11 +433,33 @@ def get_storage_from_arg(arg):
         arg['url'], options=arg.get('conf', None))
 
 
+# ------------------------------------------------------------
+# JobControl integration
+# ------------------------------------------------------------
+
+
 class ProgressReport(object):
-    def __init__(self, current, total):
+    def __init__(self, name, current, total, status_line=None):
+        self.group_name = name
         self.current = current
         self.total = total
+        self.status_line = status_line
 
 
-def report_progress(cur, tot):
-    eventlite.emit(ProgressReport(cur, tot))
+def report_progress(name, cur, tot, status=None):
+    eventlite.emit(ProgressReport(name, cur, tot, status))
+
+
+def handle_progress_report_events(*a, **kw):
+    from jobcontrol.globals import current_app
+
+    if len(a) and isinstance(a[0], ProgressReport):
+        report = a[0]
+        current_app.report_progress(
+            report.group_name, report.current, report.total,
+            report.status_line)
+
+
+def jobcontrol_integration():
+    """Returns a context manager providing jobcontrol integration stuff"""
+    return eventlite.handler(handle_progress_report_events)

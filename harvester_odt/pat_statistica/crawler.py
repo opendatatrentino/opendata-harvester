@@ -5,7 +5,7 @@ import logging
 import eventlite
 
 from harvester.ext.crawler.base import CrawlerPluginBase
-from harvester.utils import ProgressReport
+from harvester.utils import report_progress
 
 from .client import (StatisticaClient, StatisticaSubproClient)
 
@@ -62,34 +62,26 @@ class StatisticaSubPro(CrawlerPluginBase):
 
 def crawl_statistica(storage):
     client = StatisticaClient()
-
-    # Get the total number of datasets
-    total = len(client.list_datasets())
-    logger.debug('Found {0} datasets'.format(total))
-    eventlite.emit(ProgressReport(0, total))
-
-    datasets = client.iter_datasets()
-
-    for i, dataset in enumerate(datasets):
-        logger.info('Got dataset #{0}: {1}'.format(i, dataset['id']))
-        storage.documents['dataset'][dataset['id']] = dataset
-        eventlite.emit(ProgressReport(i + 1, total))
-
-    return storage.url
+    return _crawl_statistica(client, storage)
 
 
 def crawl_statistica_subpro(storage):
     client = StatisticaSubproClient()
+    return _crawl_statistica(client, storage)
 
+
+def _crawl_statistica(client, storage):
     total = len(client.list_datasets())
     logger.debug('Found {0} datasets'.format(total))
-    eventlite.emit(ProgressReport(0, total))
 
     datasets = client.iter_datasets()
-
     for i, dataset in enumerate(datasets):
+        report_progress(('datasets',), i, total,
+                        'Downloading dataset: {0}'
+                        .format(dataset['id']))
         logger.info('Got dataset #{0}: {1}'.format(i, dataset['id']))
         storage.documents['dataset'][dataset['id']] = dataset
-        eventlite.emit(ProgressReport(i + 1, total))
+
+    report_progress(('datasets',), total, total)
 
     return storage.url

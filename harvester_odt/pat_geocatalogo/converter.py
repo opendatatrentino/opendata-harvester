@@ -117,7 +117,7 @@ class GeoCatalogoToCkan(ConverterPluginBase):
         logger.info('Converting datasets PAT Geocatalogo -> ckan')
 
         _num_datasets = len(storage_in.documents['dataset'])
-        report_progress(0, _num_datasets)
+        report_progress(('datasets',), 0, _num_datasets)
 
         all_datasets = storage_in.documents['dataset'].iteritems()
         for i, (dataset_id, dataset) in enumerate(all_datasets):
@@ -128,7 +128,13 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             # then we can extract relevant information.
 
             search_result_xml = dataset['raw_xml']
-            linked_xml = storage_in.blobs['resource_xml'][dataset_id]
+
+            try:
+                linked_xml = storage_in.blobs['resource_xml'][dataset_id]
+            except:
+                logger.exception(
+                    'The dataset is missing a linked XML resource -- skipping')
+                continue
 
             try:
 
@@ -154,7 +160,7 @@ class GeoCatalogoToCkan(ConverterPluginBase):
             except:
                 logger.exception('Conversion failed')
 
-            report_progress(i + 1, _num_datasets)
+            report_progress(('datasets',), i + 1, _num_datasets)
 
         logger.info('Importing organizations')
         for org_name, org in ORGANIZATIONS.iteritems():

@@ -61,33 +61,44 @@ class ComunWebCrawler(CrawlerPluginBase):
 
     options = []
 
-    def fetch_data(self, storage):
-        logger.info("Fetching data from comunweb")
+    def fetch_data(self, storage, limit_classes=DEFAULT_CLASSES):
+        logger.info(u"Fetching data from comunweb: {0}".format(self.url))
 
-        classes = [c for c in self._list_object_classes()
-                   if c['identifier'] in DEFAULT_CLASSES]
+        classes = list(self._list_object_classes())
+        logger.debug(u'Available classes: {0}'.format(u', '.join(
+            x['identifier'] for x in classes)))
 
-        # Calculate total for progress
-        _progress_total = 0
-        for clsinfo in classes:
-            resp = requests.get(clsinfo['link'])
-            _progress_total += int(resp.json()['metadata']['count'])
-        _progress_next = itertools.count(1).next
-        report_progress(0, _progress_total)
+        if limit_classes:
+            classes = [x for x in classes
+                       if x['identifier'] in limit_classes]
+
+        logger.info(u'Selected {0} class(es)'.format(len(classes)))
+        logger.debug(u'Selected classes: {0}'.format(u', '.join(
+            x['identifier'] for x in classes)))
 
         for clsinfo in classes:
             # Each clsinfo has "identifier", "link", "name"
 
-            logger.info(u"Found class: {0} ({1}): {2}"
+            logger.info(u"Downloading data from class: {0} ({1}): {2}"
                         .format(clsinfo['identifier'],
                                 clsinfo['name'],
                                 clsinfo['link']))
+
+            resp = requests.get(clsinfo['link'])
+            _progress_total = int(resp.json()['metadata']['count'])
+            _progress_next = itertools.count(0).next
+            _progress_name = (u'Class: {0}'.format(clsinfo['identifier']),)
 
             obj_type = clsinfo['identifier']
 
             # Now iterate all the objects in this class
             objects = self._scan_pages(clsinfo['link'])
             for i, obj in enumerate(safe_iter(objects)):
+
+                report_progress(
+                    _progress_name, _progress_next(), _progress_total,
+                    'Downloading {0} #{1} [{2}]'.format(
+                        obj_type, i, obj['nodeId']))
 
                 # Make sure objects are coherent
                 assert obj['classIdentifier'] == obj_type
@@ -128,7 +139,8 @@ class ComunWebCrawler(CrawlerPluginBase):
                 # Store it by nodeId
                 storage.documents[obj_type][node_id] = obj
 
-                report_progress(_progress_next(), _progress_total)
+            report_progress(
+                _progress_name, _progress_next(), _progress_total, 'All done')
 
     def _list_object_classes(self):
         """

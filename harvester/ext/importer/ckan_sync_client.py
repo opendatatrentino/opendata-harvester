@@ -4,6 +4,17 @@
 # progress reporting, etc.
 # ----------------------------------------------------------------------
 
+# ------------------------------ TODO ------------------------------
+# we should report the *total* progress ASAP in order to avoid
+# "going back" progress bars.
+# Problem: we cannot determine the amount of required changes while
+# downloading the data; a hack might be to report *twice* the
+# total in the "downloading state" progress, then revert back to the
+# actual value after last iteration, just moments before being able
+# to compute the actual changes to be performed..
+
+# Also, double-check progress reporting for get state of orgs / categories
+
 import copy
 import logging
 import random
@@ -171,10 +182,22 @@ class SynchronizationClient(object):
         # way is to randomize resource names and hope
         # a 409 response indicates duplicate name..
 
-        _progress_total = sum(len(differences[x])
-                              for x in ('left', 'right', 'differing'))
-        _progress_next = itertools.count(1).next
-        report_progress(0, _progress_total)
+        # _progress_total = sum(len(differences[x])
+        #                       for x in ('left', 'right', 'differing'))
+        # _progress_next = itertools.count(1).next
+        # report_progress(0, _progress_total)
+
+        _prog_tot_add = len(differences['right'])
+        _prog_next_add = itertools.count(1).next
+        _prog_tot_remove = len(differences['left'])
+        _prog_next_remove = itertools.count(1).next
+        _prog_tot_update = len(differences['differing'])
+        _prog_next_update = itertools.count(1).next
+
+        # Create progress bars early..
+        report_progress(('datasets', 'delete'), 0, _prog_tot_remove)
+        report_progress(('datasets', 'create'), 0, _prog_tot_add)
+        report_progress(('datasets', 'update'), 0, _prog_tot_update)
 
         # We delete first, in order to (possibly) deallocate
         # some already-used names..
@@ -182,7 +205,8 @@ class SynchronizationClient(object):
             ckan_id = ckan_datasets[source_id].id
             logger.info('Deleting dataset {0}'.format(ckan_id))
             self._client.delete_dataset(ckan_id)
-            report_progress(_progress_next(), _progress_total)
+            report_progress(('datasets', 'delete'),
+                            _prog_next_remove(), _prog_tot_remove)
 
         def force_dataset_operation(operation, dataset, retry=5):
             # Maximum dataset name length is 100 characters
@@ -217,7 +241,8 @@ class SynchronizationClient(object):
             logger.info('Creating dataset {0}'.format(source_id))
             dataset = source_datasets[source_id]
             force_dataset_operation(self._client.create_dataset, dataset)
-            report_progress(_progress_next(), _progress_total)
+            report_progress(('datasets', 'create'),
+                            _prog_next_add(), _prog_tot_add)
 
         # Update outdated datasets
         for source_id in differences['differing']:
@@ -228,7 +253,8 @@ class SynchronizationClient(object):
             dataset = self._merge_datasets(old_dataset, new_dataset)
             dataset.id = old_dataset.id  # Mandatory!
             self._client.update_dataset(dataset)  # should never fail!
-            report_progress(_progress_next(), _progress_total)
+            report_progress(('datasets', 'update'),
+                            _prog_next_update(), _prog_tot_update)
 
     def _merge_datasets(self, old, new):
         # Preserve dataset names
@@ -397,14 +423,24 @@ class SynchronizationClient(object):
         Returns a dict mapping source ids with dataset objects.
         """
 
+        # HACK: We are reporting *twice* the number of datasets,
+        #       to give an estimate of the remaining steps..
+
+        _total = len(self._client.list_datasets())
+        _current = itertools.count(1).next
+
         results = {}
+        report_progress(('get ckan state',), 0, _total * 2)
         for dataset in self._client.iter_datasets():
-            if HARVEST_SOURCE_ID_FIELD not in dataset.extras:
-                continue
-            source_id = dataset.extras[HARVEST_SOURCE_ID_FIELD]
-            _name, _id = self._parse_source_id(source_id)
-            if _name == source_name:
-                results[_id] = dataset
+            if HARVEST_SOURCE_ID_FIELD in dataset.extras:
+                source_id = dataset.extras[HARVEST_SOURCE_ID_FIELD]
+                _name, _id = self._parse_source_id(source_id)
+                if _name == source_name:
+                    results[_id] = dataset
+            report_progress(('get ckan state',), _current(), _total * 2)
+
+        report_progress(('get ckan state',), _total, _total)
+
         return results
 
     def _parse_source_id(self, source_id):

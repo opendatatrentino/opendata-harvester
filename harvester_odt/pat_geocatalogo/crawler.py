@@ -12,6 +12,9 @@ from .constants import API_XML_NSMAP
 logger = logging.getLogger(__name__)
 
 
+DOWNLOAD_FORMATS = ('rdf', 'xml')
+
+
 class Geocatalogo(CrawlerPluginBase):
     """
     Crawler for http://www.territorio.provincia.tn.it/
@@ -34,7 +37,15 @@ class Geocatalogo(CrawlerPluginBase):
         # We assume we can use the <dc:identifier> as id, for the moment.
         # The xml data is stored in the "raw_xml" field.
 
-        logger.debug("Iterating datasets from geocatalogo")
+        # Note: apparently, in many cases the reported total
+        # mismatches the number of datasets when iterating..
+        # This is a known bug of the external service, and
+        # we can't do much to fix it..
+
+        logger.debug("Iterating {0} datasets from geocatalogo"
+                     .format(progress_total))
+        report_progress(('datasets',), 0, progress_total)
+
         for i, dataset in enumerate(client.iter_datasets()):
             logger.debug("Processing dataset {0}".format(i))
 
@@ -89,7 +100,13 @@ class Geocatalogo(CrawlerPluginBase):
 
             # Now download resources and store as blobs
             for fmt, url in obj['urls'].iteritems():
-                logger.info(u"Downloading {0} resource from {1}"
+                if fmt not in DOWNLOAD_FORMATS:
+                    logger.info(
+                        u"Skipping download of resource of type {0} (from {1})"
+                        .format(fmt, url))
+                    continue
+
+                logger.info(u"Downloading resource of type {0} (from {1})"
                             .format(fmt, url))
                 response = requests.get(url)
                 if response.ok:
@@ -108,4 +125,4 @@ class Geocatalogo(CrawlerPluginBase):
                     logger.error(u'Failed downloading {0} (code: {1})'
                                  .format(url, response.status_code))
 
-            report_progress(i + 1, progress_total)
+            report_progress(('datasets',), i + 1, progress_total)

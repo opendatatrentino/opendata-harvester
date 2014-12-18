@@ -14,17 +14,22 @@ class CKANImporter(ImporterPluginBase):
     logger = logging.getLogger(__name__)
 
     options = [
-        ('api_key', 'str', None, "CKAN API key"),
-        ('source_name', 'str', None, "Name for the import source"),
-        ('organization_merge_strategy', 'str', None, "One of: create, update"),
-        ('group_merge_strategy', 'str', None, "One of: create, update"),
+        ('api_key', 'str', None, u"CKAN API key"),
+        ('source_name', 'str', None, u"Name for the import source"),
+        ('organization_merge_strategy', 'str', None,
+         u"One of: create, update"),
+        ('group_merge_strategy', 'str', None, u"One of: create, update"),
         ('dataset_preserve_names', 'bool', True,
-         "if ``True`` (the default) will preserve old names of "
-         "existing datasets"),
+         u"if ``True`` (the default) will preserve old names of "
+         u"existing datasets"),
         ('dataset_preserve_organization', 'bool', True,
-         "Preserve current dataset organization?"),
+         u"Preserve current dataset organization?"),
         ('dataset_group_merge_strategy', 'str', 'add',
-         "One of: add, replace, preserve")
+         u"One of: add, replace, preserve"),
+        ('fail_on_inconsistency', 'bool', False,
+         u"Whether to fail in case of inconsistency after an update "
+         u"or to just log a warning and keep going. This is especially "
+         u"useful during development.")
     ]
 
     def sync_data(self, storage):
@@ -144,22 +149,12 @@ def _get_input_storage():
 
 
 def import_to_ckan_job(input_storage, **kw):
-    from harvester.utils import ProgressReport
-    import eventlite
-    from jobcontrol.globals import current_app, execution_context
-
-    def _update_progress(*a):
-        current_app.storage.update_build_progress(
-            execution_context.build_id, *a)
-
-    def handle_events(*a, **kw):
-        if len(a) and isinstance(a[0], ProgressReport):
-            _update_progress(a[0].current, a[0].total)
+    from harvester.utils import jobcontrol_integration
 
     # input_storage = _get_input_storage()
     input_storage = get_storage_from_arg(input_storage)
 
-    with eventlite.handler(handle_events):
+    with jobcontrol_integration():
         import_to_ckan(storage=input_storage, **kw)
 
 

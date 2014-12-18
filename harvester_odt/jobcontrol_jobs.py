@@ -6,56 +6,43 @@ from datetime import datetime
 import logging
 import os
 
-import eventlite
-from jobcontrol.globals import current_app, execution_context
+from jobcontrol.globals import execution_context
 
-from harvester.utils import (get_storage_direct, ProgressReport,
-                             get_storage_from_arg)
+from harvester.utils import (get_storage_direct,
+                             jobcontrol_integration, report_progress)
 
 logger = logging.getLogger('harvester_odt.pat_statistica')
-
-
-def _update_progress(*a):
-    current_app.storage.update_build_progress(
-        execution_context.build_id, *a)
 
 
 def _get_uniqid():
     return "{0:%y%m%d-%H%M%S}-{1}".format(datetime.now(), os.getpid())
 
 
-def handle_events(*a, **kw):
-    if len(a) and isinstance(a[0], ProgressReport):
-        _update_progress(a[0].current, a[0].total)
+def _prepare_storage_url(url):
+    return url.format(id=_get_uniqid())
 
 
-def get_storage(url, options=None):
-    url = url.format(id=_get_uniqid())
-    logger.debug('Destination storage: {0}'.format(url))
-    return get_storage_direct(url, options)
+def get_storage_from_arg(arg):
+    """
+    Get a storage instance from an argument to a function.
 
+    This is needed for functions that may be called via
+    an external tool that doesn't allow passing object instances
+    directly.
+    """
 
-# storage_docs = """
+    from harvester.ext.storage.base import BaseStorage
 
-#     :param storage_url:
-#         URL of the storage to use. The following replacements
-#         will be applied:
+    if isinstance(arg, BaseStorage):
+        return arg
 
-#         - ``{id}`` - A unique id, based on date/time and process PID.
+    if isinstance(arg, basestring):
+        return get_storage_direct(
+            _prepare_storage_url(arg), options={})
 
-#     :param storage_options:
-#         Options to be passed to storage constructor.
-# """
-
-
-# def with_storage(func):
-#     @functools.wraps(func)
-#     def wrapped(storage_url=None, storage_options=None, *a, **kw):
-#         storage = get_storage(storage_url, storage_options)
-#         kw['storage'] = storage
-#         return func(*a, **kw)
-#     wrapped.__doc__ += storage_docs
-#     return wrapped
+    return get_storage_direct(
+        _prepare_storage_url(arg['url']),
+        options=arg.get('conf', None))
 
 
 def crawl_statistica(storage):
@@ -63,8 +50,10 @@ def crawl_statistica(storage):
 
     import harvester_odt.pat_statistica.crawler
     storage = get_storage_from_arg(storage)
-    with eventlite.handler(handle_events):
+
+    with jobcontrol_integration():
         harvester_odt.pat_statistica.crawler.crawl_statistica(storage)
+
     return storage
 
 
@@ -73,7 +62,7 @@ def crawl_statistica_subpro(storage):
 
     import harvester_odt.pat_statistica.crawler
     storage = get_storage_from_arg(storage)
-    with eventlite.handler(handle_events):
+    with jobcontrol_integration():
         harvester_odt.pat_statistica.crawler.crawl_statistica_subpro(storage)
     return storage
 
@@ -84,7 +73,7 @@ def crawl_geocatalogo(storage):
     from harvester_odt.pat_geocatalogo.crawler import Geocatalogo
     crawler = Geocatalogo('', {'with_resources': False})
     storage = get_storage_from_arg(storage)
-    with eventlite.handler(handle_events):
+    with jobcontrol_integration():
         crawler.fetch_data(storage)
     return storage
 
@@ -99,39 +88,9 @@ def crawl_comunweb(storage, url):
     from harvester_odt.comunweb.crawler import ComunWebCrawler
     crawler = ComunWebCrawler(url)
     storage = get_storage_from_arg(storage)
-    with eventlite.handler(handle_events):
+    with jobcontrol_integration():
         crawler.fetch_data(storage)
     return storage
-
-
-def _get_input_storage():
-    """
-    Get the input storage from job dependencies.
-    """
-
-    # Get a list of dependencies of this job
-    # We expect to get exactly *one*
-
-    deps = current_app.storage.get_job_deps(execution_context.job_id)
-
-    if len(deps) != 1:
-        raise RuntimeError("This job requires exactly *one* dependency, "
-                           "which returned the URL to storage containing "
-                           "the crawled data.")
-
-    logger.debug('Job {0} dependencies: {1!r}'
-                 .format(execution_context.job_id,
-                         [x['id'] for x in deps]))
-
-    # Get the output storage URL from the latest successful
-    # build. Again, we need at least one successful build.
-
-    dep_build = current_app.storage.get_latest_successful_build(deps[0]['id'])
-
-    if dep_build is None:
-        raise RuntimeError("Expected at least a successful build")
-
-    return dep_build['retval']
 
 
 def convert_statistica_to_ckan(input_storage, storage):
@@ -142,7 +101,7 @@ def convert_statistica_to_ckan(input_storage, storage):
     input_storage = get_storage_from_arg(input_storage)
     storage = get_storage_from_arg(storage)
 
-    with eventlite.handler(handle_events):
+    with jobcontrol_integration():
         convert_statistica_to_ckan(input_storage, storage)
     return storage
 
@@ -155,7 +114,7 @@ def convert_statistica_subpro_to_ckan(input_storage, storage):
     input_storage = get_storage_from_arg(input_storage)
     storage = get_storage_from_arg(storage)
 
-    with eventlite.handler(handle_events):
+    with jobcontrol_integration():
         convert_statistica_subpro_to_ckan(input_storage, storage)
     return storage
 
@@ -169,7 +128,7 @@ def convert_geocatalogo_to_ckan(input_storage, storage):
     storage = get_storage_from_arg(storage)
     converter = GeoCatalogoToCkan('', {})
 
-    with eventlite.handler(handle_events):
+    with jobcontrol_integration():
         converter.convert(input_storage, storage)
     return storage
 
@@ -181,10 +140,10 @@ def debugging_job(storage):
 
     storage = get_storage_from_arg(storage)
 
-    with eventlite.handler(handle_events):
-        eventlite.emit(ProgressReport(0, 1))
+    with jobcontrol_integration():
+        report_progress(None, 0, 1)
 
-    job = current_app.get_job(execution_context.job_id)
+    job = execution_context.current_job
     logger.debug('Running job: {0!r}'.format(job))
 
     deps = list(job.get_deps())
@@ -199,7 +158,7 @@ def debugging_job(storage):
             logger.debug('Dependency {0!r} latest build returned {1!r}'
                          .format(dep, build['retval']))
 
-    with eventlite.handler(handle_events):
-        eventlite.emit(ProgressReport(1, 1))
+    with jobcontrol_integration():
+        report_progress(None, 1, 1)
 
     return storage

@@ -6,7 +6,7 @@ Functions to convert data from statistica to ckan
 
 import logging
 
-from .constants import CATEGORIES_MAP
+from .constants import get_ckan_category
 
 
 logger = logging.getLogger(__name__)
@@ -167,8 +167,9 @@ def dataset_statistica_to_ckan(orig_dataset):
 
     groups = []
     settore = orig_dataset['Settore']
-    if settore in CATEGORIES_MAP:
-        groups.append(CATEGORIES_MAP[settore])
+    category = get_ckan_category(settore)
+    if category is not None:
+        groups.append(category)
     new_dataset['groups'] = groups
 
     # todo: add tags from area + settore

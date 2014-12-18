@@ -1,52 +1,70 @@
 # -*- coding: utf-8 -*-
 
+import re
+
+from unidecode import unidecode
+
+
 LEGEND_TIPO_INDICATORE = {
     'R': 'rapporto',
     'M': 'media',
     'I': "incremento rispetto all'anno precedente",
 }
 
+# ======================================================================
+#     IMPORTANT NOTE if you need to modify the rules below
+# ======================================================================
+# Category names are "cleaned up" before matching with the rules below:
+# - Accented letters will be transliterated (eg. à becomes a, ...)
+# - Any group of symbols (anything but letters and digits) will be
+#   replaced with a single space
+# - The whole string will be converted to lowercase
+#
+#              Keep that in mind when writing rules below!
+# ======================================================================
+
 CATEGORIES_MAP = {
-    "Agricoltura, silvicoltura, e pesca": "economia",
-    "Ambiente": "ambiente",
-    "Altri servizi": "economia",
-    "Assistenza e protezione sociale": "welfare",
-    "Benessere economico": "welfare",
-    "Benessere soggettivo": "welfare",
-    "Commercio": "economia",
-    "Commercio con l'estero e internazionalizzazione": "economia",
-    "Conti economici": "economia",
-    "Costruzioni": "economia",
-    "Credito e servizi finanziari": "economia",
-    "Cultura, sport e tempo libero": "cultura",
-    "Edilizia e opere pubbliche": "ambiente",
-    "Energia": "ambiente",
-    "Famiglia e comportamenti sociali": "welfare",
-    "Giustizia e sicurezza": "sicurezza",
-    "Industria": "economia",
-    "Istruzione e formazione": "conoscenza",
-    "Lavoro e conciliazione dei tempi di vita": "welfare",
-    "Mercato del lavoro": "welfare",
-    "Paesaggio e patrimonio culturale": "ambiente",
-    "Politica e istituzioni": "politica",
-    "Popolazione": "demografia",
-    "Prezzi": "economia",
-    "Pubblica amministrazione": "amministrazione",
-    "Qualità dei servizi": "welfare",
-    "Relazioni sociali": "welfare",
-    "Ricerca e innovazione": "conoscenza",
-    "Ricerca, Sviluppo e innovazione": "conoscenza",
-    "Salute": "welfare",
-    "Sicurezza": "sicurezza",
-    "Società dell'informazione": "conoscenza",
-    "Stato dell'ambiente": "ambiente",
-    "Struttura e competitività delle imprese": "economia",
-    "Territorio": "gestione-del-territorio",
-    "Trasporti": "economia",
-    "Turismo": "economia",
+    "agricoltura silvicoltura e pesca": "agricoltura",
+    "ambiente": "ambiente",
+    "altri servizi": "economia",
+    "assistenza e protezione sociale": "welfare",
+    "benessere economico": "welfare",
+    "benessere soggettivo": "welfare",
+    "commercio": "economia",
+    "commercio con l estero e internazionalizzazione": "economia",
+    "conti economici": "economia",
+    "costruzioni": "economia",
+    "credito e servizi finanziari": "economia",
+    "cultura sport e tempo libero": "cultura",
+    "edilizia e opere pubbliche": "gestione-del-territorio",
+    "energia": "ambiente",
+    "famiglia e comportamenti sociali": "welfare",
+    "giustizia e sicurezza": "sicurezza",
+    "industria": "economia",
+    "istruzione e formazione": "conoscenza",
+    "lavoro e conciliazione dei tempi di vita": "welfare",
+    "mercato del lavoro": "welfare",
+    "paesaggio e patrimonio culturale": "cultura",
+    "politica e istituzioni": "politica",
+    "popolazione": "demografia",
+    "prezzi": "economia",
+    "pubblica amministrazione": "amministrazione",
+    "qualita dei servizi": "amministrazione",
+    "relazioni sociali": "welfare",
+    "ricerca e innovazione": "conoscenza",
+    "ricerca sviluppo e innovazione": "conoscenza",
+    "salute": "welfare",
+    "sicurezza": "sicurezza",
+    "societa dell informazione": "conoscenza",
+    "stato dell ambiente": "ambiente",
+    "struttura e competitivita delle imprese": "economia",
+    "territorio": "gestione-del-territorio",
+    "trasporti": "mobilita",
+    "turismo": "turismo",
 }
 
 CATEGORIES = {
+    'agricoltura': {'title': 'Agricoltura'},
     'ambiente': {'title': 'Ambiente'},
     'amministrazione': {'title': 'Amministrazione'},
     'conoscenza': {'title': 'Conoscenza'},
@@ -54,8 +72,10 @@ CATEGORIES = {
     'demografia': {'title': 'Demografia'},
     'economia': {'title': 'Economia'},
     'gestione-del-territorio': {'title': 'Gestione del territorio'},
+    'mobilita': {'title': 'Mobilità'},
     'politica': {'title': 'Politica'},
     'sicurezza': {'title': 'Sicurezza'},
+    'turismo': {'title': 'Turismo'},
     'welfare': {'title': 'Welfare'},
 }
 for key, val in CATEGORIES.iteritems():
@@ -76,3 +96,15 @@ ORGANIZATIONS = {
         'tags': [],
     }
 }
+
+
+def clean_category_name(name):
+    transliterated = unidecode(name)
+    cleaned = re.sub('[^a-zA-Z0-9]+', ' ', transliterated)
+    cleaned = cleaned.strip().lower()
+    return cleaned
+
+
+def get_ckan_category(name):
+    name = clean_category_name(name)
+    return CATEGORIES_MAP.get(name)
