@@ -99,60 +99,32 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
     ]
 
     # ------------------------------------------------------------
-    # Add resources for the "numeratore" table
+    # Add resources for related "tables" (numeratore, denominatore)
 
-    if 'metadata_numeratore' in orig_dataset:
-        _title, _md = _clean_metadata_dict_for_subpro_num_den(
-            orig_dataset['metadata_numeratore'])
+    for related in ('numeratore', 'denominatore'):
+        key = 'metadata_{0}'.format(related)
 
-        num_title = _title
-        num_name = slugify(_title)
+        if key in orig_dataset:
+            rel_title = orig_dataset[key]['title']
+            rel_url = orig_dataset[key]['url']
+            rel_name = slugify(rel_title)
 
-        new_dataset['resources'].extend([
-            {
-                'name': num_name,
-                'description': num_title,
-                'format': 'JSON',
-                'mimetype': 'application/json',
-                'url': _md['URLTabD'],
-            },
-            {
-                'name': num_name,
-                'description': num_title,
-                'format': 'CSV',
-                'mimetype': 'text/csv',
-                'url': (_md['URLTabD']
-                        .replace('fmt=json', 'fmt=csv')),  # F** this
-            },
-        ])
-
-    # ------------------------------------------------------------
-    # Add resources for the "denominatore" table
-
-    if 'metadata_denominatore' in orig_dataset:
-        _title, _md = _clean_metadata_dict_for_subpro_num_den(
-            orig_dataset['metadata_denominatore'])
-
-        den_title = _title
-        den_name = slugify(_title)
-
-        new_dataset['resources'].extend([
-            {
-                'name': den_name,
-                'description': den_title,
-                'format': 'JSON',
-                'mimetype': 'application/json',
-                'url': _md['URLTabD'],
-            },
-            {
-                'name': den_name,
-                'description': den_title,
-                'format': 'CSV',
-                'mimetype': 'text/csv',
-                'url': (_md['URLTabD']
-                        .replace('fmt=json', 'fmt=csv')),  # F** this
-            },
-        ])
+            new_dataset['resources'].extend([
+                {
+                    'name': rel_name,
+                    'description': rel_title,
+                    'format': 'JSON',
+                    'mimetype': 'application/json',
+                    'url': rel_url,
+                },
+                {
+                    'name': rel_name,
+                    'description': rel_title,
+                    'format': 'CSV',
+                    'mimetype': 'text/csv',
+                    'url': (rel_url.replace('fmt=json', 'fmt=csv')),
+                },
+            ])
 
     # ------------------------------------------------------------
     # Add description, aggregating value from some fields.
@@ -220,27 +192,27 @@ def dataset_statistica_subpro_to_ckan(orig_dataset):
     return new_dataset
 
 
-def _clean_metadata_dict_for_subpro_num_den(dct):
-    """
-    Clean metadata dictionary for numeratore/denominatore in
-    "indicatori sub-provinciali", checking that the passed-in
-    format is consistent with the expected one..
+# def _clean_metadata_dict_for_subpro_num_den(dct):
+#     """
+#     Clean metadata dictionary for numeratore/denominatore in
+#     "indicatori sub-provinciali", checking that the passed-in
+#     format is consistent with the expected one..
 
-    >>> _clean_metadata_dict_for_subpro_num_den({
-    ...   'Title' : [{
-    ...     'hello': 'world',
-    ...   }]
-    ... })
-    ('Title', {'hello': 'world'})
-    """
-    if not isinstance(dct, dict):
-        raise TypeError("Expected a dict")
-    if len(dct) != 1:
-        raise ValueError("Expected a single-key dict")
-    title = dct.keys()[0]
-    if not isinstance(dct[title], list):
-        raise ValueError("Expected a single-key dict containing a list")
-    if len(dct[title]) != 1:
-        raise ValueError(
-            "Expected a single-key dict containing a single-item list")
-    return title, dct[title][0]
+#     >>> _clean_metadata_dict_for_subpro_num_den({
+#     ...   'Title' : [{
+#     ...     'hello': 'world',
+#     ...   }]
+#     ... })
+#     ('Title', {'hello': 'world'})
+#     """
+#     if not isinstance(dct, dict):
+#         raise TypeError("Expected a dict")
+#     if len(dct) != 1:
+#         raise ValueError("Expected a single-key dict")
+#     title = dct.keys()[0]
+#     if not isinstance(dct[title], list):
+#         raise ValueError("Expected a single-key dict containing a list")
+#     if len(dct[title]) != 1:
+#         raise ValueError(
+#             "Expected a single-key dict containing a single-item list")
+#     return title, dct[title][0]

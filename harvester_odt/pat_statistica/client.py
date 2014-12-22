@@ -207,28 +207,20 @@ class StatisticaSubproClient(StatisticaClientBase):
         return dataset
 
     def _add_extended_metadata(self, record):
+        # Note: we no longer need to download the whole thing
+        # in order to get the title, as it is just in the
         # todo: we can cache sub-tables!
 
-        if record.get('URLTabNumMD'):  # non empty!
-            try:
-                response = requests.get(record['URLTabNumMD'])
-            except:
-                logger.exception('Error fetching "numeratore" metadata')
+        if record.get('DescrizioneTabNum'):
+            record['metadata_numeratore'] = {
+                'title': record['DescrizioneTabNum'],
+                'url': record.get('URLTabNumMD'),
+            }
 
-            try:
-                record['metadata_numeratore'] = response.json()
-            except:
-                logger.exception('Error decoding "numeratore" metadata')
-
-        if record.get('URLTabDenMD'):  # non empty!
-            try:
-                response = requests.get(record['URLTabDenMD'])
-            except:
-                logger.exception('Error fetching "denominatore" metadata')
-
-            try:
-                record['metadata_denominatore'] = response.json()
-            except:
-                logger.exception('Error decoding "denominatore" metadata')
+        if record.get('DescrizioneTabDen'):
+            record['metadata_denominatore'] = {
+                'title': record['DescrizioneTabDen'],
+                'url': record.get('URLTabDenMD'),
+            }
 
         return record
